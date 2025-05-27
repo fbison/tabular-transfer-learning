@@ -34,7 +34,7 @@ def get_categories_full_cat_data(full_cat_data_for_encoder):
         None
         if full_cat_data_for_encoder is None
         else [
-            len(set(full_cat_data_for_encoder.values[:, i]))
+            len(set(full_cat_data_for_encoder.values[:, i])) #set remove duplicadas e no fim calcula tamanho do set
             for i in range(full_cat_data_for_encoder.shape[1])
         ]
     )
@@ -296,7 +296,7 @@ class TabularDataset:
             normalizer = sklearn.preprocessing.QuantileTransformer(
                 output_distribution='normal',
                 n_quantiles=max(min(x_num['train'].shape[0] // 30, 1000), 10),
-                subsample=1e9,
+                subsample=int(1e9),
                 random_state=self.seed,
             )
             if noise:
@@ -305,6 +305,11 @@ class TabularDataset:
                 x_num_train += noise_std * np.random.default_rng(self.seed).standard_normal(x_num_train.shape)
         else:
             raise ValueError('Unknown Normalization')
+        log = logging.getLogger()
+        log.info("pre normalizer.fit\n")
+        normalizer.fit(x_num_train)
+        log.info("pos normalizer.fit\n")
+
         normalizer.fit(x_num_train)
         if self.normalizer_path is not None:
             if self.stage is None:
@@ -321,7 +326,9 @@ class TabularDataset:
         # TODO: handle num_nan_masks for SAINT
         # num_nan_masks_int = {k: (~np.isnan(v)).astype(int) for k, v in x_num.items()}
         num_nan_masks = {k: np.isnan(v) for k, v in x_num.items()}
-        if any(x.any() for x in num_nan_masks.values()):
+        print(x_num)
+        print(num_nan_masks.values())
+        if any(np.any(x) for x in num_nan_masks.values()):
 
             # TODO check if we need self.x_num here
             num_new_values = np.nanmean(self.x_num['train'], axis=0)

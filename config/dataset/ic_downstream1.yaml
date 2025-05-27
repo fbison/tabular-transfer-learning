@@ -1,0 +1,7 @@
+name: ic_downstream1
+source: local
+task: regression
+normalization: quantile
+normalizer_path: '../../../data/ic_downstream/normalizer.pkl'
+stage: 'downstream'
+y_policy:

@@ -1,0 +1,7 @@
+name: ic_upstream2
+source: local
+task: regression
+normalization: quantile
+normalizer_path: '../../../data/ic_upstream1/normalizer.pkl'
+stage: 'pretrain'
+y_policy:

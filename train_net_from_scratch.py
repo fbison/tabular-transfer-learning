@@ -44,7 +44,7 @@ def main(cfg: DictConfig):
     ####################################################
     #               Dataset and Network and Optimizer
     loaders, unique_categories, n_numerical, n_classes = dt.utils.get_dataloaders(cfg)
-
+    
     net, start_epoch, optimizer_state_dict = dt.utils.load_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,
                                                                                  unique_categories,
@@ -72,7 +72,6 @@ def main(cfg: DictConfig):
     done = False
     epoch = start_epoch
     best_epoch = epoch
-
     while not done and epoch < cfg.hyp.epochs:
         # forward and backward pass for one whole epoch handeld inside dt.default_training_loop()
         loss = dt.default_training_loop(net, loaders["train"], train_setup, device)
@@ -95,9 +94,9 @@ def main(cfg: DictConfig):
                                                                    [loaders["test"], loaders["val"], loaders["train"]],
                                                                    cfg.dataset.task,
                                                                    device)
-            log.info(f"Training accuracy: {json.dumps(train_stats, indent=4)}")
-            log.info(f"Val accuracy: {json.dumps(val_stats, indent=4)}")
-            log.info(f"Test accuracy: {json.dumps(test_stats, indent=4)}")
+            log.info(f"Training stats: {json.dumps(train_stats, indent=4)}")
+            log.info(f"Val stats: {json.dumps(val_stats, indent=4)}")
+            log.info(f"Test stats: {json.dumps(test_stats, indent=4)}")
 
             dt.utils.write_to_tb([train_stats["score"], val_stats["score"], test_stats["score"]],
                                  [f"train_acc-{cfg.dataset.name}",

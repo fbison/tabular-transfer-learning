@@ -83,6 +83,8 @@ def get_dataloaders(cfg, which_dataset=None):
     X = dataset.preprocess_data()
     Y, y_info = dataset.build_y()
     unique_categories = get_categories_full_cat_data(full_cat_data_for_encoder)
+    print(f"dataser shape: {len(X[0]['train'])}")
+    print(f"x shape: {X[0]['train'].shape}, {X[1]['train'].shape}, y shape: {Y['train'].shape}")
     n_numerical = dataset.n_num_features
     n_categorical = dataset.n_cat_features
     n_classes = dataset.n_classes
@@ -93,11 +95,10 @@ def get_dataloaders(cfg, which_dataset=None):
     trainset = TensorDataset(X[0]["train"], X[1]["train"], Y["train"])
     valset = TensorDataset(X[0]["val"], X[1]["val"], Y["val"])
     testset = TensorDataset(X[0]["test"], X[1]["test"], Y["test"])
-
-    trainloader = DataLoader(trainset, batch_size=cfg.hyp.train_batch_size, shuffle=True, drop_last=True)
+    print(f"Train set features: {X[0]['train'].shape}, ")
+    trainloader = DataLoader(trainset, batch_size=cfg.hyp.train_batch_size, shuffle=True, drop_last=(cfg_dataset.stage=="train"))
     valloader = DataLoader(valset, batch_size=cfg.hyp.test_batch_size, shuffle=False, drop_last=False)
     testloader = DataLoader(testset, batch_size=cfg.hyp.test_batch_size, shuffle=False, drop_last=False)
-
 
     loaders = {"train": trainloader, "val": valloader, "test": testloader}
     return loaders, unique_categories, n_numerical, n_classes

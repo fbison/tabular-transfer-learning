@@ -1,6 +1,6 @@
 name: ft_transformer
 d_embedding: 192
-model_path: '../../../outputs/transfer-learning-experiment/ft_transformer-yeast_upstream/model_best.pth'
+model_path: '../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2/model_best.pth'
 use_mlp_head: false
 freeze_feature_extractor: false
 token_bias: true

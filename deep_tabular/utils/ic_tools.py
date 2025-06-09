@@ -39,7 +39,7 @@ missing_features = {
 non_numerical_columns = ['Molecule', 'SMILES', 'Formula_x']
 default_target_columns = ["pIC50"]
 
-def remove_common_strings(downstream_columns, non_numerical_columns, target_columns):
+def remove_common_strings(downstream_columns, non_numerical_columns, target_columns, target=0):
     """
     Removes strings from the first list that are present in the other two lists.
 
@@ -55,7 +55,7 @@ def remove_common_strings(downstream_columns, non_numerical_columns, target_colu
     # Convert lists to sets for efficient set operations
     set_downstream = set(downstream_columns)
     set_non_numerical = set(non_numerical_columns)
-    set_target = set(target_columns)
+    set_target = set([target_columns])
 
     # Perform the set difference operation
     # (set_downstream - set_non_numerical) gets elements in downstream_columns but not in non_numerical_columns
@@ -156,13 +156,13 @@ def read_ic_dataset(dataset_name, target_colums, target, stage='pretrain'):
     X_val = pd.read_csv(file_paths['X_val'])
     X_test = pd.read_csv(file_paths['X_test'])
     
-    y_train_full = pd.read_csv(file_paths['y_train'])
-    y_val_full = pd.read_csv(file_paths['y_val'])
-    y_test_full = pd.read_csv(file_paths['y_test'])
+    y_train_full = pd.read_csv(file_paths['y_train']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
+    y_val_full = pd.read_csv(file_paths['y_val']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
+    y_test_full = pd.read_csv(file_paths['y_test']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
 
-    y_train = y_train_full.drop(columns=[target_colums[target]])
-    y_val = y_val_full.drop(columns=[target_colums[target]])
-    y_test = y_test_full.drop(columns=[target_colums[target]])
+    y_train = y_train_full[[target_colums[target]]]
+    y_val = y_val_full[[target_colums[target]]]
+    y_test = y_test_full[[target_colums[target]]]
 
     if stage == 'ic_downstream1':
         # Merge validation set into train, keep the dummy validation set for the code not to fail
@@ -197,6 +197,7 @@ def get_ic_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
     dataset_id = get_last_char_as_int(dataset_name)
     target_columns = get_target_columns(dataset_name)
+    print(f"Target columns: {len(target_columns)}")
     X_features = get_x_features(dataset_name, target_columns)
     X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(dataset_name, dataset_id, target_columns = target_columns, stage=stage)
 
@@ -211,10 +212,10 @@ def get_ic_dataset(dataset_name, task, stage):
     
     
     info["n_classes"] = 1
-    numerical_data = {"train": X_train, "val": X_val, "test": X_test}
+    numerical_data = {"train": X_train.values.astype('float'), "val": X_val.values.astype('float'), "test": X_test.values.astype('float')}
     categorical_data = None
     full_cat_data_for_encoder = None
 
-    targets = {"train": y_train, "val": y_val, "test": y_test}        
+    targets = {"train": y_train.values.astype('float'), "val": y_val.values.astype('float'), "test": y_test.values.astype('float')}        
 
     return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder

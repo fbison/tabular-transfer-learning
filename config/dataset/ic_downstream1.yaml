@@ -2,6 +2,6 @@ name: ic_downstream1
 source: local
 task: regression
 normalization: quantile
-normalizer_path: '../../../data/ic_downstream/normalizer.pkl'
+normalizer_path: 
 stage: 'downstream'
-y_policy:
+y_policy: 'mean_std'

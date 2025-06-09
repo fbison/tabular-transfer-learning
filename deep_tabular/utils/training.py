@@ -39,11 +39,19 @@ def default_training_loop(net, trainloader, train_setup, device):
 
     train_loss = 0
     total = 0
+    adjust_targets = None  # Flag para saber se devemos aplicar squeeze
 
     for batch_idx, (inputs_num, inputs_cat, targets) in enumerate(tqdm(trainloader, leave=False)):
         inputs_num, inputs_cat, targets = inputs_num.to(device).float(), inputs_cat.to(device), targets.to(device)
         inputs_num, inputs_cat = inputs_num if inputs_num.nelement() != 0 else None, \
                                  inputs_cat if inputs_cat.nelement() != 0 else None
+
+        if adjust_targets is None:
+            outputs_sample = net(inputs_num, inputs_cat)
+            adjust_targets = targets.dim() == 2 and targets.size(1) == 1 and outputs_sample.dim() == 1
+
+        if adjust_targets:
+            targets = targets.squeeze(1)
 
         optimizer.zero_grad()
         outputs = net(inputs_num, inputs_cat)

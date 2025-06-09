@@ -8,7 +8,7 @@
 import torch
 from sklearn.metrics import accuracy_score, mean_squared_error, balanced_accuracy_score, roc_auc_score
 from tqdm import tqdm
-
+import numpy as np
 
 # Ignore statements for pylint:
 #     Too many branches (R0912), Too many statements (R0915), No member (E1101),
@@ -54,9 +54,9 @@ def test_default(net, testloader, task, device):
                   "balanced_accuracy": balanced_accuracy,
                   "balanced_accuracy_adjusted": balanced_accuracy_adjusted}
     elif task == "regression":
-        rmse = mean_squared_error(targets_all, predictions_all, squared=False)
+        rmse = np.sqrt(mean_squared_error(targets_all, predictions_all))
         scores = {"score": -rmse,
-                  "rmse": -rmse}
+                  "rmse": rmse}
     elif task == "binclass":
         roc_auc = roc_auc_score(targets_all, predictions_all)
         scores = {"score": roc_auc,
@@ -108,7 +108,7 @@ def evaluate_backbone_one_dataset(embedder, backbone, head, testloader, task, de
     elif task == "regression":
         rmse = mean_squared_error(targets_all, predictions_all, squared=False)
         scores = {"score": -rmse,
-                  "rmse": -rmse}
+                  "rmse": rmse}
     elif task == "binclass":
         roc_auc = roc_auc_score(targets_all, predictions_all)
         scores = {"score": roc_auc,

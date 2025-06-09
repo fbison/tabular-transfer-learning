@@ -326,8 +326,7 @@ class TabularDataset:
         # TODO: handle num_nan_masks for SAINT
         # num_nan_masks_int = {k: (~np.isnan(v)).astype(int) for k, v in x_num.items()}
         num_nan_masks = {k: np.isnan(v) for k, v in x_num.items()}
-        print(x_num)
-        print(num_nan_masks.values())
+        
         if any(np.any(x) for x in num_nan_masks.values()):
 
             # TODO check if we need self.x_num here

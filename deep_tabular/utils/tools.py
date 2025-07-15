@@ -20,7 +20,7 @@ from .warmup import ExponentialWarmup, LinearWarmup
 from ..adjectives import adjectives
 from ..names import names
 from .mimic_tools import data_prep_transfer_mimic
-from .ic_tools import get_ic_dataset
+from .ic_tools import get_ic_dataset, get_synthetic_dataset
 
 # Ignore statements for pylint:
 #     Too many branches (R0912), Too many statements (R0915), No member (E1101),
@@ -66,6 +66,8 @@ def get_dataloaders(cfg, which_dataset=None):
         x_numerical, x_categorical, y, info, full_cat_data_for_encoder = get_ic_dataset(dataset_name=cfg_dataset.name,
                                                                                   task=cfg_dataset.task,
                                                                                   stage=cfg_dataset.stage)
+    elif cfg_dataset.name== 'synthetic':
+        x_numerical, x_categorical, y, info, full_cat_data_for_encoder = get_synthetic_dataset()
     else:
         x_numerical, x_categorical, y, info, full_cat_data_for_encoder = get_data(dataset_id=cfg_dataset.name,
                                                                                   source=cfg_dataset.source,

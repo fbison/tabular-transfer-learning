@@ -13,6 +13,7 @@ import pandas as pd
 import torch
 import sklearn
 from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_regression
 
 
 
@@ -217,5 +218,50 @@ def get_ic_dataset(dataset_name, task, stage):
     full_cat_data_for_encoder = None
 
     targets = {"train": y_train.values.astype('float'), "val": y_val.values.astype('float'), "test": y_test.values.astype('float')}        
+
+    return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder
+
+
+def get_synthetic_dataset(n_samples=1000, n_features=10, noise=10.0, val_size=0.2, test_size=0.2, random_state=42):
+    print(f"Generating synthetic dataset with {n_samples} samples, {n_features} features, noise={noise}")
+
+    # Gerar os dados
+    X, y = make_regression(
+        n_samples=n_samples,
+        n_features=n_features,
+        noise=noise,
+        random_state=random_state
+    )
+
+    # Dividir entre treino, validação e teste
+    X_trainval, X_test, y_trainval, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+    X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=val_size / (1 - test_size), random_state=random_state)
+
+    # Informações sobre o dataset
+    info = {
+        "name": "synthetic",
+        "task_type": "regression",
+        "n_num_features": n_features,
+        "n_cat_features": 0,
+        "train_size": X_train.shape[0],
+        "val_size": X_val.shape[0],
+        "test_size": X_test.shape[0],
+        "n_classes": 1
+    }
+
+    numerical_data = {
+        "train": X_train.astype('float'),
+        "val": X_val.astype('float'),
+        "test": X_test.astype('float')
+    }
+
+    categorical_data = None
+    full_cat_data_for_encoder = None
+
+    targets = {
+        "train": y_train.astype('float'),
+        "val": y_val.astype('float'),
+        "test": y_test.astype('float')
+    }
 
     return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder

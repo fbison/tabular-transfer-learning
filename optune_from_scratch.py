@@ -4,7 +4,8 @@
     March 2022
 """
 
-import train_net_from_scratch
+import time
+import train_net_for_optuna
 import hydra
 import optuna
 import sys
@@ -13,7 +14,9 @@ import os
 import copy
 from omegaconf import DictConfig, OmegaConf
 import json
+import torch
 
+SAVE_INTERVAL = 5  # salva a cada 5 trials
 
 def sample_value_with_default(trial, name, distr, min, max, default):
     # chooses suggested or default value with 50/50 chance
@@ -27,17 +30,21 @@ def sample_value_with_default(trial, name, distr, min, max, default):
 
 def get_parameters(model, trial):
     if model=='ft_transformer':
+        valid_pairs = [(64, 4), (128, 4), (128, 8), (256, 4), (256, 8)]
+        chosen = trial.suggest_categorical("embedding_head_pair", valid_pairs)
+        d_embedding, n_heads = chosen
         model_params = {
-            'd_embedding':  trial.suggest_int('d_embedding', 32, 512, step=8), #using n_heads = 8 by default
-            'n_layers': trial.suggest_int('n_layers', 1, 4),
+            'd_embedding': d_embedding,
+            'n_heads': n_heads,
+            'n_layers': trial.suggest_int('n_layers', 1, 8, step=2),
             'd_ffn_factor': trial.suggest_uniform('d_ffn_factor', 2/3, 8/3),
             'attention_dropout': trial.suggest_uniform('attention_dropout', 0.0, 0.5),
             'ffn_dropout' : trial.suggest_uniform('attention_dropout', 0.0, 0.5),
-            'residual_dropout': sample_value_with_default(trial, 'residual_dropout', 'uniform', 0.0, 0.2, 0.0),
+            #'residual_dropout': sample_value_with_default(trial, 'residual_dropout', 'uniform', 0.0, 0.2, 0.0),
             }
         training_params = {
-            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3),
-            'weight_decay':  trial.suggest_loguniform('weight_decay', 1e-6, 1e-3),
+            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3) ##,
+            ##'weight_decay':  trial.suggest_loguniform('weight_decay', 1e-6, 1e-3),
             }
 
     if model=='resnet':
@@ -75,7 +82,13 @@ def get_parameters(model, trial):
 
 
 
-def objective(trial, cfg: DictConfig, trial_configs, trial_stats):
+def objective(trial, cfg: DictConfig, trial_stats, 
+              trial_counter, n_total_trials, 
+              loaders, unique_categories, n_numerical, n_classes
+              ):
+
+    current_trial = trial_counter[0] + 1
+    print(f"Running trial {current_trial}/{n_total_trials}")
 
     model_params, training_params =  get_parameters(cfg.model.name, trial) # need to suggest parameters for optuna here, probably writing a function for suggesting parameters is the optimal way
 
@@ -85,25 +98,71 @@ def objective(trial, cfg: DictConfig, trial_configs, trial_stats):
     for par, value in training_params.items():
         config.hyp[par] = value
 
-
-    stats = train_net_from_scratch.main(config)
-
-    trial_configs.append(config)
+    if cfg.hyp.save_period < 0:
+        cfg.hyp.save_period = 1e8
+    beginTime = time.time()
+    stats = train_net_for_optuna.main(config, loaders, unique_categories, n_numerical, n_classes)
+    endTime = time.time()
+    time_taken = endTime - beginTime
     trial_stats.append(stats)
-    print(stats)
+    trial_counter[0] += 1
+
+    with open("all_trials.jsonl", "a") as f:
+        json.dump({
+            "config": OmegaConf.to_container(config, resolve=True),
+            "stats": stats,
+            "time_taken": time_taken,
+            "trial_number": current_trial,
+        }, f)
+        f.write("\n")
+
 
     return stats['val_stats']['score']
 
 
 @hydra.main(config_path="config", config_name="optune_config")
 def main(cfg):
-    n_optuna_trials = 50
-
+    n_optuna_trials = 180
     trial_stats = []
-    trial_configs = []
+    trial_counter = [0]  # mutable counter for tracking inside objective
+    torch.manual_seed(cfg.hyp.seed)
+    torch.cuda.manual_seed_all(cfg.hyp.seed)
+
+    ####################################################
+    #               Dataset and Network and Optimizer
+    loaders, unique_categories, n_numerical, n_classes = dt.utils.get_dataloaders(cfg)
+    storage_path = "sqlite:///optuna_study.db"
+    study = optuna.create_study(
+        study_name="my_study",
+        direction="maximize",
+        sampler=optuna.samplers.TPESampler(),
+        pruner=optuna.pruners.MedianPruner(),
+        storage=storage_path,
+        load_if_exists=True
+    )
+
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
-    func = lambda trial: objective(trial, cfg, trial_configs, trial_stats)
+    func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, n_optuna_trials,
+                                   loaders, unique_categories, n_numerical, n_classes)
     study.optimize(func, n_trials=n_optuna_trials)
+
+    in_memory_study = study  # assume it's still available in scope
+
+    # Create a persistent study
+    storage_path = "sqlite:///optuna_study.db"
+    persistent_study = optuna.create_study(
+        study_name="my_study",
+        direction=in_memory_study.direction,
+        sampler=in_memory_study.sampler,
+        pruner=in_memory_study.pruner,
+        storage=storage_path,
+        load_if_exists=True
+    )
+
+    # Copy each trial
+    for trial in in_memory_study.trials:
+        if trial.state == optuna.trial.TrialState.COMPLETE:
+            persistent_study.enqueue_trial(trial.params)
 
     best_trial = study.best_trial
 
@@ -116,8 +175,31 @@ def main(cfg):
         json.dump(best_stats, fp, indent = 4)
     with open(os.path.join("best_config.json"), "w") as fp:
         json.dump(best_trial.params, fp, indent = 4)
-
-
+    
+    from optuna.visualization import (
+        plot_optimization_history,
+        plot_intermediate_values,
+        plot_param_importances,
+        plot_parallel_coordinate,
+        plot_slice,
+        plot_contour,
+        plot_edf,
+    )
+    plots = {
+        "optimization_history.html": plot_optimization_history,
+        "intermediate_values.html": plot_intermediate_values,
+        "param_importance.html": plot_param_importances,
+        "parallel_coordinate.html": plot_parallel_coordinate,
+        "slice_plot.html": plot_slice,
+        "contour_plot.html": plot_contour,
+        "edf_plot.html": plot_edf,
+    }
+    for filename, plot_func in plots.items():
+        try:
+            fig = plot_func(study)
+            fig.write_html(os.path.join(filename))
+        except Exception as e:
+            print(f"Could not generate {filename}: {e}")
 
 
 

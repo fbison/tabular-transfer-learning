@@ -1,4 +1,4 @@
-""" train_net_from_scratch.py
+""" train_net_for_optuna.py
     Train, test, and save neural networks without transfer learning
     Developed for Tabular Transfer Learning project
     March 2022
@@ -27,29 +27,19 @@ import deep_tabular as dt
 #     Too many local variables (R0914), Missing docstring (C0116, C0115).
 # pylint: disable=R0912, R0915, E1101, E1102, C0103, W0702, R0914, C0116, C0115
 
-@hydra.main(config_path="config", config_name="train_net_config")
-def main(cfg: DictConfig):
+def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     torch.backends.cudnn.benchmark = True
     log = logging.getLogger()
 
     #Desativa logs se preciso
-    for handler in log.handlers:
-        if isinstance(handler, logging.StreamHandler):
-            handler.setLevel(logging.WARNING)  # Ou ERROR, INFO, etc.
+
 
     log.info("\n_________________________________________________\n")
-    log.info("train_net_from_scratch.py main() running.")
+    log.info("train_net_for_optune.py main() running.")
     log.info(OmegaConf.to_yaml(cfg))
-    if cfg.hyp.save_period < 0:
-        cfg.hyp.save_period = 1e8
-    torch.manual_seed(cfg.hyp.seed)
-    torch.cuda.manual_seed_all(cfg.hyp.seed)
-    writer = SummaryWriter(log_dir=f"tensorboard")
 
-    ####################################################
-    #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes = dt.utils.get_dataloaders(cfg)
+    writer = SummaryWriter(log_dir=f"tensorboard")
     
     net, start_epoch, optimizer_state_dict = dt.utils.load_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,

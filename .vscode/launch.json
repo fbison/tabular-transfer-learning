@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug optuna script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_from_scratch.py",
+            "args": ["model=ft_transformer", "dataset=ic_upstream2"],
+            "console": "integratedTerminal"
+        }
+    ]
+}

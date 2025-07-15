@@ -1,16 +1,16 @@
 name: ft_transformer
-d_embedding: 192
+d_embedding: 128
 model_path:
 use_mlp_head: false
 freeze_feature_extractor: false
 token_bias: true
 n_layers: 3
-n_heads: 8
+n_heads: 4
 d_ffn_factor: 1.3333333333
-attention_dropout: 0.2
+attention_dropout: 0.1
 ffn_dropout: 0.1
 residual_dropout: 0.0
-activation: reglu
+activation: gelu
 prenormalization: true
 initialization: kaiming
 kv_compression:

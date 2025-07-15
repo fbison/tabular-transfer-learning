@@ -1,0 +1,7 @@
+name: synthetic
+source: sklearn
+task: regression
+normalization: quantile
+normalizer_path: 
+stage: 'downstream'
+y_policy: 'mean_std'

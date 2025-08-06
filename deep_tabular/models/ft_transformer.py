@@ -162,8 +162,6 @@ class FTTransformer(nn.Module):
             return F.gelu
         elif activation == "reglu":
             return reglu
-        elif activation == "glu":
-            return reglu
         else:
             raise ValueError(f"Unknown activation function: {activation}")
     

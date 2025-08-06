@@ -30,17 +30,17 @@ def sample_value_with_default(trial, name, distr, min, max, default):
 
 def get_parameters(model, trial):
     if model=='ft_transformer':
-        valid_pairs = [(64, 4), (64, 8), (128, 4), (128, 8), (256, 4), (256, 8)]
+        valid_pairs = [(64, 8), (128, 4), (128, 8), (256, 4), (256, 8), (320, 8), (384, 8), (384, 12), (512, 8), (512, 16), ]
         chosen = trial.suggest_categorical("embedding_head_pair", valid_pairs)
         d_embedding, n_heads = chosen
         model_params = {
             'd_embedding': d_embedding,
             'n_heads': n_heads,
-            'n_layers': trial.suggest_int('n_layers', 1, 8, step=2),
+            'n_layers': trial.suggest_int('n_layers', 2, 10, step=2),
             'd_ffn_factor': trial.suggest_uniform('d_ffn_factor', 2/3, 8/3),
             'attention_dropout': trial.suggest_uniform('attention_dropout', 0.0, 0.5),
             'ffn_dropout' : trial.suggest_uniform('attention_dropout', 0.0, 0.5),
-            #'residual_dropout': sample_value_with_default(trial, 'residual_dropout', 'uniform', 0.0, 0.2, 0.0),
+            "activation": trial.suggest_categorical("activation", ["reglu", "gelu", "relu"]),
             }
         training_params = {
             'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3) ##,

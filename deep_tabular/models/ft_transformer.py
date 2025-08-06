@@ -155,6 +155,18 @@ class FTTransformer(nn.Module):
     - https://github.com/pytorch/fairseq/blob/1bba712622b8ae4efb3eb793a8a40da386fe11d0/examples/linformer/linformer_src/modules/multihead_linear_attention.py#L19
     """
 
+    def getActivation(self, activation: str) -> ty.Callable[[Tensor], Tensor]:
+        if activation == "relu":
+            return F.relu
+        elif activation == "gelu":
+            return F.gelu
+        elif activation == "reglu":
+            return reglu
+        elif activation == "glu":
+            return reglu
+        else:
+            raise ValueError(f"Unknown activation function: {activation}")
+    
     def __init__(self,
                  d_numerical,
                  d_out,
@@ -221,7 +233,7 @@ class FTTransformer(nn.Module):
                     assert kv_compression_sharing == "key-value"
             self.layers.append(layer)
 
-        self.activation = reglu
+        self.activation = self.getActivation(activation)
         self.last_activation = F.relu
         self.prenormalization = prenormalization
         self.last_normalization = make_normalization() if prenormalization else None
@@ -258,6 +270,8 @@ class FTTransformer(nn.Module):
 
     def forward(self, x_num, x_cat):
         x = self.tokenizer(x_num, x_cat)
+        print("Tokenizer output shape:", x.shape)
+        print("Tokenizer  -1:", x.shape[-1])
 
         for layer_idx, layer in enumerate(self.layers):
             is_last_layer = layer_idx + 1 == len(self.layers)
@@ -273,12 +287,13 @@ class FTTransformer(nn.Module):
             if is_last_layer:
                 x = x[:, : x_residual.shape[1]]
             x = self._end_residual(x, x_residual, layer, 0)
-
             x_residual = self._start_residual(x, layer, 1)
             x_residual = layer["linear0"](x_residual)
             x_residual = self.activation(x_residual)
+
             if self.ffn_dropout:
                 x_residual = F.dropout(x_residual, self.ffn_dropout, self.training)
+
             x_residual = layer["linear1"](x_residual)
             x = self._end_residual(x, x_residual, layer, 1)
 

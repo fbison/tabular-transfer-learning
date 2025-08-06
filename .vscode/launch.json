@@ -2,11 +2,35 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug optuna script",
+            "name": "optuna script",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_from_scratch.py",
             "args": ["model=ft_transformer", "dataset=ic_upstream2"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "pre train ic_upstream2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": ["model=ft_transformer_pretrain", "dataset=ic_upstream2"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "train transfering downstream",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": ["model=ft_transformer_downstream dataset=ic_downstream1"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "train downstream from scratch",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": ["model=ft_transformer dataset=ic_downstream1"],
             "console": "integratedTerminal"
         }
     ]

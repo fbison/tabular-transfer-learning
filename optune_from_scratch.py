@@ -30,7 +30,7 @@ def sample_value_with_default(trial, name, distr, min, max, default):
 
 def get_parameters(model, trial):
     if model=='ft_transformer':
-        valid_pairs = [(64, 4), (128, 4), (128, 8), (256, 4), (256, 8)]
+        valid_pairs = [(64, 4), (64, 8), (128, 4), (128, 8), (256, 4), (256, 8)]
         chosen = trial.suggest_categorical("embedding_head_pair", valid_pairs)
         d_embedding, n_heads = chosen
         model_params = {

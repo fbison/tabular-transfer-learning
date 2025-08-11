@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3",
+    "model_name": "ft_transformer",
+    "run_id": "renowned-Tressie",
+    "best_epoch": 194,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.6241033210671136,
+        "rmse": 0.6241033210671136
+    },
+    "train_stats": {
+        "score": -0.3959291623477524,
+        "rmse": 0.3959291623477524
+    },
+    "val_stats": {
+        "score": -0.6021793633197913,
+        "rmse": 0.6021793633197913
+    }
+}

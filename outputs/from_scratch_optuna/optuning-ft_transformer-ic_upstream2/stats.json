@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream2",
+    "model_name": "ft_transformer",
+    "run_id": "graveless-Jacquleen",
+    "best_epoch": 43,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.6627257820187586,
+        "rmse": 0.6627257820187586
+    },
+    "train_stats": {
+        "score": -0.47696626607236653,
+        "rmse": 0.47696626607236653
+    },
+    "val_stats": {
+        "score": -0.6170728373570695,
+        "rmse": 0.6170728373570695
+    }
+}

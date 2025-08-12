@@ -144,7 +144,7 @@ def main(cfg):
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, n_optuna_trials,
                                    loaders, unique_categories, n_numerical, n_classes)
-    study.optimize(func, n_trials=n_optuna_trials)
+    study.optimize(func, n_trials=n_optuna_trials, n_jobs=10, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope
 

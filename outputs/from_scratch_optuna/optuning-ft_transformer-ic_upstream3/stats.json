@@ -1,19 +1,19 @@
 {
     "dataset": "ic_upstream3",
     "model_name": "ft_transformer",
-    "run_id": "renowned-Tressie",
-    "best_epoch": 194,
+    "run_id": "revolved-Rody",
+    "best_epoch": 110,
     "routine": "from_scratch",
     "test_stats": {
-        "score": -0.6241033210671136,
-        "rmse": 0.6241033210671136
+        "score": -0.7533046049425218,
+        "rmse": 0.7533046049425218
     },
     "train_stats": {
-        "score": -0.3959291623477524,
-        "rmse": 0.3959291623477524
+        "score": -0.6665243986724892,
+        "rmse": 0.6665243986724892
     },
     "val_stats": {
-        "score": -0.6021793633197913,
-        "rmse": 0.6021793633197913
+        "score": -0.754127078864875,
+        "rmse": 0.754127078864875
     }
 }

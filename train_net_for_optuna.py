@@ -39,7 +39,12 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
     log.info("train_net_for_optune.py main() running.")
     log.info(OmegaConf.to_yaml(cfg))
 
-    writer = SummaryWriter(log_dir=f"tensorboard")
+    # Create a unique directory for this trial's output
+    trial_output_dir = cfg.run_id
+    os.makedirs(trial_output_dir, exist_ok=True)
+    
+    # All outputs will be saved inside this directory
+    writer = SummaryWriter(log_dir=os.path.join(trial_output_dir, "tensorboard"))
     
     net, start_epoch, optimizer_state_dict = dt.utils.load_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,
@@ -110,9 +115,9 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
                 best_epoch = epoch
                 highest_val_acc_so_far = val_stats["score"]
                 log.info(f"New best epoch, val score: {val_stats['score']}")
-                # save current model
+                # Use the unique path for saving the model
                 state = {"net": net.state_dict(), "epoch": epoch, "optimizer": optimizer.state_dict()}
-                out_str = "model_best.pth"
+                out_str = os.path.join(trial_output_dir, "model_best.pth")
                 log.info(f"Saving model to: {out_str}")
                 torch.save(state, out_str)
 
@@ -123,7 +128,7 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
         writer.close()
 
     log.info("Running Final Evaluation...")
-    checkpoint_path = "model_best.pth"
+    checkpoint_path = os.path.join(trial_output_dir, "model_best.pth")
     net.load_state_dict(torch.load(checkpoint_path)["net"])
     test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                            [loaders["test"], loaders["val"], loaders["train"]],
@@ -142,10 +147,11 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
                          ("test_stats", test_stats),
                          ("train_stats", train_stats),
                          ("val_stats", val_stats)])
-    with open(os.path.join("stats.json"), "w") as fp:
+    with open(os.path.join(trial_output_dir, "stats.json"), "w") as fp:
         json.dump(stats, fp, indent=4)
     log.info(json.dumps(stats, indent=4))
     ####################################################
+    log.info("Procewss finished for trial " + cfg.run_id)
     return stats
 
 

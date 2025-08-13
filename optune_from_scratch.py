@@ -15,6 +15,8 @@ import copy
 from omegaconf import DictConfig, OmegaConf
 import json
 import torch
+import multiprocessing
+
 
 SAVE_INTERVAL = 5  # salva a cada 5 trials
 
@@ -84,46 +86,60 @@ def get_parameters(model, trial):
 
 def objective(trial, cfg: DictConfig, trial_stats, 
               trial_counter, n_total_trials, 
-              loaders, unique_categories, n_numerical, n_classes
+              loaders, unique_categories, n_numerical, n_classes, run_id, lock
               ):
 
-    current_trial = trial_counter[0] + 1
+    # Use a lock to safely get and increment the trial counter
+    with lock:
+        current_trial = trial_counter[0] + 1
+        trial_counter[0] = current_trial
     print(f"Running trial {current_trial}/{n_total_trials}")
+    # Generate a unique directory name for this trial
+    trial_run_id = f"{run_id}_trial_{current_trial}"
+    try:
+        model_params, training_params =  get_parameters(cfg.model.name, trial) # need to suggest parameters for optuna here, probably writing a function for suggesting parameters is the optimal way
+        
+        config = copy.deepcopy(cfg) # create config for train_model with suggested parameters
+        for par, value in model_params.items():
+            config.model[par] = value
+        for par, value in training_params.items():
+            config.hyp[par] = value
 
-    model_params, training_params =  get_parameters(cfg.model.name, trial) # need to suggest parameters for optuna here, probably writing a function for suggesting parameters is the optimal way
+        config.run_id = trial_run_id  # unique directory for this trial
 
-    config = copy.deepcopy(cfg) # create config for train_model with suggested parameters
-    for par, value in model_params.items():
-        config.model[par] = value
-    for par, value in training_params.items():
-        config.hyp[par] = value
+        if cfg.hyp.save_period < 0:
+            cfg.hyp.save_period = 1e8
+        beginTime = time.time()
+        stats = train_net_for_optuna.main(config, loaders, unique_categories, n_numerical, n_classes)
+        endTime = time.time()
+        time_taken = endTime - beginTime
+        with lock:
+            trial_stats.append(stats)
+            with open("all_trials.jsonl", "a") as f:
+                json.dump({
+                    "config": OmegaConf.to_container(config, resolve=True),
+                    "stats": stats,
+                    "time_taken": time_taken,
+                    "trial_number": current_trial,
+                }, f)
+                f.write("\n")
 
-    if cfg.hyp.save_period < 0:
-        cfg.hyp.save_period = 1e8
-    beginTime = time.time()
-    stats = train_net_for_optuna.main(config, loaders, unique_categories, n_numerical, n_classes)
-    endTime = time.time()
-    time_taken = endTime - beginTime
-    trial_stats.append(stats)
-    trial_counter[0] += 1
-
-    with open("all_trials.jsonl", "a") as f:
-        json.dump({
-            "config": OmegaConf.to_container(config, resolve=True),
-            "stats": stats,
-            "time_taken": time_taken,
-            "trial_number": current_trial,
-        }, f)
-        f.write("\n")
-
-
-    return stats['val_stats']['score']
+        return stats['val_stats']['score']
+    except Exception as e:
+        print(f"Trial {trial.number} with ID '{trial_run_id}' failed with an error: {e}")
+        # Mark the trial as failed and prune it, so the study can continue
+        raise optuna.exceptions.TrialPruned()
 
 
 @hydra.main(config_path="config", config_name="optune_config")
 def main(cfg):
     n_optuna_trials = 180
     trial_stats = []
+    # Use a shared, mutable counter protected by a lock
+    manager = multiprocessing.Manager()
+    trial_counter = manager.list([0])
+    lock = multiprocessing.Lock()
+
     trial_counter = [0]  # mutable counter for tracking inside objective
     torch.manual_seed(cfg.hyp.seed)
     torch.cuda.manual_seed_all(cfg.hyp.seed)
@@ -143,7 +159,7 @@ def main(cfg):
 
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, n_optuna_trials,
-                                   loaders, unique_categories, n_numerical, n_classes)
+                                   loaders, unique_categories, n_numerical, n_classes, cfg.run_id, lock)
     study.optimize(func, n_trials=n_optuna_trials, n_jobs=10, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope

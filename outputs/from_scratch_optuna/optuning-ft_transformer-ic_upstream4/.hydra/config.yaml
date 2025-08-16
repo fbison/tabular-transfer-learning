@@ -1,0 +1,51 @@
+model:
+  name: ft_transformer
+  d_embedding: 128
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 1
+  n_heads: 16
+  d_ffn_factor: 1.3333333333
+  attention_dropout: 0.2
+  ffn_dropout: 0.1
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream4
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream4/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 0.001
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: -1
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: airtight-Justn

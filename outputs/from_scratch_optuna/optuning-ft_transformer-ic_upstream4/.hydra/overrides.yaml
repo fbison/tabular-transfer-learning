@@ -1,0 +1,3 @@
+- model=ft_transformer
+- dataset=ic_upstream4
+- +run_id=airtight-Justn

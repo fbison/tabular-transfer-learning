@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream2",
+    "model_name": "ft_transformer",
+    "run_id": "intense-Mervin_trial_68",
+    "best_epoch": 141,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.6350465211332886,
+        "rmse": 0.6350465211332886
+    },
+    "train_stats": {
+        "score": -0.519476407634501,
+        "rmse": 0.519476407634501
+    },
+    "val_stats": {
+        "score": -0.636836368074192,
+        "rmse": 0.636836368074192
+    }
+}

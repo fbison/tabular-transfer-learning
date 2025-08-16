@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream4",
+    "model_name": "ft_transformer",
+    "run_id": "airtight-Justn_trial_155",
+    "best_epoch": 47,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.6578760913742266,
+        "rmse": 0.6578760913742266
+    },
+    "train_stats": {
+        "score": -0.5995191102165779,
+        "rmse": 0.5995191102165779
+    },
+    "val_stats": {
+        "score": -0.6445129319666778,
+        "rmse": 0.6445129319666778
+    }
+}

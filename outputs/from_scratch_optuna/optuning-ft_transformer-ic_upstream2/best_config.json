@@ -1,0 +1,11 @@
+{
+    "embedding_head_pair": [
+        512,
+        8
+    ],
+    "n_layers": 8,
+    "d_ffn_factor": 1.3335296999946975,
+    "attention_dropout": 0.07511283966877853,
+    "activation": "reglu",
+    "lr": 2.3875087429508465e-05
+}

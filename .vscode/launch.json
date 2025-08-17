@@ -2,11 +2,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "optuna backup",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optuna_backup.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "optuna script",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_from_scratch.py",
-            "args": ["model=ft_transformer", "dataset=ic_upstream2"],
+            "args": ["model=ft_transformer_pretrain", "dataset=ic_upstream2"],
             "console": "integratedTerminal"
         },
         {

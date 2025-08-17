@@ -29,7 +29,7 @@ def infer_distribution(key, value):
         raise ValueError(f"Unsupported param type: {key} = {value} ({type(value)})")
 
 # Caminho para o arquivo com todos os trials
-input_path = r"outputs\from_scratch_optuna\optuning-ft_transformer-ic_upstream2\all_trials.jsonl"
+input_path = r"outputs\from_scratch_optuna\optuning-ft_transformer-ic_upstream3\all_trials.jsonl"
 output_dir = os.path.dirname(input_path)
 
 # Carrega todos os trials do JSONL
@@ -39,7 +39,12 @@ with open(input_path, "r") as f:
         data = json.loads(line)
         params = data["config"]["model"]
         val_score = data["stats"]["val_stats"]["score"]
-        trial_number = data.get("trial_number", len(trials))
+        trial_number = data.get("trial_number", len(trials)+1)
+        if len(trials) < 18:
+            trial_number = len(trials) + 1
+        else:
+            trial_number = data.get("trial_number") + 18
+
         # Parâmetros relevantes
         relevant_keys = ["d_embedding", "n_heads","n_layers", "d_ffn_factor", "attention_dropout", "ffn_dropout", "lr"]
 
@@ -67,12 +72,12 @@ study.add_trials(trials)
 
 # Lista de gráficos possíveis
 plots = {
-    "optimization_history.png": plot_optimization_history,
-    "param_importance.png": plot_param_importances,
-    "parallel_coordinate.png": plot_parallel_coordinate,
-    "slice_plot.png": plot_slice,
-    "contour_plot.png": plot_contour,
-    "edf_plot.png": plot_edf,
+    "optimization_history": plot_optimization_history,
+    "param_importance": plot_param_importances,
+    "parallel_coordinate": plot_parallel_coordinate,
+    "slice_plot": plot_slice,
+    "contour_plot": plot_contour,
+    "edf_plot": plot_edf,
 }
 
 # Gera e salva os gráficos em PNG
@@ -80,7 +85,8 @@ for filename, plot_func in plots.items():
     try:
         fig = plot_func(study)
         save_path = os.path.join(output_dir, filename)
-        fig.write_image(save_path, width=1000, height=600)
+        fig.write_html(save_path + ".html")
+        fig.write_image((save_path + ".png"), width=1000, height=600)
         print(f"Salvo: {save_path}")
     except Exception as e:
         print(f"Erro ao gerar {filename}: {e}")

@@ -40,6 +40,14 @@
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": ["model=ft_transformer dataset=ic_downstream1"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "inputação estatistica",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/input_data.py",
+            "args": [],
+            "console": "integratedTerminal"
         }
     ]
 }

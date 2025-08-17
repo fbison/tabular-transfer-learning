@@ -22,7 +22,6 @@ plots
 classification_training
 check_default
 checkpoints
-*.png
 helpers/data/
 plots/
 launch/my_launch/

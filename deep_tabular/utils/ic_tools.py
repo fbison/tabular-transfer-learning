@@ -265,3 +265,72 @@ def get_synthetic_dataset(n_samples=1000, n_features=10, noise=10.0, val_size=0.
     }
 
     return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder
+
+
+def imputar_colunas_faltantes(path_dir, path_src, seed=42):
+    np.random.seed(seed)
+
+    # Carrega o CSV fonte
+    df_src = pd.read_csv(path_src, sep="|")
+
+    # Lista arquivos CSV do diretório
+    arquivos = [f for f in os.listdir(path_dir) if f.lower().endswith(".csv")]
+    if not arquivos:
+        raise ValueError("Nenhum CSV encontrado no diretório.")
+
+    # Carrega o primeiro arquivo para descobrir colunas existentes
+    df_primeiro = pd.read_csv(os.path.join(path_dir, arquivos[1]), sep="|")
+
+    # Colunas extras no fonte que não estão no diretório
+    colunas_extras = [c for c in df_src.columns if c not in df_primeiro.columns]
+    if not colunas_extras:
+        print("Nenhuma coluna nova encontrada para imputação.")
+        return
+
+    # Calcula estatísticas no arquivo fonte
+    estatisticas = {}
+    for col in colunas_extras:
+        if pd.api.types.is_numeric_dtype(df_src[col]):
+            media = df_src[col].mean(skipna=True)
+            std = df_src[col].std(skipna=True)
+            estatisticas[col] = (media, std)
+        else:
+            estatisticas[col] = None  # para colunas não numéricas
+
+    # Pasta de saída
+    sourceName = os.path.basename(os.path.normpath(path_src))
+    nome_dir = os.path.basename(os.path.normpath(path_dir))
+    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoEstatistica_{sourceName}")
+    os.makedirs(pasta_saida, exist_ok=True)
+
+
+    # Para cada arquivo no diretório
+    for arq in arquivos:
+        if arq.lower().endswith("y.csv"):
+            continue  # pula arquivos de target
+        df = pd.read_csv(os.path.join(path_dir, arq), sep="|")
+
+        # Adicionar colunas extras
+        for col in colunas_extras:
+            if pd.api.types.is_numeric_dtype(df_src[col]):
+                media, std = estatisticas[col]
+                if media is not None and not np.isnan(media):
+                    df[col] = np.random.normal(loc=media, scale=std, size=len(df))
+                else:
+                    df[col] = np.nan
+            else:
+                # Repete o valor mais frequente ou o primeiro do fonte
+                if not df_src[col].empty:
+                    df[col] = [df_src[col].mode()[0]] * len(df)
+                else:
+                    df[col] = None
+
+        # Reordena colunas: originais + extras na ordem do fonte
+        colunas_ordenadas = list(df.columns) + [c for c in df_src.columns if c in colunas_extras]
+        df = df[colunas_ordenadas]
+
+        # Salva arquivo novo
+        nome_saida = os.path.splitext(arq)[0] + "_ImputacaoEstatistica.csv"
+        df.to_csv(os.path.join(pasta_saida, nome_saida), sep="|", index=False)
+
+    print(f"Arquivos gerados em: {pasta_saida}")

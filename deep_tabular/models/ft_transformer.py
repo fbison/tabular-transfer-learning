@@ -58,6 +58,15 @@ class Tokenizer(nn.Module):
             + ([] if x_num is None else [x_num]),
             dim=1,
         )
+
+        # expandido antes da multiplicação:
+        # aqui os pesos e features são expandidos para permitir a multiplicação
+        # Tendo assim: X num com shape [batch_size, d_numerical+1, 1]
+        # e weight com shape [1, d_numerical+1, d_token]
+        # O resultado da multiplicação será [batch_size, d_numerical+1, d_token]
+        # Assim, cada feature numérica é convertida em um vetor de embedding
+        # Esse é o truque usado no FT-Transformer:
+        # Cada feature numérica não é só jogada crua no modelo, mas convertida em um token embedding que carrega direção aprendida (W[i]) e magnitude dada pelo valor (x_num). 
         x = self.weight[None] * x_num[:, :, None]
         if x_cat is not None:
             x = torch.cat(
@@ -390,7 +399,7 @@ class FTBackbone(nn.Module):
 def ft_transformer(num_numerical, unique_categories, num_outputs, d_embedding, model_params):
     return FTTransformer(num_numerical, num_outputs, unique_categories, d_embedding,
                          model_params.token_bias,
-                         model_params.n_layers,
+                         model_params.n_layers, 
                          model_params.n_heads,
                          model_params.d_ffn_factor,
                          model_params.attention_dropout,

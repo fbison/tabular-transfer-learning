@@ -71,13 +71,13 @@ def get_x_features(dataset_name, target_columns, target=0):
     Function to get the features for a given dataset
     """
     
-    if dataset_name == 'ic_upstream2':
+    if 'ic_upstream2' in dataset_name:
         return remove_common_strings(upstream2_columns, non_numerical_columns, target_columns[target])
-    elif dataset_name == 'ic_upstream3':
+    elif 'ic_upstream3' in dataset_name:
         return remove_common_strings(upstream3_columns, non_numerical_columns, target_columns[target])
-    elif dataset_name == 'ic_upstream4':
+    elif 'ic_upstream4' in dataset_name:
         return remove_common_strings(upstream4_columns, non_numerical_columns, target_columns[target])
-    elif dataset_name == 'ic_downstream1':
+    elif 'ic_downstream1' in dataset_name:
         return remove_common_strings(downstream_columns, non_numerical_columns, target_columns[target])
     else:
         raise ValueError(f"Unknown dataset name: {dataset_name}")
@@ -91,13 +91,13 @@ def get_target_columns(dataset_name):
     Function to get the target columns for a given dataset
     """
     
-    if dataset_name == 'ic_upstream2':
+    if "ic_upstream2" in dataset_name:
         return default_target_columns + missing_features['up2_only']
-    elif dataset_name == 'ic_upstream3':
+    elif 'ic_upstream3' in dataset_name:
         return default_target_columns + missing_features['up3_only']
-    elif dataset_name == 'ic_upstream4':
+    elif 'ic_upstream4' in dataset_name:
         return default_target_columns + missing_features['up4_only']
-    elif dataset_name == 'ic_downstream1':
+    elif 'ic_downstream1' in dataset_name:
         return default_target_columns + combine_unique_sorted(missing_features['up2_missing'], missing_features['up3_missing'], missing_features['up4_missing'])
     else:
         raise ValueError(f"Unknown dataset name: {dataset_name}")
@@ -199,13 +199,12 @@ def get_ic_dataset(dataset_name, task, stage):
     dataset_id = get_last_char_as_int(dataset_name)
     target_columns = get_target_columns(dataset_name)
     print(f"Target columns: {len(target_columns)}")
-    X_features = get_x_features(dataset_name, target_columns)
     X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(dataset_name, dataset_id, target_columns = target_columns, stage=stage)
 
 
     info = {"name": dataset_id,
             "task_type": task,
-            "n_num_features": len(X_features),
+            "n_num_features": len(X_train.columns),
             "n_cat_features": 0, # Ic is a regreession task, so no categorical features
             "train_size": X_train.shape[0],
             "val_size": X_val.shape[0],
@@ -265,13 +264,17 @@ def get_synthetic_dataset(n_samples=1000, n_features=10, noise=10.0, val_size=0.
     }
 
     return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder
-
-
+def get_separator(fileName: str) -> str:
+    if fileName.startswith('exp_100'):
+        return '|'
+    else:
+        return ','
+    
 def imputar_colunas_faltantes(path_dir, path_src, seed=42):
     np.random.seed(seed)
 
     # Carrega o CSV fonte
-    df_src = pd.read_csv(path_src, sep="|")
+    df_src = pd.read_csv(path_src, sep=get_separator(os.path.basename(path_src)))
 
     # Lista arquivos CSV do diretório
     arquivos = [f for f in os.listdir(path_dir) if f.lower().endswith(".csv")]
@@ -279,7 +282,7 @@ def imputar_colunas_faltantes(path_dir, path_src, seed=42):
         raise ValueError("Nenhum CSV encontrado no diretório.")
 
     # Carrega o primeiro arquivo para descobrir colunas existentes
-    df_primeiro = pd.read_csv(os.path.join(path_dir, arquivos[1]), sep="|")
+    df_primeiro = pd.read_csv(os.path.join(path_dir, arquivos[1]), sep=get_separator(os.path.basename(arquivos[1])))
 
     # Colunas extras no fonte que não estão no diretório
     colunas_extras = [c for c in df_src.columns if c not in df_primeiro.columns]
@@ -300,37 +303,34 @@ def imputar_colunas_faltantes(path_dir, path_src, seed=42):
     # Pasta de saída
     sourceName = os.path.basename(os.path.normpath(path_src))
     nome_dir = os.path.basename(os.path.normpath(path_dir))
-    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoEstatistica_{sourceName}")
+    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoEstatistica_{sourceName.split('.')[0]}")
     os.makedirs(pasta_saida, exist_ok=True)
-
 
     # Para cada arquivo no diretório
     for arq in arquivos:
+        novas_colunas =[]
         if arq.lower().endswith("y.csv"):
-            continue  # pula arquivos de target
-        df = pd.read_csv(os.path.join(path_dir, arq), sep="|")
+            df.to_csv(os.path.join(pasta_saida, arq), index=False)  # Não alterar arquivos de target
+            continue 
+        df = pd.read_csv(os.path.join(path_dir, arq), sep=get_separator(os.path.basename(arq)))
 
         # Adicionar colunas extras
         for col in colunas_extras:
             if pd.api.types.is_numeric_dtype(df_src[col]):
                 media, std = estatisticas[col]
+                novas_colunas.append(col)
                 if media is not None and not np.isnan(media):
                     df[col] = np.random.normal(loc=media, scale=std, size=len(df))
                 else:
                     df[col] = np.nan
-            else:
-                # Repete o valor mais frequente ou o primeiro do fonte
-                if not df_src[col].empty:
-                    df[col] = [df_src[col].mode()[0]] * len(df)
-                else:
-                    df[col] = None
 
         # Reordena colunas: originais + extras na ordem do fonte
-        colunas_ordenadas = list(df.columns) + [c for c in df_src.columns if c in colunas_extras]
+        colunas_ordenadas = [c for c in df.columns if c not in novas_colunas] + novas_colunas
         df = df[colunas_ordenadas]
 
+
         # Salva arquivo novo
-        nome_saida = os.path.splitext(arq)[0] + "_ImputacaoEstatistica.csv"
-        df.to_csv(os.path.join(pasta_saida, nome_saida), sep="|", index=False)
+        nome_saida = arq
+        df.to_csv(os.path.join(pasta_saida, arq), index=False)
 
     print(f"Arquivos gerados em: {pasta_saida}")

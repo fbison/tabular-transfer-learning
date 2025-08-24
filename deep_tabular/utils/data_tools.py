@@ -315,7 +315,9 @@ class TabularDataset:
             if self.stage is None:
                 raise ValueError('stage is None, only pretrain or downstream are accepted if normalizer_path is not None')
             if self.stage == 'pretrain':
-                pickle.dump(normalizer, open(self.normalizer_path, 'wb'))
+                os.makedirs(os.path.dirname(self.normalizer_path), exist_ok=True)  # cria pastas se não existirem
+                with open(self.normalizer_path, 'wb') as f:
+                    pickle.dump(normalizer, f)
                 print(f'Normalizer saved to {self.normalizer_path}')
             if self.stage == 'downstream':
                 normalizer = pickle.load(open(self.normalizer_path, 'rb'))

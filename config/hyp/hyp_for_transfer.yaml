@@ -1,5 +1,5 @@
 epochs: 200
-lr: 0.0001
+lr: 2.3875087429508465e-05
 lr_decay: step
 lr_factor: 0.1
 lr_schedule:
@@ -7,7 +7,7 @@ lr_schedule:
   - 80
 optimizer: adam
 patience: 30
-save_period: -1
+save_period: 100000000.0
 seed: 0
 test_batch_size: 256
 train_batch_size: 256

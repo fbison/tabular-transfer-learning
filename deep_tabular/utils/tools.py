@@ -264,7 +264,7 @@ def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_catego
     net = net.to(device)
     head_name, head_module = get_head(model_args.name, net)
     if model_path is not None:
-        logging.info(f"Loading model from checkpoint {model_path}...")
+        logging.info(f"Loading model from checkpoint {model_path}...") 
         state_dict = torch.load(model_path, map_location=device)
         if device == "cuda":
             state_dict["net"] = remove_parallel(state_dict["net"])

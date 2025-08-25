@@ -32,12 +32,9 @@ def sample_value_with_default(trial, name, distr, min, max, default):
 
 def get_parameters(model, trial):
     if model=='ft_transformer':
-        valid_pairs = [(64, 8), (128, 4), (128, 8), (256, 4), (256, 8), (320, 8), (384, 8), (384, 12), (512, 8), (512, 16), ]
-        chosen = trial.suggest_categorical("embedding_head_pair", valid_pairs)
-        d_embedding, n_heads = chosen
         model_params = {
-            'd_embedding': d_embedding,
-            'n_heads': n_heads,
+            'd_embedding': trial.suggest_categorical("d_embedding", [64, 128, 256, 320, 384, 512]),
+            'n_heads': trial.suggest_categorical("n_heads", [4, 8, 16]),
             'n_layers': trial.suggest_int('n_layers', 2, 10, step=2),
             'd_ffn_factor': trial.suggest_uniform('d_ffn_factor', 2/3, 8/3),
             'attention_dropout': trial.suggest_uniform('attention_dropout', 0.0, 0.5),
@@ -160,7 +157,7 @@ def main(cfg):
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, n_optuna_trials,
                                    loaders, unique_categories, n_numerical, n_classes, cfg.run_id, lock)
-    study.optimize(func, n_trials=n_optuna_trials, n_jobs=10, show_progress_bar=True)
+    study.optimize(func, n_trials=n_optuna_trials, n_jobs=20, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope
 

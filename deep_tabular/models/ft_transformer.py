@@ -59,7 +59,6 @@ class Tokenizer(nn.Module):
             dim=1,
         )
 
-        # expandido antes da multiplicação:
         # aqui os pesos e features são expandidos para permitir a multiplicação
         # Tendo assim: X num com shape [batch_size, d_numerical+1, 1]
         # e weight com shape [1, d_numerical+1, d_token]

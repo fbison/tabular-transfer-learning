@@ -40,7 +40,7 @@ from optuna.visualization import (
 
 INPUT_PATH = r"all_trials.jsonl"
 STORAGE_PATH = "sqlite:///optuna_study.db"
-N_TOTAL_TRIALS = 5
+N_TOTAL_TRIALS = 180
 
 
 def load_completed_trials():

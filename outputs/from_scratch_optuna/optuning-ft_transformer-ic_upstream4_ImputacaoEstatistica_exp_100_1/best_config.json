@@ -1,0 +1,9 @@
+{
+    "d_embedding": 384,
+    "n_heads": 16,
+    "n_layers": 8,
+    "d_ffn_factor": 2.452163311664963,
+    "attention_dropout": 0.41217126062271847,
+    "activation": "reglu",
+    "lr": 3.4996217986298305e-05
+}

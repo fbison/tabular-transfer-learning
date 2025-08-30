@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream4_ImputacaoEstatistica_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "blotchy-Amado_trial_49",
+    "best_epoch": 16,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.870764038770904,
+        "rmse": 0.870764038770904
+    },
+    "train_stats": {
+        "score": -1.0138472805298402,
+        "rmse": 1.0138472805298402
+    },
+    "val_stats": {
+        "score": -0.659986825948019,
+        "rmse": 0.659986825948019
+    }
+}

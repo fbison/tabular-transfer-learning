@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3_ImputacaoEstatistica_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "unhanged-Shanesha_trial_119",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.8698882541642534,
+        "rmse": 0.8698882541642534
+    },
+    "train_stats": {
+        "score": -1.0081851987176795,
+        "rmse": 1.0081851987176795
+    },
+    "val_stats": {
+        "score": -0.6606745731170452,
+        "rmse": 0.6606745731170452
+    }
+}

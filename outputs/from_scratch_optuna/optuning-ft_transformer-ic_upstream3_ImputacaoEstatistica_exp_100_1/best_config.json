@@ -1,0 +1,9 @@
+{
+    "d_embedding": 384,
+    "n_heads": 8,
+    "n_layers": 10,
+    "d_ffn_factor": 2.653584398419122,
+    "attention_dropout": 0.14219434125189218,
+    "activation": "gelu",
+    "lr": 1.693711335643905e-05
+}

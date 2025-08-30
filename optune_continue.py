@@ -239,7 +239,7 @@ def main(cfg):
 
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     study.add_trials(trials)
-    func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, n_optuna_trials,
+    func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, N_TOTAL_TRIALS,
                                    loaders, unique_categories, n_numerical, n_classes, cfg.run_id, lock)
     if n_done >= N_TOTAL_TRIALS:
         print("Já atingiu ou ultrapassou o limite de trials.")

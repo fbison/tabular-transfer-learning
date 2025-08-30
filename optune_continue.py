@@ -236,7 +236,8 @@ def main(cfg):
             trial_id=trial_number,
         )
         trials.append(frozen)
-
+    print("Creaye trials")
+    trial_counter[0] = n_done
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     study.add_trials(trials)
     func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, N_TOTAL_TRIALS,

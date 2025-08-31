@@ -1,8 +1,6 @@
 {
     "version": "0.2.0",
-    "configurations": [
-
-    
+    "configurations": [    
         {
             "name": "optuna backup",
             "type": "debugpy",
@@ -16,6 +14,14 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_from_scratch.py",
+            "args": ["model=ft_transformer", "dataset=ic_upstream2_ImputacaoEstatistica_exp_100_1"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "optune continue script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
             "args": ["model=ft_transformer", "dataset=ic_upstream2_ImputacaoEstatistica_exp_100_1"],
             "console": "integratedTerminal"
         },

@@ -1,25 +1,25 @@
-from deep_tabular.utils.ic_tools import imputar_colunas_faltantes
+from deep_tabular.utils.ic_tools import impute_and_save
 
-def input_missing_columns_with_gausian():
-    path_src = "data/ic_downstream1/exp_100_1.csv"
+def input_missing_columns(method):
+    path_src = "data/ic_downstream1/ic_train_X.csv"
     path_dir = "data/ic_upstream2"
-    imputar_colunas_faltantes(path_dir, path_src, seed=42)
+    impute_and_save(path_dir, path_src, "exp_100_1", method=method, seed=42)
     
     path_dir = "data/ic_upstream3"
-    imputar_colunas_faltantes(path_dir, path_src, seed=42)
+    impute_and_save(path_dir, path_src, "exp_100_1", method=method, seed=42)
 
     path_dir = "data/ic_upstream4"
-    imputar_colunas_faltantes(path_dir, path_src, seed=42)
+    impute_and_save(path_dir, path_src, "exp_100_1", method=method, seed=42)
 
-    path_src = "data/ic_upstream2/exp_100_2.csv"
+    path_src = "data/ic_upstream2/ic_train_X.csv"
     path_dir = "data/ic_downstream1"
-    imputar_colunas_faltantes(path_dir, path_src, seed=42)
+    impute_and_save(path_dir, path_src, "exp_100_2", method=method, seed=42)
 
-    path_src = "data/ic_upstream3/exp_100_3.csv"
-    imputar_colunas_faltantes(path_dir, path_src, seed=42)
+    path_src = "data/ic_upstream3/ic_train_X.csv"
+    impute_and_save(path_dir, path_src, "exp_100_3", method=method, seed=42)
     
-    path_src = "data/ic_upstream4/exp_100_4.csv"
-    imputar_colunas_faltantes(path_dir, path_src, seed=42)
+    path_src = "data/ic_upstream4/ic_train_X.csv"
+    impute_and_save(path_dir, path_src, "exp_100_4", method=method, seed=42)
 
 def order_columns_in_csv(path_csv):
     import pandas as pd
@@ -53,12 +53,8 @@ def remove_target_from_directory(path_dir):
             path_csv = os.path.join(path_dir, filename)
             remove_target_from_csv(path_csv)
 def main():
-    remove_target_from_directory("data/ic_downstream1_ImputacaoEstatistica_exp_100_2")
-    remove_target_from_directory("data/ic_downstream1_ImputacaoEstatistica_exp_100_3")
-    remove_target_from_directory("data/ic_downstream1_ImputacaoEstatistica_exp_100_4")
-    remove_target_from_directory("data/ic_upstream2_ImputacaoEstatistica_exp_100_1")
-    remove_target_from_directory("data/ic_upstream3_ImputacaoEstatistica_exp_100_1")
-    remove_target_from_directory("data/ic_upstream4_ImputacaoEstatistica_exp_100_1")
+    input_missing_columns(method="mean")
+    input_missing_columns(method="gaussian")
 
 if __name__ == "__main__":
     main()

@@ -38,7 +38,7 @@ def get_parameters(model, trial):
             'n_layers': trial.suggest_int('n_layers', 2, 10, step=2),
             'd_ffn_factor': trial.suggest_uniform('d_ffn_factor', 2/3, 8/3),
             'attention_dropout': trial.suggest_uniform('attention_dropout', 0.0, 0.5),
-            'ffn_dropout' : trial.suggest_uniform('attention_dropout', 0.0, 0.5),
+            'ffn_dropout' : trial.suggest_uniform('ffn_dropout', 0.0, 0.5),
             "activation": trial.suggest_categorical("activation", ["reglu", "gelu", "relu"]),
             }
         training_params = {
@@ -51,7 +51,7 @@ def get_parameters(model, trial):
             'd_embedding':  trial.suggest_int('d_embedding', 32, 512, step=8),
             'd_hidden_factor': trial.suggest_uniform('d_hidden_factor', 1.0, 4.0),
             'n_layers': trial.suggest_int('n_layers', 1, 8,),
-            'hidden_dropout': trial.suggest_uniform('residual_dropout', 0.0, 0.5),
+            'hidden_dropout': trial.suggest_uniform('hidden_dropout', 0.0, 0.5),
             'residual_dropout': sample_value_with_default(trial, 'residual_dropout', 'uniform', 0.0, 0.5, 0.0),
             }
         training_params = {

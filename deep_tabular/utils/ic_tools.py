@@ -157,6 +157,7 @@ def read_ic_dataset(dataset_name, target_colums, target, stage='pretrain'):
     X_val = pd.read_csv(file_paths['X_val'])
     X_test = pd.read_csv(file_paths['X_test'])
     
+    # TODO: acho que esse drop é inutil
     y_train_full = pd.read_csv(file_paths['y_train']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
     y_val_full = pd.read_csv(file_paths['y_val']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
     y_test_full = pd.read_csv(file_paths['y_test']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
@@ -270,7 +271,7 @@ def get_separator(fileName: str) -> str:
     else:
         return ','
     
-def imputar_colunas_faltantes(path_dir, path_src, seed=42):
+def imputar_colunas_faltantes_gausian(path_dir, path_src, sourceName, seed=42):
     np.random.seed(seed)
 
     # Carrega o CSV fonte
@@ -301,9 +302,8 @@ def imputar_colunas_faltantes(path_dir, path_src, seed=42):
             estatisticas[col] = None  # para colunas não numéricas
 
     # Pasta de saída
-    sourceName = os.path.basename(os.path.normpath(path_src))
     nome_dir = os.path.basename(os.path.normpath(path_dir))
-    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoEstatistica_{sourceName.split('.')[0]}")
+    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoGausiana_{sourceName.split('.')[0]}")
     os.makedirs(pasta_saida, exist_ok=True)
 
     # Para cada arquivo no diretório
@@ -324,13 +324,76 @@ def imputar_colunas_faltantes(path_dir, path_src, seed=42):
                 else:
                     df[col] = np.nan
 
-        # Reordena colunas: originais + extras na ordem do fonte
-        colunas_ordenadas = [c for c in df.columns if c not in novas_colunas] + novas_colunas
+        # Reordena colunas alfabeticamentes
+        colunas_ordenadas = sorted(df.columns)
         df = df[colunas_ordenadas]
 
 
         # Salva arquivo novo
         nome_saida = arq
+        df.to_csv(os.path.join(pasta_saida, arq), index=False)
+
+    print(f"Arquivos gerados em: {pasta_saida}")
+
+def imputar_colunas_faltantes_media(path_dir, path_src, sourceName, seed=42):
+    np.random.seed(seed)
+
+    # Carrega o CSV fonte
+    df_src = pd.read_csv(path_src, sep=get_separator(os.path.basename(path_src)))
+
+    # Lista arquivos CSV do diretório
+    arquivos = [f for f in os.listdir(path_dir) if f.lower().endswith(".csv")]
+    if not arquivos:
+        raise ValueError("Nenhum CSV encontrado no diretório.")
+
+    # Carrega o primeiro arquivo para descobrir colunas existentes
+    df_primeiro = pd.read_csv(os.path.join(path_dir, arquivos[0]), sep=get_separator(os.path.basename(arquivos[0])))
+
+    # Colunas extras no fonte que não estão no diretório
+    colunas_extras = [c for c in df_src.columns if c not in df_primeiro.columns]
+    if not colunas_extras:
+        print("Nenhuma coluna nova encontrada para imputação.")
+        return
+
+    # Calcula médias no arquivo fonte
+    medias = {}
+    for col in colunas_extras:
+        if pd.api.types.is_numeric_dtype(df_src[col]):
+            medias[col] = df_src[col].mean(skipna=True)
+        else:
+            medias[col] = None  # para colunas não numéricas
+
+    # Pasta de saída
+    nome_dir = os.path.basename(os.path.normpath(path_dir))
+    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoMedia_{sourceName.split('.')[0]}")
+    os.makedirs(pasta_saida, exist_ok=True)
+
+    # Para cada arquivo no diretório
+    for arq in arquivos:
+        if arq.lower().endswith("y.csv"):
+            # Não alterar arquivos de target
+            df = pd.read_csv(os.path.join(path_dir, arq), sep=get_separator(os.path.basename(arq)))
+            df.to_csv(os.path.join(pasta_saida, arq), index=False)
+            continue
+
+        df = pd.read_csv(os.path.join(path_dir, arq), sep=get_separator(os.path.basename(arq)))
+        novas_colunas = []
+
+        # Adicionar colunas extras preenchidas com a média
+        for col in colunas_extras:
+            if pd.api.types.is_numeric_dtype(df_src[col]):
+                media = medias[col]
+                novas_colunas.append(col)
+                if media is not None and not np.isnan(media):
+                    df[col] = media  # imputação direta com a média
+                else:
+                    df[col] = np.nan
+
+        # Reordena colunas alfabeticamentes
+        colunas_ordenadas = sorted(df.columns)
+        df = df[colunas_ordenadas]
+
+        # Salva arquivo novo
         df.to_csv(os.path.join(pasta_saida, arq), index=False)
 
     print(f"Arquivos gerados em: {pasta_saida}")

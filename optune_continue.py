@@ -73,7 +73,7 @@ def get_parameters(model, trial):
             'n_layers': trial.suggest_int('n_layers', 2, 10, step=2),
             'd_ffn_factor': trial.suggest_uniform('d_ffn_factor', 2/3, 8/3),
             'attention_dropout': trial.suggest_uniform('attention_dropout', 0.0, 0.5),
-            'ffn_dropout' : trial.suggest_uniform('attention_dropout', 0.0, 0.5),
+            'ffn_dropout' : trial.suggest_uniform('ffn_dropout', 0.0, 0.5),
             "activation": trial.suggest_categorical("activation", ["reglu", "gelu", "relu"]),
             }
         training_params = {
@@ -86,7 +86,7 @@ def get_parameters(model, trial):
             'd_embedding':  trial.suggest_int('d_embedding', 32, 512, step=8),
             'd_hidden_factor': trial.suggest_uniform('d_hidden_factor', 1.0, 4.0),
             'n_layers': trial.suggest_int('n_layers', 1, 8,),
-            'hidden_dropout': trial.suggest_uniform('residual_dropout', 0.0, 0.5),
+            'hidden_dropout': trial.suggest_uniform('hidden_dropout', 0.0, 0.5),
             'residual_dropout': sample_value_with_default(trial, 'residual_dropout', 'uniform', 0.0, 0.5, 0.0),
             }
         training_params = {
@@ -236,7 +236,7 @@ def main(cfg):
             trial_id=trial_number,
         )
         trials.append(frozen)
-    print("Creaye trials")
+    print("Create trials")
     trial_counter[0] = n_done
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     study.add_trials(trials)
@@ -246,7 +246,7 @@ def main(cfg):
         print("Já atingiu ou ultrapassou o limite de trials.")
     else:
         print("Estudo será iniciado ou continuado.")
-        study.optimize(func, n_trials=N_TOTAL_TRIALS, n_jobs=20, show_progress_bar=True)
+        study.optimize(func, n_trials=N_TOTAL_TRIALS, n_jobs=1, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope
 

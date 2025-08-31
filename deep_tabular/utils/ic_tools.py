@@ -14,6 +14,8 @@ import torch
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_regression
+from typing import List
+
 
 
 
@@ -270,130 +272,109 @@ def get_separator(fileName: str) -> str:
         return '|'
     else:
         return ','
-    
-def imputar_colunas_faltantes_gausian(path_dir, path_src, sourceName, seed=42):
+
+
+def list_csv_files(path_dir: str) -> List[str]:
+    """Return a list of all CSV files in the given directory."""
+    return [f for f in os.listdir(path_dir) if f.lower().endswith(".csv")]
+
+
+def load_reference_file(path_dir: str, files: List[str]) -> pd.DataFrame:
+    """
+    Load the first CSV file that ends with 'x.csv' (case-insensitive).
+    This file will be used to determine the reference columns.
+    """
+    for f in files:
+        if f.lower().endswith("x.csv"):
+            return pd.read_csv(os.path.join(path_dir, f), sep=get_separator(os.path.basename(f)))
+    raise ValueError("No file ending with 'x.csv' found in the directory.")
+
+
+def compute_statistics(df: pd.DataFrame, columns: List[str], method: str):
+    """
+    Compute column statistics from a DataFrame depending on the imputation method.
+    - method='gaussian': return (mean, std)
+    - method='mean': return mean
+    """
+    stats = {}
+    for col in columns:
+        if pd.api.types.is_numeric_dtype(df[col]):
+            if method == "gaussian":
+                stats[col] = (df[col].mean(skipna=True), df[col].std(skipna=True))
+            elif method == "mean":
+                stats[col] = df[col].mean(skipna=True)
+        else:
+            stats[col] = None  # non-numeric columns are ignored
+    return stats
+
+
+def impute_and_save(
+    path_dir: str, path_src: str, source_name: str, method: str = "mean", seed: int = 42
+):
+    """
+    Impute missing columns into all CSV files in a directory using a given method.
+    Methods:
+      - 'gaussian': fill with values sampled from N(mean, std)
+      - 'mean': fill with the column mean
+    """
     np.random.seed(seed)
 
-    # Carrega o CSV fonte
+    # Load source CSV
     df_src = pd.read_csv(path_src, sep=get_separator(os.path.basename(path_src)))
 
-    # Lista arquivos CSV do diretório
-    arquivos = [f for f in os.listdir(path_dir) if f.lower().endswith(".csv")]
-    if not arquivos:
-        raise ValueError("Nenhum CSV encontrado no diretório.")
+    # List CSV files in directory
+    files = list_csv_files(path_dir)
+    if not files:
+        raise ValueError("No CSV files found in the directory.")
 
-    # Carrega o primeiro arquivo para descobrir colunas existentes
-    df_primeiro = pd.read_csv(os.path.join(path_dir, arquivos[1]), sep=get_separator(os.path.basename(arquivos[1])))
+    # Load reference file (first one ending with x.csv)
+    df_ref = load_reference_file(path_dir, files)
 
-    # Colunas extras no fonte que não estão no diretório
-    colunas_extras = [c for c in df_src.columns if c not in df_primeiro.columns]
-    if not colunas_extras:
-        print("Nenhuma coluna nova encontrada para imputação.")
+    # Determine which columns exist in source but not in reference
+    extra_columns = [c for c in df_src.columns if c not in df_ref.columns]
+    if not extra_columns:
+        print("No new columns found for imputation.")
         return
 
-    # Calcula estatísticas no arquivo fonte
-    estatisticas = {}
-    for col in colunas_extras:
-        if pd.api.types.is_numeric_dtype(df_src[col]):
-            media = df_src[col].mean(skipna=True)
-            std = df_src[col].std(skipna=True)
-            estatisticas[col] = (media, std)
-        else:
-            estatisticas[col] = None  # para colunas não numéricas
+    # Compute statistics (mean/std depending on method)
+    stats = compute_statistics(df_src, extra_columns, method)
 
-    # Pasta de saída
-    nome_dir = os.path.basename(os.path.normpath(path_dir))
-    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoGausiana_{sourceName.split('.')[0]}")
-    os.makedirs(pasta_saida, exist_ok=True)
+    # Output folder
+    dir_name = os.path.basename(os.path.normpath(path_dir))
+    out_dir = os.path.join(
+        os.path.dirname(path_dir),
+        f"{dir_name}_Imputation_{method.capitalize()}_{source_name.split('.')[0]}",
+    )
+    os.makedirs(out_dir, exist_ok=True)
 
-    # Para cada arquivo no diretório
-    for arq in arquivos:
-        novas_colunas =[]
-        if arq.lower().endswith("y.csv"):
-            df.to_csv(os.path.join(pasta_saida, arq), index=False)  # Não alterar arquivos de target
-            continue 
-        df = pd.read_csv(os.path.join(path_dir, arq), sep=get_separator(os.path.basename(arq)))
+    # Process each CSV file
+    for f in files:
+        file_path = os.path.join(path_dir, f)
+        df = pd.read_csv(file_path, sep=get_separator(os.path.basename(f)))
 
-        # Adicionar colunas extras
-        for col in colunas_extras:
-            if pd.api.types.is_numeric_dtype(df_src[col]):
-                media, std = estatisticas[col]
-                novas_colunas.append(col)
-                if media is not None and not np.isnan(media):
-                    df[col] = np.random.normal(loc=media, scale=std, size=len(df))
-                else:
-                    df[col] = np.nan
-
-        # Reordena colunas alfabeticamentes
-        colunas_ordenadas = sorted(df.columns)
-        df = df[colunas_ordenadas]
-
-
-        # Salva arquivo novo
-        nome_saida = arq
-        df.to_csv(os.path.join(pasta_saida, arq), index=False)
-
-    print(f"Arquivos gerados em: {pasta_saida}")
-
-def imputar_colunas_faltantes_media(path_dir, path_src, sourceName, seed=42):
-    np.random.seed(seed)
-
-    # Carrega o CSV fonte
-    df_src = pd.read_csv(path_src, sep=get_separator(os.path.basename(path_src)))
-
-    # Lista arquivos CSV do diretório
-    arquivos = [f for f in os.listdir(path_dir) if f.lower().endswith(".csv")]
-    if not arquivos:
-        raise ValueError("Nenhum CSV encontrado no diretório.")
-
-    # Carrega o primeiro arquivo para descobrir colunas existentes
-    df_primeiro = pd.read_csv(os.path.join(path_dir, arquivos[0]), sep=get_separator(os.path.basename(arquivos[0])))
-
-    # Colunas extras no fonte que não estão no diretório
-    colunas_extras = [c for c in df_src.columns if c not in df_primeiro.columns]
-    if not colunas_extras:
-        print("Nenhuma coluna nova encontrada para imputação.")
-        return
-
-    # Calcula médias no arquivo fonte
-    medias = {}
-    for col in colunas_extras:
-        if pd.api.types.is_numeric_dtype(df_src[col]):
-            medias[col] = df_src[col].mean(skipna=True)
-        else:
-            medias[col] = None  # para colunas não numéricas
-
-    # Pasta de saída
-    nome_dir = os.path.basename(os.path.normpath(path_dir))
-    pasta_saida = os.path.join(os.path.dirname(path_dir), f"{nome_dir}_ImputacaoMedia_{sourceName.split('.')[0]}")
-    os.makedirs(pasta_saida, exist_ok=True)
-
-    # Para cada arquivo no diretório
-    for arq in arquivos:
-        if arq.lower().endswith("y.csv"):
-            # Não alterar arquivos de target
-            df = pd.read_csv(os.path.join(path_dir, arq), sep=get_separator(os.path.basename(arq)))
-            df.to_csv(os.path.join(pasta_saida, arq), index=False)
+        if f.lower().endswith("y.csv"):
+            # Do not change target files
+            df.to_csv(os.path.join(out_dir, f), index=False)
             continue
 
-        df = pd.read_csv(os.path.join(path_dir, arq), sep=get_separator(os.path.basename(arq)))
-        novas_colunas = []
-
-        # Adicionar colunas extras preenchidas com a média
-        for col in colunas_extras:
+        # Add extra columns with imputed values
+        for col in extra_columns:
             if pd.api.types.is_numeric_dtype(df_src[col]):
-                media = medias[col]
-                novas_colunas.append(col)
-                if media is not None and not np.isnan(media):
-                    df[col] = media  # imputação direta com a média
+                if stats[col] is not None and not np.isnan(
+                    stats[col] if method == "mean" else stats[col][0]
+                ):
+                    if method == "gaussian":
+                        mean, std = stats[col]
+                        df[col] = np.random.normal(loc=mean, scale=std, size=len(df))
+                    elif method == "mean":
+                        df[col] = stats[col]
                 else:
                     df[col] = np.nan
 
-        # Reordena colunas alfabeticamentes
-        colunas_ordenadas = sorted(df.columns)
-        df = df[colunas_ordenadas]
+        # Reorder columns alphabetically
+        df = df[sorted(df.columns)]
 
-        # Salva arquivo novo
-        df.to_csv(os.path.join(pasta_saida, arq), index=False)
+        # Save file
+        df.to_csv(os.path.join(out_dir, f), index=False)
 
-    print(f"Arquivos gerados em: {pasta_saida}")
+    print(f"Files generated in: {out_dir}")

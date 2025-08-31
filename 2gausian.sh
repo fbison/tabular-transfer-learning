@@ -3,10 +3,10 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --mem-per-cpu=20000 
-#SBATCH -J ic4_optuna
+#SBATCH -J ic2Gaus
 #SBATCH --time=192:00:00
-#SBATCH -o out4.txt
-#SBATCH -e err4.txt
+#SBATCH -o out2Gaus.txt
+#SBATCH -e err2Gaus.txt
 
 # 1. Carregar o módulo base do Miniconda
 module load Miniconda/biopython
@@ -19,7 +19,7 @@ conda activate my_optuna_env
 pip install -r requirements.txt
 
 # 4. Executar o seu script Python
-python optune_from_scratch.py model=ft_transformer dataset=ic_upstream4_ImputacaoEstatistica_exp_100_1
+python optune_from_scratch.py model=ft_transformer dataset=ic_upstream2_Imputation_Gaussian_exp_100_1
 
 # 5. (Opcional) Desativar o ambiente após a execução
 conda deactivate

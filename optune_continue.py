@@ -64,57 +64,68 @@ def sample_value_with_default(trial, name, distr, min, max, default):
     value = value_suggested if trial.suggest_categorical(f'optional_{name}', [False, True]) else default
     return value
 #
+def define_search_space(model: str):
+    if model == "ft_transformer":
+        return {
+            "d_embedding": optuna.distributions.CategoricalDistribution([64, 128, 256, 320, 384, 512]),
+            "n_heads": optuna.distributions.CategoricalDistribution([4, 8, 16]),
+            "n_layers": optuna.distributions.IntDistribution(2, 10, step=2),
+            "d_ffn_factor": optuna.distributions.FloatDistribution(2/3, 8/3),
+            "attention_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "ffn_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "activation": optuna.distributions.CategoricalDistribution(["reglu", "gelu", "relu"]),
+            "lr": optuna.distributions.FloatDistribution(1e-5, 1e-3, log=True),
+            # "weight_decay": optuna.distributions.FloatDistribution(1e-6, 1e-3, log=True),
+        }
 
-def get_parameters(model, trial):
-    if model=='ft_transformer':
-        model_params = {
-            'd_embedding': trial.suggest_categorical("d_embedding", [64, 128, 256, 320, 384, 512]),
-            'n_heads': trial.suggest_categorical("n_heads", [4, 8, 16]),
-            'n_layers': trial.suggest_int('n_layers', 2, 10, step=2),
-            'd_ffn_factor': trial.suggest_uniform('d_ffn_factor', 2/3, 8/3),
-            'attention_dropout': trial.suggest_uniform('attention_dropout', 0.0, 0.5),
-            'ffn_dropout' : trial.suggest_uniform('ffn_dropout', 0.0, 0.5),
-            "activation": trial.suggest_categorical("activation", ["reglu", "gelu", "relu"]),
-            }
-        training_params = {
-            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3) ##,
-            ##'weight_decay':  trial.suggest_loguniform('weight_decay', 1e-6, 1e-3),
-            }
+    elif model == "resnet":
+        return {
+            "d_embedding": optuna.distributions.IntDistribution(32, 512, step=8),
+            "d_hidden_factor": optuna.distributions.FloatDistribution(1.0, 4.0),
+            "n_layers": optuna.distributions.IntDistribution(1, 8),
+            "hidden_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "residual_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "lr": optuna.distributions.FloatDistribution(1e-5, 1e-3, log=True),
+            "weight_decay": optuna.distributions.FloatDistribution(1e-6, 1e-3, log=True),
+        }
 
-    if model=='resnet':
-        model_params = {
-            'd_embedding':  trial.suggest_int('d_embedding', 32, 512, step=8),
-            'd_hidden_factor': trial.suggest_uniform('d_hidden_factor', 1.0, 4.0),
-            'n_layers': trial.suggest_int('n_layers', 1, 8,),
-            'hidden_dropout': trial.suggest_uniform('hidden_dropout', 0.0, 0.5),
-            'residual_dropout': sample_value_with_default(trial, 'residual_dropout', 'uniform', 0.0, 0.5, 0.0),
-            }
-        training_params = {
-            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3),
-            'weight_decay':  sample_value_with_default(trial, 'weight_decay', 'loguniform', 1e-6, 1e-3, 0.0),
-            }
+    elif model == "mlp":
+        return {
+            "d_embedding": optuna.distributions.IntDistribution(32, 512, step=8),
+            "n_layers": optuna.distributions.IntDistribution(1, 8),
+            "d_first": optuna.distributions.IntDistribution(1, 512),
+            "d_middle": optuna.distributions.IntDistribution(1, 512),
+            "d_last": optuna.distributions.IntDistribution(1, 512),
+            "dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "lr": optuna.distributions.FloatDistribution(1e-5, 1e-3, log=True),
+            "weight_decay": optuna.distributions.FloatDistribution(1e-6, 1e-3, log=True),
+        }
 
-    if model=='mlp':
-        n_layers = trial.suggest_int('n_layers', 1, 8)
-        suggest_dim = lambda name: trial.suggest_int(name, 1, 512)
-        d_first = [suggest_dim('d_first')] if n_layers else []
-        d_middle = ([suggest_dim('d_middle')] * (n_layers - 2) if n_layers > 2 else [])
-        d_last = [suggest_dim('d_last')] if n_layers > 1 else []
-        layers = d_first + d_middle + d_last
+    else:
+        raise ValueError(f"Unknown model: {model}")
 
-        model_params = {
-            'd_embedding':  trial.suggest_int('d_embedding', 32, 512, step=8),
-            'd_layers': layers,
-            'dropout': sample_value_with_default(trial, 'dropout', 'uniform', 0.0, 0.5, 0.0),
-            }
-        training_params = {
-            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3),
-            'weight_decay':  sample_value_with_default(trial, 'weight_decay', 'loguniform', 1e-6, 1e-3, 0.0),
-            }
+def get_parameters(model, trial: optuna.trial.Trial):
+    search_space = define_search_space(model)
+    all_params = {k: trial._suggest(k, dist) for k, dist in search_space.items()}
+
+    if model == "ft_transformer":
+        model_keys = ["d_embedding", "n_heads", "n_layers", "d_ffn_factor",
+                      "attention_dropout", "ffn_dropout", "activation"]
+        training_keys = ["lr"]
+
+    elif model == "resnet":
+        model_keys = ["d_embedding", "d_hidden_factor", "n_layers",
+                      "hidden_dropout", "residual_dropout"]
+        training_keys = ["lr", "weight_decay"]
+
+    elif model == "mlp":
+        model_keys = ["d_embedding", "n_layers", "d_first", "d_middle", "d_last", "dropout"]
+        training_keys = ["lr", "weight_decay"]
+
+    model_params = {k: all_params[k] for k in model_keys}
+    training_params = {k: all_params[k] for k in training_keys}
 
     return model_params, training_params
-
-
 
 def objective(trial, cfg: DictConfig, trial_stats, 
               trial_counter, n_total_trials, 
@@ -213,15 +224,19 @@ def main(cfg):
     trials = []
     for data in existing_params:
         params = data["config"]["model"]
+        hyp = data["config"]["hyp"]
         val_score = data["stats"]["val_stats"]["score"]
         trial_number = data.get("trial_number", len(trials)+1)
 
         # Parâmetros relevantes
-        relevant_keys = ["d_embedding", "n_heads","n_layers", "d_ffn_factor", "attention_dropout", "ffn_dropout", "lr"]
+        relevant_keys = ["d_embedding", "n_heads","n_layers", "d_ffn_factor", "attention_dropout", "ffn_dropout"]
 
         filtered_params = {k: v for k, v in params.items() if k in relevant_keys}
-        distributions = {k: infer_distribution(k, v) for k, v in filtered_params.items()}
+        filtered_params.update({k: v for k, v in hyp.items() if k in ["lr"]})
+        search_space = define_search_space(cfg.model.name)
+        distributions = {k: search_space[k] for k in filtered_params.keys()}
 
+        
         frozen = FrozenTrial(
             number=trial_number,
             value=val_score,
@@ -246,7 +261,7 @@ def main(cfg):
         print("Já atingiu ou ultrapassou o limite de trials.")
     else:
         print("Estudo será iniciado ou continuado.")
-        study.optimize(func, n_trials=N_TOTAL_TRIALS, n_jobs=1, show_progress_bar=True)
+        study.optimize(func, n_trials=N_TOTAL_TRIALS, n_jobs=20, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope
 
@@ -291,7 +306,7 @@ def main(cfg):
     }
     for filename, plot_func in plots.items():
         try:
-            fig = plot_func(study)
+            fig = plot_func(in_memory_study)
             save_path = os.path.join(filename)
             fig.write_html(save_path + ".html")
             fig.write_image((save_path + ".png"), width=1000, height=600)

@@ -38,17 +38,15 @@ with open(input_path, "r") as f:
     for line in f:
         data = json.loads(line)
         params = data["config"]["model"]
+        hyp = data["config"]["hyp"]
         val_score = data["stats"]["val_stats"]["score"]
         trial_number = data.get("trial_number", len(trials)+1)
-        if len(trials) < 18:
-            trial_number = len(trials) + 1
-        else:
-            trial_number = data.get("trial_number") + 18
 
         # Parâmetros relevantes
-        relevant_keys = ["d_embedding", "n_heads","n_layers", "d_ffn_factor", "attention_dropout", "ffn_dropout", "lr"]
+        relevant_keys = ["d_embedding", "n_heads","n_layers", "d_ffn_factor", "attention_dropout", "ffn_dropout"]
 
         filtered_params = {k: v for k, v in params.items() if k in relevant_keys}
+        filtered_params.update({k: v for k, v in hyp.items() if k in ["lr", "weight_decay"]})
         distributions = {k: infer_distribution(k, v) for k, v in filtered_params.items()}
 
         frozen = FrozenTrial(

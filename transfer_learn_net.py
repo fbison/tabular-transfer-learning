@@ -33,7 +33,7 @@ def main(cfg: DictConfig):
     torch.backends.cudnn.benchmark = True
     log = logging.getLogger()
     log.info("\n_________________________________________________\n")
-    log.info("train_net_from_scratch.py main() running.")
+    log.info("transfer_learn_net.py main() running.")
     log.info(OmegaConf.to_yaml(cfg))
     if cfg.hyp.save_period < 0:
         cfg.hyp.save_period = 1e8

@@ -293,9 +293,14 @@ class TabularDataset:
         if self.normalization == 'standard':
             normalizer = sklearn.preprocessing.StandardScaler()
         elif self.normalization == 'quantile':
+            n_samples = x_num['train'].shape[0]
+            n_quantiles = n_samples // 30
+            n_quantiles = max(n_quantiles, 1)       # pelo menos 1
+            n_quantiles = min(n_quantiles, 1000)    # no máximo 1000, para evitar lentidão
+            n_quantiles = min(n_quantiles, n_samples)  # nunca mais que o número de amostras
             normalizer = sklearn.preprocessing.QuantileTransformer(
                 output_distribution='normal',
-                n_quantiles=max(min(x_num['train'].shape[0] // 30, 1000), 10),
+                n_quantiles=n_quantiles,
                 subsample=int(1e9),
                 random_state=self.seed,
             )
@@ -322,7 +327,10 @@ class TabularDataset:
             if self.stage == 'downstream':
                 normalizer = pickle.load(open(self.normalizer_path, 'rb'))
                 print(f'Normalizer loaded from {self.normalizer_path}')
-        return {k: normalizer.transform(v) for k, v in x_num.items()}
+        return {
+                k: normalizer.transform(v) if v.shape[0] > 0 else np.empty((0, normalizer.n_features_in_))
+                for k, v in x_num.items()
+            }
 
     def handle_missing_values_numerical_features(self, x_num):
         # TODO: handle num_nan_masks for SAINT

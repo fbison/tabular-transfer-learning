@@ -1,0 +1,16 @@
+defaults:
+  - preTrained: ic_upstream4
+  - override hydra/job_logging: custom
+  - _self_
+
+
+hydra:
+  run:
+    dir: ./outputs/${name}/${preTrained.name}
+  job_logging:
+    handlers:
+      file:
+        filename: train.log
+
+train_log: train_log
+name: transfer-learning-from-upstream

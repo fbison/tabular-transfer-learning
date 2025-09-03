@@ -19,7 +19,7 @@ import numpy as np
 
 def evaluate_model(net, loaders, task, device):
     scores = []
-    for loader in loaders:
+    for loader in loaders: #TODO: validar loader vazio
         score = test_default(net, loader, task, device)
         scores.append(score)
     return scores

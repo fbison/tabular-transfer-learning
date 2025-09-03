@@ -13,6 +13,46 @@ from optuna.visualization import (
 )
 import plotly.io as pio
 
+def define_search_space(model: str):
+    if model == "ft_transformer":
+        return {
+            "d_embedding": optuna.distributions.CategoricalDistribution([64, 128, 256, 320, 384, 512]),
+            "n_heads": optuna.distributions.CategoricalDistribution([4, 8, 16]),
+            "n_layers": optuna.distributions.IntDistribution(2, 10, step=2),
+            "d_ffn_factor": optuna.distributions.FloatDistribution(2/3, 8/3),
+            "attention_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "ffn_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "activation": optuna.distributions.CategoricalDistribution(["reglu", "gelu", "relu"]),
+            "lr": optuna.distributions.FloatDistribution(1e-5, 1e-3, log=True),
+            # "weight_decay": optuna.distributions.FloatDistribution(1e-6, 1e-3, log=True),
+        }
+
+    elif model == "resnet":
+        return {
+            "d_embedding": optuna.distributions.IntDistribution(32, 512, step=8),
+            "d_hidden_factor": optuna.distributions.FloatDistribution(1.0, 4.0),
+            "n_layers": optuna.distributions.IntDistribution(1, 8),
+            "hidden_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "residual_dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "lr": optuna.distributions.FloatDistribution(1e-5, 1e-3, log=True),
+            "weight_decay": optuna.distributions.FloatDistribution(1e-6, 1e-3, log=True),
+        }
+
+    elif model == "mlp":
+        return {
+            "d_embedding": optuna.distributions.IntDistribution(32, 512, step=8),
+            "n_layers": optuna.distributions.IntDistribution(1, 8),
+            "d_first": optuna.distributions.IntDistribution(1, 512),
+            "d_middle": optuna.distributions.IntDistribution(1, 512),
+            "d_last": optuna.distributions.IntDistribution(1, 512),
+            "dropout": optuna.distributions.FloatDistribution(0.0, 0.5),
+            "lr": optuna.distributions.FloatDistribution(1e-5, 1e-3, log=True),
+            "weight_decay": optuna.distributions.FloatDistribution(1e-6, 1e-3, log=True),
+        }
+
+    else:
+        raise ValueError(f"Unknown model: {model}")
+
 def infer_distribution(key, value):
     if isinstance(value, bool):
         # treat booleans as categorical
@@ -47,8 +87,8 @@ with open(input_path, "r") as f:
 
         filtered_params = {k: v for k, v in params.items() if k in relevant_keys}
         filtered_params.update({k: v for k, v in hyp.items() if k in ["lr", "weight_decay"]})
-        distributions = {k: infer_distribution(k, v) for k, v in filtered_params.items()}
-
+        search_space = define_search_space("ft_transformer")
+        distributions = {k: search_space[k] for k in filtered_params.keys()}
         frozen = FrozenTrial(
             number=trial_number,
             value=val_score,

@@ -1,6 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [    
+
         {
             "name": "optuna backup",
             "type": "debugpy",
@@ -55,6 +56,14 @@
             "request": "launch",
             "program": "${workspaceFolder}/input_data.py",
             "args": [],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "DownstreamPipeline",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": ["preTrained=ic_upstream4"],
             "console": "integratedTerminal"
         }
     ]

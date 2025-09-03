@@ -261,7 +261,7 @@ def main(cfg):
         print("Já atingiu ou ultrapassou o limite de trials.")
     else:
         print("Estudo será iniciado ou continuado.")
-        study.optimize(func, n_trials=N_TOTAL_TRIALS, n_jobs=20, show_progress_bar=True)
+        study.optimize(func, n_trials=(N_TOTAL_TRIALS-n_done), n_jobs=20, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope
 

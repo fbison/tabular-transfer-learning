@@ -69,7 +69,9 @@ def infer_distribution(key, value):
         raise ValueError(f"Unsupported param type: {key} = {value} ({type(value)})")
 
 # Caminho para o arquivo com todos os trials
-input_path = r"outputs\from_scratch_optuna\optuning-ft_transformer-ic_upstream3\all_trials.jsonl"
+#optuning-ft_transformer-ic_upstream3_Imputation_Mean_exp_100_1
+#optuning-ft_transformer-ic_upstream4_Imputation_Gaussian_exp_100_1
+input_path = r"outputs\from_scratch_optuna\optuning-ft_transformer-ic_upstream4_Imputation_Mean_exp_100_1\all_trials.jsonl"
 output_dir = os.path.dirname(input_path)
 
 # Carrega todos os trials do JSONL
@@ -86,7 +88,7 @@ with open(input_path, "r") as f:
         relevant_keys = ["d_embedding", "n_heads","n_layers", "d_ffn_factor", "attention_dropout", "ffn_dropout"]
 
         filtered_params = {k: v for k, v in params.items() if k in relevant_keys}
-        filtered_params.update({k: v for k, v in hyp.items() if k in ["lr", "weight_decay"]})
+        filtered_params.update({k: v for k, v in hyp.items() if k in ["lr"]})
         search_space = define_search_space("ft_transformer")
         distributions = {k: search_space[k] for k in filtered_params.keys()}
         frozen = FrozenTrial(
@@ -136,7 +138,7 @@ for key, value in best_trial.params.items():
 
 best_stats = trials[best_trial.number]
 
+with open(os.path.join(output_dir, "best_config.json"), "w") as fp:
+    json.dump(best_trial, fp, indent = 4)
 with open(os.path.join(output_dir, "best_stats.json"), "w") as fp:
     json.dump(best_stats, fp, indent = 4)
-with open(os.path.join(output_dir, "best_config.json"), "w") as fp:
-    json.dump(best_trial.params, fp, indent = 4)

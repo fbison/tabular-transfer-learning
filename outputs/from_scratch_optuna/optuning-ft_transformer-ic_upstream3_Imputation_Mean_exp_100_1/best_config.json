@@ -1,0 +1,9 @@
+{
+    "d_embedding": 64,
+    "n_layers": 6,
+    "n_heads": 16,
+    "d_ffn_factor": 2.235357675090564,
+    "attention_dropout": 0.32926386239738986,
+    "ffn_dropout": 0.04918978921696623,
+    "lr": 0.0005681810669556986
+}

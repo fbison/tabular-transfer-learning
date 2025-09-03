@@ -132,6 +132,73 @@ def split_ic_dataset(dataset_name, dataset_number, target_columns):
     y_test.to_csv(f'{base_path}ic_test_y.csv', index = False)
     return
 
+
+def split_ic_dataset(dataset_name, dataset_number, target_columns):
+    base_path = f'../../../data/{dataset_name}/'
+    dataset = pd.read_csv(f'{base_path}exp_100_{dataset_number}.csv', delimiter = '|')
+    dataset = dataset.drop(columns = non_numerical_columns)
+
+    dataset = dataset.astype(float)
+
+    y_full = dataset[target_columns].copy()
+
+    dataset.drop(columns = default_target_columns, inplace = True) #Não retira tudo, pois as outras targets collumns serão usadas como X em outras tasks
+    
+    X_full = dataset.copy()
+
+
+    X_train, X_test, y_train, y_test = train_test_split(X_full, y_full, test_size=0.2, random_state=1)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1875, random_state=1) # 0.1875 x 0.8 = 0.15
+
+
+    X_train.to_csv(f'{base_path}ic_train_X.csv', index = False)
+    X_val.to_csv(f'{base_path}ic_val_X.csv', index = False)
+    X_test.to_csv(f'{base_path}ic_test_X.csv', index = False)
+
+    y_train.to_csv(f'{base_path}ic_train_y.csv', index = False)
+    y_val.to_csv(f'{base_path}ic_val_y.csv', index = False)
+    y_test.to_csv(f'{base_path}ic_test_y.csv', index = False)
+    return
+
+def split_downstream_dataset(dataset_name: str, dataset_number: int):
+    target_columns = get_target_columns(dataset_name)
+    base_path = os.path.join('data', dataset_name)
+    dataset = pd.read_csv(f'{base_path}/exp_100_{dataset_number}.csv', delimiter = '|')
+    dataset = dataset.drop(columns = non_numerical_columns)
+
+    dataset = dataset.astype(float)
+
+    y_full = dataset[target_columns].copy()
+
+    dataset.drop(columns = default_target_columns, inplace = True) #Não retira tudo, pois as outras targets collumns serão usadas como X em outras tasks
+    
+    X_full = dataset.copy()
+
+    X_train, X_test, y_train, y_test = train_test_split(X_full, y_full, test_size=30, random_state=1) # test size fixed to 30 samples to all downstream
+    X_val = pd.DataFrame(columns=X_train.columns)
+    if isinstance(y_train, pd.DataFrame):
+        y_val = pd.DataFrame(columns=y_train.columns)
+    sample_train_sizes = [5, 10, 20, 50, 75]
+    for sample_size in sample_train_sizes:
+        base_path = os.path.join('data', f'{dataset_name}_Sample{sample_size}')
+        os.makedirs(base_path, exist_ok=True)
+        X_train_samples, y_train_sampled = train_sample(X_train, y_train, sample_size)
+        X_train_samples.to_csv(f'{base_path}/ic_train_X.csv', index = False)
+        y_train_sampled.to_csv(f'{base_path}/ic_train_y.csv', index = False)
+        X_val.to_csv(f'{base_path}/ic_val_X.csv', index = False)
+        y_val.to_csv(f'{base_path}/ic_val_y.csv', index = False)
+        X_test.to_csv(f'{base_path}/ic_test_X.csv', index = False)
+        y_test.to_csv(f'{base_path}/ic_test_y.csv', index = False)
+
+    return
+
+def train_sample(xTrain, yTrain, sample_size):
+    if sample_size >= len(xTrain):
+        return xTrain, yTrain
+    else:
+        x_sampled, _, y_sampled, _ = train_test_split(xTrain, yTrain, train_size=sample_size, random_state=42)
+        return x_sampled, y_sampled
+    
 def read_ic_dataset(dataset_name, target_colums, target, stage='pretrain'):
     """
     Function to read the IC dataset.

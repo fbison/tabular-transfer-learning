@@ -1,4 +1,4 @@
-from deep_tabular.utils.ic_tools import impute_and_save
+from deep_tabular.utils.ic_tools import impute_and_save, split_downstream_dataset
 
 def input_missing_columns(method):
     path_src = "data/ic_downstream1/ic_train_X.csv"
@@ -52,9 +52,24 @@ def remove_target_from_directory(path_dir):
         if filename.endswith(".csv"):
             path_csv = os.path.join(path_dir, filename)
             remove_target_from_csv(path_csv)
+
+def input_missing_columns_downstream_samples(method):
+    sample_train_sizes = [5, 10, 20, 50, 75]
+    for sample_size in sample_train_sizes:
+        path_dir = f"data/ic_downstream1_Sample{sample_size}"
+
+        path_src = "data/ic_upstream2/ic_train_X.csv"
+        impute_and_save(path_dir, path_src, "exp_100_2", method=method, seed=42)
+
+        path_src = "data/ic_upstream3/ic_train_X.csv"
+        impute_and_save(path_dir, path_src, "exp_100_3", method=method, seed=42)
+        
+        path_src = "data/ic_upstream4/ic_train_X.csv"
+        impute_and_save(path_dir, path_src, "exp_100_4", method=method, seed=42)
+
 def main():
-    input_missing_columns(method="mean")
-    input_missing_columns(method="gaussian")
+    input_missing_columns_downstream_samples(method="mean")
+    input_missing_columns_downstream_samples(method="gaussian")
 
 if __name__ == "__main__":
     main()

@@ -16,6 +16,26 @@ import transfer_learn_net
 import deep_tabular as dt
 
 N_JOBS_MAX = 20  # Número máximo de jobs do HPC DA USP
+import numpy as np
+import torch
+
+def make_serializable(obj):
+    if isinstance(obj, dict):
+        return {k: make_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [make_serializable(v) for v in obj]
+    elif isinstance(obj, tuple):
+        return tuple(make_serializable(v) for v in obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, (np.int64, np.int32)):
+        return int(obj)
+    elif isinstance(obj, (np.float32, np.float64)):
+        return float(obj)
+    elif isinstance(obj, torch.Tensor):
+        return obj.tolist()
+    else:
+        return obj
 
 def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
     # Copias independentes para cada job
@@ -25,35 +45,31 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
 
     result = None
     try:
-        # Monta a configuração manualmente, sem Hydra.initialize/compose
-        cfgExecution.model = model_copy
-        cfgExecution.dataset = dataset_copy
-        cfgExecution.hyp = hyp_copy
-        OmegaConf.set_struct(cfgExecution, False)
-        cfgExecution = OmegaConf.merge(
-            cfgExecution,
-            DictConfig({"run_id": configName})
-        )
-        OmegaConf.set_struct(cfgExecution, True)
+        cfgExecution = OmegaConf.create({
+            "model": model_copy,
+            "dataset": dataset_copy,
+            "hyp": hyp_copy,
+            "run_id": configName
+        })
 
         # Executa a função principal do transfer_learn_net
         stats = transfer_learn_net.main(cfgExecution)
 
         # Retorna config + stats em um único objeto
         result = {
-            "config": OmegaConf.to_container(cfgExecution, resolve=True),
+            "config": OmegaConf.to_object(cfgExecution, resolve=True),
             "stats": stats
         }
 
     except Exception as e:
         logging.getLogger().error(f"Erro no job {configName}: {e}")
         result = {
-            "config": {
-                "model": model_copy,
-                "dataset": dataset_copy,
-                "hyp": hyp_copy,
+            "config": make_serializable({
+                "model": OmegaConf.to_object(model_copy),
+                "dataset": OmegaConf.to_object(dataset_copy),
+                "hyp": OmegaConf.to_object(hyp_copy),
                 "run_id": f"{configName}_ERROR"
-            },
+            }),
             "error": str(e)
         }
 

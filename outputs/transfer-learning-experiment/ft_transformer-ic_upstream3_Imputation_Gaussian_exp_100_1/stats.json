@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3_Imputation_Gaussian_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "timid-Chikara",
+    "best_epoch": 83,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.694041699501073,
+        "rmse": 0.694041699501073
+    },
+    "train_stats": {
+        "score": -0.5606342154976348,
+        "rmse": 0.5606342154976348
+    },
+    "val_stats": {
+        "score": -0.6816136875627481,
+        "rmse": 0.6816136875627481
+    }
+}

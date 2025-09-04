@@ -1,0 +1,698 @@
+[09/03/2025 21:44:19 INFO]: 
+_________________________________________________
+
+[09/03/2025 21:44:19 INFO]: transfer_learn_net.py main() running.
+[09/03/2025 21:44:19 INFO]: model:
+  name: ft_transformer
+  d_embedding: 320
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.7391005045679577
+  attention_dropout: 0.2755193280539978
+  ffn_dropout: 0.0739459748467074
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream4_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream4_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 0.0005496742505476187
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: transfer-learning-experiment
+run_id: abuzz-Aditya
+
+[09/03/2025 21:44:19 INFO]: Building Dataset
+[09/03/2025 21:44:19 INFO]: pre normalizer.fit
+
+[09/03/2025 21:44:19 INFO]: pos normalizer.fit
+
+[09/03/2025 21:44:20 INFO]: Task: regression, Dataset: ic_upstream4_Imputation_Mean_exp_100_1, n_numerical: 165, n_categorical: 0, n_classes: 1, n_train_samples: 282, n_val_samples: 66, n_test_samples: 87
+[09/03/2025 21:44:21 INFO]: This ft_transformer has 1.644 million parameters.
+[09/03/2025 21:44:21 INFO]: Training will start at epoch 0.
+[09/03/2025 21:44:48 INFO]: ==> Starting training for 200 epochs...
+[09/03/2025 21:45:19 INFO]: Training loss at epoch 0: 1.0303301811218262
+[09/03/2025 21:45:23 INFO]: New best epoch, val score: -0.9630775619714598
+[09/03/2025 21:45:23 INFO]: Saving model to: model_best.pth
+[09/03/2025 21:45:53 INFO]: Training loss at epoch 1: 1.0279026627540588
+[09/03/2025 21:46:27 INFO]: Training loss at epoch 2: 1.1921160519123077
+[09/03/2025 21:46:31 INFO]: New best epoch, val score: -0.9302753513302572
+[09/03/2025 21:46:31 INFO]: Saving model to: model_best.pth
+[09/03/2025 21:47:01 INFO]: Training loss at epoch 3: 1.1796855330467224
+[09/03/2025 21:47:35 INFO]: Training loss at epoch 4: 1.0636308193206787
+[09/03/2025 21:48:09 INFO]: Training loss at epoch 5: 0.9411891996860504
+[09/03/2025 21:48:43 INFO]: Training loss at epoch 6: 0.9085365533828735
+[09/03/2025 21:49:17 INFO]: Training loss at epoch 7: 0.9920031428337097
+[09/03/2025 21:49:51 INFO]: Training loss at epoch 8: 0.8944732546806335
+[09/03/2025 21:50:25 INFO]: Training loss at epoch 9: 1.127653181552887
+[09/03/2025 21:50:37 INFO]: Training accuracy: {
+    "score": -0.9787637185339022,
+    "rmse": 0.9787637185339022
+}
+[09/03/2025 21:50:37 INFO]: Val accuracy: {
+    "score": -0.9328492666897232,
+    "rmse": 0.9328492666897232
+}
+[09/03/2025 21:50:37 INFO]: Test accuracy: {
+    "score": -0.9011944837695222,
+    "rmse": 0.9011944837695222
+}
+[09/03/2025 21:51:11 INFO]: Training loss at epoch 10: 0.9605264961719513
+[09/03/2025 21:51:45 INFO]: Training loss at epoch 11: 1.0739901959896088
+[09/03/2025 21:52:19 INFO]: Training loss at epoch 12: 1.0797624289989471
+[09/03/2025 21:52:53 INFO]: Training loss at epoch 13: 0.9836427867412567
+[09/04/2025 10:27:28 INFO]: 
+_________________________________________________
+
+[09/04/2025 10:27:28 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 10:27:28 INFO]: model:
+  name: ft_transformer
+  d_embedding: 320
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.7391005045679577
+  attention_dropout: 0.2755193280539978
+  ffn_dropout: 0.0739459748467074
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream4_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream4_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 0.0005496742505476187
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: transfer-learning-experiment
+run_id: horny-Rosibel
+
+[09/04/2025 10:27:30 INFO]: Building Dataset
+[09/04/2025 10:27:30 INFO]: pre normalizer.fit
+
+[09/04/2025 10:27:30 INFO]: pos normalizer.fit
+
+[09/04/2025 10:27:31 INFO]: Task: regression, Dataset: ic_upstream4_Imputation_Mean_exp_100_1, n_numerical: 165, n_categorical: 0, n_classes: 1, n_train_samples: 282, n_val_samples: 66, n_test_samples: 87
+[09/04/2025 10:27:31 INFO]: This ft_transformer has 1.644 million parameters.
+[09/04/2025 10:27:31 INFO]: Training will start at epoch 0.
+[09/04/2025 10:28:09 INFO]: ==> Starting training for 200 epochs...
+[09/04/2025 10:28:42 INFO]: Training loss at epoch 0: 1.0303301811218262
+[09/04/2025 10:28:46 INFO]: New best epoch, val score: -0.9630775619714598
+[09/04/2025 10:28:46 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:29:14 INFO]: Training loss at epoch 1: 1.0279026627540588
+[09/04/2025 10:29:46 INFO]: Training loss at epoch 2: 1.1921160519123077
+[09/04/2025 10:29:50 INFO]: New best epoch, val score: -0.9302753513302572
+[09/04/2025 10:29:50 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:30:19 INFO]: Training loss at epoch 3: 1.1796855330467224
+[09/04/2025 10:30:51 INFO]: Training loss at epoch 4: 1.0636308193206787
+[09/04/2025 10:31:23 INFO]: Training loss at epoch 5: 0.9411891996860504
+[09/04/2025 10:31:55 INFO]: Training loss at epoch 6: 0.9085365533828735
+[09/04/2025 10:32:27 INFO]: Training loss at epoch 7: 0.9920031428337097
+[09/04/2025 10:32:59 INFO]: Training loss at epoch 8: 0.8944732546806335
+[09/04/2025 10:33:31 INFO]: Training loss at epoch 9: 1.127653181552887
+[09/04/2025 10:33:42 INFO]: Training accuracy: {
+    "score": -0.9787637185339022,
+    "rmse": 0.9787637185339022
+}
+[09/04/2025 10:33:42 INFO]: Val accuracy: {
+    "score": -0.9328492666897232,
+    "rmse": 0.9328492666897232
+}
+[09/04/2025 10:33:42 INFO]: Test accuracy: {
+    "score": -0.9011944837695222,
+    "rmse": 0.9011944837695222
+}
+[09/04/2025 10:34:14 INFO]: Training loss at epoch 10: 0.9605264961719513
+[09/04/2025 10:34:46 INFO]: Training loss at epoch 11: 1.0739901959896088
+[09/04/2025 10:35:22 INFO]: Training loss at epoch 12: 1.0797624289989471
+[09/04/2025 10:35:54 INFO]: Training loss at epoch 13: 0.9836427867412567
+[09/04/2025 10:36:26 INFO]: Training loss at epoch 14: 0.9405058324337006
+[09/04/2025 10:36:58 INFO]: Training loss at epoch 15: 0.8456642627716064
+[09/04/2025 10:37:02 INFO]: New best epoch, val score: -0.9181263521224751
+[09/04/2025 10:37:02 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:37:31 INFO]: Training loss at epoch 16: 0.8298732340335846
+[09/04/2025 10:38:03 INFO]: Training loss at epoch 17: 0.7361924052238464
+[09/04/2025 10:38:36 INFO]: Training loss at epoch 18: 0.9846118688583374
+[09/04/2025 10:38:40 INFO]: New best epoch, val score: -0.9154656255947264
+[09/04/2025 10:38:40 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:39:11 INFO]: Training loss at epoch 19: 0.8349967002868652
+[09/04/2025 10:39:22 INFO]: Training accuracy: {
+    "score": -0.8671076551170832,
+    "rmse": 0.8671076551170832
+}
+[09/04/2025 10:39:22 INFO]: Val accuracy: {
+    "score": -0.8907914916038118,
+    "rmse": 0.8907914916038118
+}
+[09/04/2025 10:39:22 INFO]: Test accuracy: {
+    "score": -0.8309874453881674,
+    "rmse": 0.8309874453881674
+}
+[09/04/2025 10:39:26 INFO]: New best epoch, val score: -0.8907914916038118
+[09/04/2025 10:39:26 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:39:55 INFO]: Training loss at epoch 20: 0.6745879948139191
+[09/04/2025 10:39:59 INFO]: New best epoch, val score: -0.8581235693488345
+[09/04/2025 10:39:59 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:40:28 INFO]: Training loss at epoch 21: 0.8194922208786011
+[09/04/2025 10:40:33 INFO]: New best epoch, val score: -0.8527665852949288
+[09/04/2025 10:40:33 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:41:02 INFO]: Training loss at epoch 22: 0.8543999493122101
+[09/04/2025 10:41:34 INFO]: Training loss at epoch 23: 0.8451719880104065
+[09/04/2025 10:41:38 INFO]: New best epoch, val score: -0.8435317208499293
+[09/04/2025 10:41:38 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:42:07 INFO]: Training loss at epoch 24: 0.7026843130588531
+[09/04/2025 10:42:11 INFO]: New best epoch, val score: -0.7673324611634578
+[09/04/2025 10:42:11 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:42:40 INFO]: Training loss at epoch 25: 0.5977353453636169
+[09/04/2025 10:42:44 INFO]: New best epoch, val score: -0.7288852508871163
+[09/04/2025 10:42:44 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:43:13 INFO]: Training loss at epoch 26: 0.5956070721149445
+[09/04/2025 10:43:45 INFO]: Training loss at epoch 27: 0.6015883982181549
+[09/04/2025 10:44:17 INFO]: Training loss at epoch 28: 0.7330741584300995
+[09/04/2025 10:44:50 INFO]: Training loss at epoch 29: 0.8102257549762726
+[09/04/2025 10:45:01 INFO]: Training accuracy: {
+    "score": -0.7816622685641045,
+    "rmse": 0.7816622685641045
+}
+[09/04/2025 10:45:01 INFO]: Val accuracy: {
+    "score": -0.7171941847951107,
+    "rmse": 0.7171941847951107
+}
+[09/04/2025 10:45:01 INFO]: Test accuracy: {
+    "score": -0.7170589525469004,
+    "rmse": 0.7170589525469004
+}
+[09/04/2025 10:45:04 INFO]: New best epoch, val score: -0.7171941847951107
+[09/04/2025 10:45:04 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:45:33 INFO]: Training loss at epoch 30: 0.6081341803073883
+[09/04/2025 10:45:37 INFO]: New best epoch, val score: -0.7133196695050156
+[09/04/2025 10:45:37 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:46:06 INFO]: Training loss at epoch 31: 0.5360519587993622
+[09/04/2025 10:46:38 INFO]: Training loss at epoch 32: 0.6857332289218903
+[09/04/2025 10:47:11 INFO]: Training loss at epoch 33: 0.5466967821121216
+[09/04/2025 10:47:15 INFO]: New best epoch, val score: -0.7051745779617906
+[09/04/2025 10:47:15 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:47:44 INFO]: Training loss at epoch 34: 0.6563832014799118
+[09/04/2025 10:47:48 INFO]: New best epoch, val score: -0.7003869826671407
+[09/04/2025 10:47:48 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:48:16 INFO]: Training loss at epoch 35: 0.5823072195053101
+[09/04/2025 10:48:20 INFO]: New best epoch, val score: -0.6903906863473827
+[09/04/2025 10:48:20 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:48:49 INFO]: Training loss at epoch 36: 0.5044795870780945
+[09/04/2025 10:49:32 INFO]: Training loss at epoch 37: 0.5333366394042969
+[09/04/2025 10:50:05 INFO]: Training loss at epoch 38: 0.43500716984272003
+[09/04/2025 10:50:38 INFO]: Training loss at epoch 39: 0.3686598390340805
+[09/04/2025 10:50:48 INFO]: Training accuracy: {
+    "score": -0.654848941431869,
+    "rmse": 0.654848941431869
+}
+[09/04/2025 10:50:48 INFO]: Val accuracy: {
+    "score": -0.7380825953999873,
+    "rmse": 0.7380825953999873
+}
+[09/04/2025 10:50:48 INFO]: Test accuracy: {
+    "score": -0.6606468517168479,
+    "rmse": 0.6606468517168479
+}
+[09/04/2025 10:51:21 INFO]: Training loss at epoch 40: 0.3782615214586258
+[09/04/2025 10:51:54 INFO]: Training loss at epoch 41: 0.347762793302536
+[09/04/2025 10:52:26 INFO]: Training loss at epoch 42: 0.5025153756141663
+[09/04/2025 10:52:59 INFO]: Training loss at epoch 43: 0.38303935527801514
+[09/04/2025 10:53:02 INFO]: New best epoch, val score: -0.6902927040749806
+[09/04/2025 10:53:02 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:53:31 INFO]: Training loss at epoch 44: 0.522784024477005
+[09/04/2025 10:53:35 INFO]: New best epoch, val score: -0.6710434226818806
+[09/04/2025 10:53:35 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:54:04 INFO]: Training loss at epoch 45: 0.4151480793952942
+[09/04/2025 10:54:08 INFO]: New best epoch, val score: -0.6608600915311461
+[09/04/2025 10:54:08 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:54:37 INFO]: Training loss at epoch 46: 0.45533350110054016
+[09/04/2025 10:55:09 INFO]: Training loss at epoch 47: 0.42816781997680664
+[09/04/2025 10:55:41 INFO]: Training loss at epoch 48: 0.3563603162765503
+[09/04/2025 10:55:45 INFO]: New best epoch, val score: -0.6566803295186975
+[09/04/2025 10:55:45 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:56:14 INFO]: Training loss at epoch 49: 0.3440362960100174
+[09/04/2025 10:56:26 INFO]: Training accuracy: {
+    "score": -0.5929642528625595,
+    "rmse": 0.5929642528625595
+}
+[09/04/2025 10:56:26 INFO]: Val accuracy: {
+    "score": -0.6521378360871931,
+    "rmse": 0.6521378360871931
+}
+[09/04/2025 10:56:26 INFO]: Test accuracy: {
+    "score": -0.6475279779659516,
+    "rmse": 0.6475279779659516
+}
+[09/04/2025 10:56:29 INFO]: New best epoch, val score: -0.6521378360871931
+[09/04/2025 10:56:29 INFO]: Saving model to: model_best.pth
+[09/04/2025 10:56:58 INFO]: Training loss at epoch 50: 0.40575239062309265
+[09/04/2025 10:57:31 INFO]: Training loss at epoch 51: 0.48918116092681885
+[09/04/2025 10:58:03 INFO]: Training loss at epoch 52: 0.3995661735534668
+[09/04/2025 10:58:35 INFO]: Training loss at epoch 53: 0.4051654189825058
+[09/04/2025 10:59:08 INFO]: Training loss at epoch 54: 0.38180217146873474
+[09/04/2025 10:59:40 INFO]: Training loss at epoch 55: 0.3675200492143631
+[09/04/2025 10:59:44 INFO]: New best epoch, val score: -0.6390604173410961
+[09/04/2025 10:59:44 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:00:12 INFO]: Training loss at epoch 56: 0.3724409490823746
+[09/04/2025 11:00:16 INFO]: New best epoch, val score: -0.6352407245228187
+[09/04/2025 11:00:16 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:00:45 INFO]: Training loss at epoch 57: 0.4317246824502945
+[09/04/2025 11:01:17 INFO]: Training loss at epoch 58: 0.283906452357769
+[09/04/2025 11:01:49 INFO]: Training loss at epoch 59: 0.37102121114730835
+[09/04/2025 11:02:00 INFO]: Training accuracy: {
+    "score": -0.5582990927832092,
+    "rmse": 0.5582990927832092
+}
+[09/04/2025 11:02:00 INFO]: Val accuracy: {
+    "score": -0.6559408632496453,
+    "rmse": 0.6559408632496453
+}
+[09/04/2025 11:02:00 INFO]: Test accuracy: {
+    "score": -0.6678284920620948,
+    "rmse": 0.6678284920620948
+}
+[09/04/2025 11:02:33 INFO]: Training loss at epoch 60: 0.396183043718338
+[09/04/2025 11:03:06 INFO]: Training loss at epoch 61: 0.37445883452892303
+[09/04/2025 11:03:38 INFO]: Training loss at epoch 62: 0.332166463136673
+[09/04/2025 11:04:10 INFO]: Training loss at epoch 63: 0.34682755172252655
+[09/04/2025 11:04:43 INFO]: Training loss at epoch 64: 0.32565881311893463
+[09/04/2025 11:05:15 INFO]: Training loss at epoch 65: 0.3338750898838043
+[09/04/2025 11:05:47 INFO]: Training loss at epoch 66: 0.2939029484987259
+[09/04/2025 11:06:20 INFO]: Training loss at epoch 67: 0.3818906843662262
+[09/04/2025 11:06:52 INFO]: Training loss at epoch 68: 0.42976850271224976
+[09/04/2025 11:07:24 INFO]: Training loss at epoch 69: 0.39495237171649933
+[09/04/2025 11:07:36 INFO]: Training accuracy: {
+    "score": -0.5284002897847392,
+    "rmse": 0.5284002897847392
+}
+[09/04/2025 11:07:36 INFO]: Val accuracy: {
+    "score": -0.6535367550480868,
+    "rmse": 0.6535367550480868
+}
+[09/04/2025 11:07:36 INFO]: Test accuracy: {
+    "score": -0.6819089090878137,
+    "rmse": 0.6819089090878137
+}
+[09/04/2025 11:08:08 INFO]: Training loss at epoch 70: 0.2681666538119316
+[09/04/2025 11:08:40 INFO]: Training loss at epoch 71: 0.31167516112327576
+[09/04/2025 11:09:13 INFO]: Training loss at epoch 72: 0.45082059502601624
+[09/04/2025 11:09:47 INFO]: Training loss at epoch 73: 0.32928164303302765
+[09/04/2025 11:10:19 INFO]: Training loss at epoch 74: 0.24844644963741302
+[09/04/2025 11:10:52 INFO]: Training loss at epoch 75: 0.40327686071395874
+[09/04/2025 11:11:24 INFO]: Training loss at epoch 76: 0.2844908833503723
+[09/04/2025 11:11:57 INFO]: Training loss at epoch 77: 0.3358086943626404
+[09/04/2025 11:12:30 INFO]: Training loss at epoch 78: 0.33584706485271454
+[09/04/2025 11:13:03 INFO]: Training loss at epoch 79: 0.41461193561553955
+[09/04/2025 11:13:14 INFO]: Training accuracy: {
+    "score": -0.5027548668105027,
+    "rmse": 0.5027548668105027
+}
+[09/04/2025 11:13:14 INFO]: Val accuracy: {
+    "score": -0.6735849518478823,
+    "rmse": 0.6735849518478823
+}
+[09/04/2025 11:13:14 INFO]: Test accuracy: {
+    "score": -0.6671304612564073,
+    "rmse": 0.6671304612564073
+}
+[09/04/2025 11:13:47 INFO]: Training loss at epoch 80: 0.2806784063577652
+[09/04/2025 11:14:19 INFO]: Training loss at epoch 81: 0.27400369942188263
+[09/04/2025 11:14:52 INFO]: Training loss at epoch 82: 0.31615547835826874
+[09/04/2025 11:15:25 INFO]: Training loss at epoch 83: 0.3341745585203171
+[09/04/2025 11:15:57 INFO]: Training loss at epoch 84: 0.3545506000518799
+[09/04/2025 11:16:29 INFO]: Training loss at epoch 85: 0.3799479305744171
+[09/04/2025 11:17:02 INFO]: Training loss at epoch 86: 0.26598017662763596
+[09/04/2025 11:17:06 INFO]: New best epoch, val score: -0.6246921325247755
+[09/04/2025 11:17:06 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:17:34 INFO]: Training loss at epoch 87: 0.2487296387553215
+[09/04/2025 11:18:06 INFO]: Training loss at epoch 88: 0.29428958892822266
+[09/04/2025 11:18:10 INFO]: New best epoch, val score: -0.6215370174940421
+[09/04/2025 11:18:10 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:18:39 INFO]: Training loss at epoch 89: 0.2550477832555771
+[09/04/2025 11:18:50 INFO]: Training accuracy: {
+    "score": -0.5020950992356484,
+    "rmse": 0.5020950992356484
+}
+[09/04/2025 11:18:50 INFO]: Val accuracy: {
+    "score": -0.6496341792732971,
+    "rmse": 0.6496341792732971
+}
+[09/04/2025 11:18:50 INFO]: Test accuracy: {
+    "score": -0.6963127060474408,
+    "rmse": 0.6963127060474408
+}
+[09/04/2025 11:19:22 INFO]: Training loss at epoch 90: 0.30781157314777374
+[09/04/2025 11:19:55 INFO]: Training loss at epoch 91: 0.34152446687221527
+[09/04/2025 11:20:27 INFO]: Training loss at epoch 92: 0.2423950657248497
+[09/04/2025 11:20:59 INFO]: Training loss at epoch 93: 0.2658803015947342
+[09/04/2025 11:21:32 INFO]: Training loss at epoch 94: 0.3289870023727417
+[09/04/2025 11:22:04 INFO]: Training loss at epoch 95: 0.2931329905986786
+[09/04/2025 11:22:36 INFO]: Training loss at epoch 96: 0.21566876024007797
+[09/04/2025 11:23:09 INFO]: Training loss at epoch 97: 0.3468593657016754
+[09/04/2025 11:23:13 INFO]: New best epoch, val score: -0.6195386750290867
+[09/04/2025 11:23:13 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:23:41 INFO]: Training loss at epoch 98: 0.2510131001472473
+[09/04/2025 11:24:14 INFO]: Training loss at epoch 99: 0.23077190667390823
+[09/04/2025 11:24:25 INFO]: Training accuracy: {
+    "score": -0.4865183615203295,
+    "rmse": 0.4865183615203295
+}
+[09/04/2025 11:24:25 INFO]: Val accuracy: {
+    "score": -0.6573111215491622,
+    "rmse": 0.6573111215491622
+}
+[09/04/2025 11:24:25 INFO]: Test accuracy: {
+    "score": -0.6990522029192375,
+    "rmse": 0.6990522029192375
+}
+[09/04/2025 11:24:57 INFO]: Training loss at epoch 100: 0.27920790016651154
+[09/04/2025 11:25:30 INFO]: Training loss at epoch 101: 0.3359190672636032
+[09/04/2025 11:26:02 INFO]: Training loss at epoch 102: 0.2670615017414093
+[09/04/2025 11:26:34 INFO]: Training loss at epoch 103: 0.3006395846605301
+[09/04/2025 11:27:06 INFO]: Training loss at epoch 104: 0.28615398705005646
+[09/04/2025 11:27:40 INFO]: Training loss at epoch 105: 0.2925233542919159
+[09/04/2025 11:28:12 INFO]: Training loss at epoch 106: 0.3512265980243683
+[09/04/2025 11:28:45 INFO]: Training loss at epoch 107: 0.23620513081550598
+[09/04/2025 11:29:18 INFO]: Training loss at epoch 108: 0.24336177855730057
+[09/04/2025 11:29:50 INFO]: Training loss at epoch 109: 0.25894423574209213
+[09/04/2025 11:30:01 INFO]: Training accuracy: {
+    "score": -0.49451077157064594,
+    "rmse": 0.49451077157064594
+}
+[09/04/2025 11:30:01 INFO]: Val accuracy: {
+    "score": -0.6514436601867133,
+    "rmse": 0.6514436601867133
+}
+[09/04/2025 11:30:01 INFO]: Test accuracy: {
+    "score": -0.7106860859985673,
+    "rmse": 0.7106860859985673
+}
+[09/04/2025 11:30:33 INFO]: Training loss at epoch 110: 0.2769891023635864
+[09/04/2025 11:31:06 INFO]: Training loss at epoch 111: 0.3069969266653061
+[09/04/2025 11:31:09 INFO]: New best epoch, val score: -0.6155516302335109
+[09/04/2025 11:31:09 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:31:40 INFO]: Training loss at epoch 112: 0.3087339252233505
+[09/04/2025 11:32:12 INFO]: Training loss at epoch 113: 0.27184414863586426
+[09/04/2025 11:32:45 INFO]: Training loss at epoch 114: 0.319837361574173
+[09/04/2025 11:32:48 INFO]: New best epoch, val score: -0.6114097233441506
+[09/04/2025 11:32:48 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:33:17 INFO]: Training loss at epoch 115: 0.26994553208351135
+[09/04/2025 11:33:50 INFO]: Training loss at epoch 116: 0.34607262909412384
+[09/04/2025 11:34:22 INFO]: Training loss at epoch 117: 0.3273058533668518
+[09/04/2025 11:34:54 INFO]: Training loss at epoch 118: 0.34267866611480713
+[09/04/2025 11:35:27 INFO]: Training loss at epoch 119: 0.25135984271764755
+[09/04/2025 11:35:38 INFO]: Training accuracy: {
+    "score": -0.4688597413952582,
+    "rmse": 0.4688597413952582
+}
+[09/04/2025 11:35:38 INFO]: Val accuracy: {
+    "score": -0.63557394420685,
+    "rmse": 0.63557394420685
+}
+[09/04/2025 11:35:38 INFO]: Test accuracy: {
+    "score": -0.6512828894868467,
+    "rmse": 0.6512828894868467
+}
+[09/04/2025 11:36:11 INFO]: Training loss at epoch 120: 0.2642252743244171
+[09/04/2025 11:36:43 INFO]: Training loss at epoch 121: 0.2834549993276596
+[09/04/2025 11:37:15 INFO]: Training loss at epoch 122: 0.22104290127754211
+[09/04/2025 11:37:48 INFO]: Training loss at epoch 123: 0.24260510504245758
+[09/04/2025 11:38:22 INFO]: Training loss at epoch 124: 0.20870888233184814
+[09/04/2025 11:38:54 INFO]: Training loss at epoch 125: 0.24761082977056503
+[09/04/2025 11:39:26 INFO]: Training loss at epoch 126: 0.27814212441444397
+[09/04/2025 11:39:59 INFO]: Training loss at epoch 127: 0.25015489012002945
+[09/04/2025 11:40:31 INFO]: Training loss at epoch 128: 0.27097028493881226
+[09/04/2025 11:41:04 INFO]: Training loss at epoch 129: 0.25175250321626663
+[09/04/2025 11:41:15 INFO]: Training accuracy: {
+    "score": -0.42101453542338957,
+    "rmse": 0.42101453542338957
+}
+[09/04/2025 11:41:15 INFO]: Val accuracy: {
+    "score": -0.6101918146444765,
+    "rmse": 0.6101918146444765
+}
+[09/04/2025 11:41:15 INFO]: Test accuracy: {
+    "score": -0.6464367163698648,
+    "rmse": 0.6464367163698648
+}
+[09/04/2025 11:41:18 INFO]: New best epoch, val score: -0.6101918146444765
+[09/04/2025 11:41:18 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:41:47 INFO]: Training loss at epoch 130: 0.16482305526733398
+[09/04/2025 11:42:20 INFO]: Training loss at epoch 131: 0.1913738250732422
+[09/04/2025 11:42:52 INFO]: Training loss at epoch 132: 0.23418868333101273
+[09/04/2025 11:43:25 INFO]: Training loss at epoch 133: 0.19579821079969406
+[09/04/2025 11:43:58 INFO]: Training loss at epoch 134: 0.17982789874076843
+[09/04/2025 11:44:31 INFO]: Training loss at epoch 135: 0.16935545578598976
+[09/04/2025 11:45:05 INFO]: Training loss at epoch 136: 0.2786100134253502
+[09/04/2025 11:45:38 INFO]: Training loss at epoch 137: 0.18582139164209366
+[09/04/2025 11:46:11 INFO]: Training loss at epoch 138: 0.20377632975578308
+[09/04/2025 11:46:44 INFO]: Training loss at epoch 139: 0.19627147167921066
+[09/04/2025 11:46:55 INFO]: Training accuracy: {
+    "score": -0.39095571929325634,
+    "rmse": 0.39095571929325634
+}
+[09/04/2025 11:46:55 INFO]: Val accuracy: {
+    "score": -0.61336426741281,
+    "rmse": 0.61336426741281
+}
+[09/04/2025 11:46:55 INFO]: Test accuracy: {
+    "score": -0.6467866907212203,
+    "rmse": 0.6467866907212203
+}
+[09/04/2025 11:47:28 INFO]: Training loss at epoch 140: 0.17940422147512436
+[09/04/2025 11:48:01 INFO]: Training loss at epoch 141: 0.21685467660427094
+[09/04/2025 11:48:33 INFO]: Training loss at epoch 142: 0.21651894599199295
+[09/04/2025 11:49:06 INFO]: Training loss at epoch 143: 0.2612130343914032
+[09/04/2025 11:49:39 INFO]: Training loss at epoch 144: 0.23768792301416397
+[09/04/2025 11:50:12 INFO]: Training loss at epoch 145: 0.18199017643928528
+[09/04/2025 11:50:47 INFO]: Training loss at epoch 146: 0.21250209212303162
+[09/04/2025 11:50:52 INFO]: New best epoch, val score: -0.5919477144192392
+[09/04/2025 11:50:52 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:51:23 INFO]: Training loss at epoch 147: 0.15100394189357758
+[09/04/2025 11:51:57 INFO]: Training loss at epoch 148: 0.1934989094734192
+[09/04/2025 11:52:01 INFO]: New best epoch, val score: -0.5902523798960527
+[09/04/2025 11:52:01 INFO]: Saving model to: model_best.pth
+[09/04/2025 11:52:32 INFO]: Training loss at epoch 149: 0.2361655831336975
+[09/04/2025 11:52:43 INFO]: Training accuracy: {
+    "score": -0.39590762538079327,
+    "rmse": 0.39590762538079327
+}
+[09/04/2025 11:52:43 INFO]: Val accuracy: {
+    "score": -0.6272743373610012,
+    "rmse": 0.6272743373610012
+}
+[09/04/2025 11:52:43 INFO]: Test accuracy: {
+    "score": -0.637234822086507,
+    "rmse": 0.637234822086507
+}
+[09/04/2025 11:53:16 INFO]: Training loss at epoch 150: 0.1522454023361206
+[09/04/2025 11:53:48 INFO]: Training loss at epoch 151: 0.1973554939031601
+[09/04/2025 11:54:21 INFO]: Training loss at epoch 152: 0.16093499958515167
+[09/04/2025 11:54:54 INFO]: Training loss at epoch 153: 0.1777552291750908
+[09/04/2025 11:55:28 INFO]: Training loss at epoch 154: 0.19950701296329498
+[09/04/2025 11:56:01 INFO]: Training loss at epoch 155: 0.23117052763700485
+[09/04/2025 11:56:34 INFO]: Training loss at epoch 156: 0.19446348398923874
+[09/04/2025 11:57:06 INFO]: Training loss at epoch 157: 0.16059427708387375
+[09/04/2025 11:57:38 INFO]: Training loss at epoch 158: 0.15172847360372543
+[09/04/2025 11:58:11 INFO]: Training loss at epoch 159: 0.1499747857451439
+[09/04/2025 11:58:24 INFO]: Training accuracy: {
+    "score": -0.38205042840293024,
+    "rmse": 0.38205042840293024
+}
+[09/04/2025 11:58:24 INFO]: Val accuracy: {
+    "score": -0.6779050149028053,
+    "rmse": 0.6779050149028053
+}
+[09/04/2025 11:58:24 INFO]: Test accuracy: {
+    "score": -0.7014124675667004,
+    "rmse": 0.7014124675667004
+}
+[09/04/2025 11:58:56 INFO]: Training loss at epoch 160: 0.21453958749771118
+[09/04/2025 11:59:30 INFO]: Training loss at epoch 161: 0.1975005567073822
+[09/04/2025 12:00:03 INFO]: Training loss at epoch 162: 0.1334344632923603
+[09/04/2025 12:00:36 INFO]: Training loss at epoch 163: 0.1534658521413803
+[09/04/2025 12:01:09 INFO]: Training loss at epoch 164: 0.18082428723573685
+[09/04/2025 12:01:42 INFO]: Training loss at epoch 165: 0.15752218663692474
+[09/04/2025 12:02:15 INFO]: Training loss at epoch 166: 0.13828924670815468
+[09/04/2025 12:02:48 INFO]: Training loss at epoch 167: 0.1561429351568222
+[09/04/2025 12:03:21 INFO]: Training loss at epoch 168: 0.14161740988492966
+[09/04/2025 12:03:54 INFO]: Training loss at epoch 169: 0.2297646850347519
+[09/04/2025 12:04:05 INFO]: Training accuracy: {
+    "score": -0.3274309153073424,
+    "rmse": 0.3274309153073424
+}
+[09/04/2025 12:04:05 INFO]: Val accuracy: {
+    "score": -0.6318691601430177,
+    "rmse": 0.6318691601430177
+}
+[09/04/2025 12:04:05 INFO]: Test accuracy: {
+    "score": -0.5812337901176106,
+    "rmse": 0.5812337901176106
+}
+[09/04/2025 12:04:39 INFO]: Training loss at epoch 170: 0.13857202231884003
+[09/04/2025 12:05:12 INFO]: Training loss at epoch 171: 0.18599377572536469
+[09/04/2025 12:05:45 INFO]: Training loss at epoch 172: 0.17660606652498245
+[09/04/2025 12:06:18 INFO]: Training loss at epoch 173: 0.1693422719836235
+[09/04/2025 12:06:22 INFO]: New best epoch, val score: -0.588892426673575
+[09/04/2025 12:06:22 INFO]: Saving model to: model_best.pth
+[09/04/2025 12:06:51 INFO]: Training loss at epoch 174: 0.14676548913121223
+[09/04/2025 12:06:55 INFO]: New best epoch, val score: -0.587872869499456
+[09/04/2025 12:06:55 INFO]: Saving model to: model_best.pth
+[09/04/2025 12:07:24 INFO]: Training loss at epoch 175: 0.18356220424175262
+[09/04/2025 12:07:56 INFO]: Training loss at epoch 176: 0.18985390663146973
+[09/04/2025 12:08:28 INFO]: Training loss at epoch 177: 0.1364096663892269
+[09/04/2025 12:09:00 INFO]: Training loss at epoch 178: 0.188710056245327
+[09/04/2025 12:09:31 INFO]: Training loss at epoch 179: 0.14231684803962708
+[09/04/2025 12:09:42 INFO]: Training accuracy: {
+    "score": -0.3561092499298866,
+    "rmse": 0.3561092499298866
+}
+[09/04/2025 12:09:42 INFO]: Val accuracy: {
+    "score": -0.6501612201574898,
+    "rmse": 0.6501612201574898
+}
+[09/04/2025 12:09:42 INFO]: Test accuracy: {
+    "score": -0.6267063935325152,
+    "rmse": 0.6267063935325152
+}
+[09/04/2025 12:10:14 INFO]: Training loss at epoch 180: 0.16928107291460037
+[09/04/2025 12:10:46 INFO]: Training loss at epoch 181: 0.24435525387525558
+[09/04/2025 12:11:18 INFO]: Training loss at epoch 182: 0.15307296812534332
+[09/04/2025 12:11:50 INFO]: Training loss at epoch 183: 0.16266172379255295
+[09/04/2025 12:12:22 INFO]: Training loss at epoch 184: 0.1321306899189949
+[09/04/2025 12:12:53 INFO]: Training loss at epoch 185: 0.16205183416604996
+[09/04/2025 12:12:57 INFO]: New best epoch, val score: -0.5873240794611626
+[09/04/2025 12:12:57 INFO]: Saving model to: model_best.pth
+[09/04/2025 12:13:25 INFO]: Training loss at epoch 186: 0.26673102378845215
+[09/04/2025 12:13:57 INFO]: Training loss at epoch 187: 0.13978860527276993
+[09/04/2025 12:14:29 INFO]: Training loss at epoch 188: 0.16924940794706345
+[09/04/2025 12:15:01 INFO]: Training loss at epoch 189: 0.12697333842515945
+[09/04/2025 12:15:11 INFO]: Training accuracy: {
+    "score": -0.3183266544818379,
+    "rmse": 0.3183266544818379
+}
+[09/04/2025 12:15:11 INFO]: Val accuracy: {
+    "score": -0.6147631848581647,
+    "rmse": 0.6147631848581647
+}
+[09/04/2025 12:15:11 INFO]: Test accuracy: {
+    "score": -0.607888644916667,
+    "rmse": 0.607888644916667
+}
+[09/04/2025 12:15:42 INFO]: Training loss at epoch 190: 0.23779144138097763
+[09/04/2025 12:16:13 INFO]: Training loss at epoch 191: 0.15036091208457947
+[09/04/2025 12:16:44 INFO]: Training loss at epoch 192: 0.2000187709927559
+[09/04/2025 12:17:19 INFO]: Training loss at epoch 193: 0.14067793637514114
+[09/04/2025 12:17:50 INFO]: Training loss at epoch 194: 0.22988010942935944
+[09/04/2025 12:18:21 INFO]: Training loss at epoch 195: 0.17808897793293
+[09/04/2025 12:18:53 INFO]: Training loss at epoch 196: 0.13414428383111954
+[09/04/2025 12:19:24 INFO]: Training loss at epoch 197: 0.16783688217401505
+[09/04/2025 12:19:55 INFO]: Training loss at epoch 198: 0.20157216489315033
+[09/04/2025 12:20:26 INFO]: Training loss at epoch 199: 0.18055135756731033
+[09/04/2025 12:20:36 INFO]: Training accuracy: {
+    "score": -0.32454021701329033,
+    "rmse": 0.32454021701329033
+}
+[09/04/2025 12:20:36 INFO]: Val accuracy: {
+    "score": -0.6507465949701582,
+    "rmse": 0.6507465949701582
+}
+[09/04/2025 12:20:36 INFO]: Test accuracy: {
+    "score": -0.6438598039127359,
+    "rmse": 0.6438598039127359
+}
+[09/04/2025 12:20:41 INFO]: Running Final Evaluation...
+[09/04/2025 12:20:52 INFO]: Training accuracy: {
+    "score": -0.3219838732010411,
+    "rmse": 0.3219838732010411
+}
+[09/04/2025 12:20:52 INFO]: Val accuracy: {
+    "score": -0.5873240794611626,
+    "rmse": 0.5873240794611626
+}
+[09/04/2025 12:20:52 INFO]: Test accuracy: {
+    "score": -0.618174205098014,
+    "rmse": 0.618174205098014
+}
+[09/04/2025 12:20:53 INFO]: {
+    "dataset": "ic_upstream4_Imputation_Mean_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "horny-Rosibel",
+    "best_epoch": 185,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.618174205098014,
+        "rmse": 0.618174205098014
+    },
+    "train_stats": {
+        "score": -0.3219838732010411,
+        "rmse": 0.3219838732010411
+    },
+    "val_stats": {
+        "score": -0.5873240794611626,
+        "rmse": 0.5873240794611626
+    }
+}

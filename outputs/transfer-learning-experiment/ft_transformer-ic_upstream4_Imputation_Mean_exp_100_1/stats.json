@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream4_Imputation_Mean_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "horny-Rosibel",
+    "best_epoch": 185,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.618174205098014,
+        "rmse": 0.618174205098014
+    },
+    "train_stats": {
+        "score": -0.3219838732010411,
+        "rmse": 0.3219838732010411
+    },
+    "val_stats": {
+        "score": -0.5873240794611626,
+        "rmse": 0.5873240794611626
+    }
+}

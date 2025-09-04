@@ -71,7 +71,7 @@ def infer_distribution(key, value):
 # Caminho para o arquivo com todos os trials
 #optuning-ft_transformer-ic_upstream3_Imputation_Mean_exp_100_1
 #optuning-ft_transformer-ic_upstream4_Imputation_Gaussian_exp_100_1
-input_path = r"outputs\from_scratch_optuna\optuning-ft_transformer-ic_upstream4_Imputation_Mean_exp_100_1\all_trials.jsonl"
+input_path = r"outputs\from_scratch_optuna\optuning-ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1\all_trials.jsonl"
 output_dir = os.path.dirname(input_path)
 
 # Carrega todos os trials do JSONL

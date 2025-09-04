@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3_Imputation_Mean_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "squiffy-Kenosha",
+    "best_epoch": 108,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.7095292760318918,
+        "rmse": 0.7095292760318918
+    },
+    "train_stats": {
+        "score": -0.4469209088585585,
+        "rmse": 0.4469209088585585
+    },
+    "val_stats": {
+        "score": -0.7130206274937695,
+        "rmse": 0.7130206274937695
+    }
+}

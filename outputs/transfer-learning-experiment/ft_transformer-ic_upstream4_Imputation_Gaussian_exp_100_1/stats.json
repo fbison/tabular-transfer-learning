@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream4_Imputation_Gaussian_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "nodous-Konstantinos",
+    "best_epoch": 60,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.6678245014045938,
+        "rmse": 0.6678245014045938
+    },
+    "train_stats": {
+        "score": -0.6061775132105417,
+        "rmse": 0.6061775132105417
+    },
+    "val_stats": {
+        "score": -0.6503160438493016,
+        "rmse": 0.6503160438493016
+    }
+}

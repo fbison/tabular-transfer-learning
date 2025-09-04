@@ -1,28 +1,29 @@
 name: ic_upstream2
-number: 2
-model_path: 
-normalizer_path: 
+number: 4
+model_path: '../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream4_Imputation_Mean_exp_100_1/model_best.pth'
+normalizer_path: '../../../data/ic_upstream4_Imputation_Mean_exp_100_1/normalizer.pkl'
+imputationMethod: mean
 model:
   name: ft_transformer
-  d_embedding: 128
+  d_embedding: 320
   model_path:
   use_mlp_head:
   freeze_feature_extractor:
   token_bias: true
-  n_layers: 1
-  n_heads: 16
-  d_ffn_factor: 1.3333333333
-  attention_dropout: 0.2
-  ffn_dropout: 0.1
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.7391005045679577
+  attention_dropout: 0.2755193280539978
+  ffn_dropout: 0.0739459748467074
   residual_dropout: 0.0
-  activation: gelu
+  activation: relu
   prenormalization: true
   initialization: kaiming
   kv_compression:
   kv_compression_sharing:
 hyp:
   epochs: 200
-  lr: 2.3875087429508465e-05
+  lr: 0.0005496742505476187
   lr_decay: step
   lr_factor: 0.1
   lr_schedule:
@@ -34,23 +35,11 @@ hyp:
   seed: 0
   test_batch_size: 256
   train_batch_size: 256
-  use_patience: true
+  use_patience: false
   val_period: 10
   warmup_period: 5
-  weight_decay: 2e-4
+  weight_decay: 0.0002
   momentum: 0.9
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
-
-model:
-  d_embedding: 256
-  n_layers: 2
-  n_heads: 4
-  d_ffn_factor: 1.864002857848663
-  attention_dropout: 0.07447213349093826
-  ffn_dropout: 0.06108340466868334
-  lr: 0.0006926430133190523
-
-
-  292 0.5..

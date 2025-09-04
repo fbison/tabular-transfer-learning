@@ -54,7 +54,11 @@ def test_default(net, testloader, task, device):
                   "balanced_accuracy": balanced_accuracy,
                   "balanced_accuracy_adjusted": balanced_accuracy_adjusted}
     elif task == "regression":
-        rmse = np.sqrt(mean_squared_error(targets_all, predictions_all))
+        if len(targets_all) <= 1:
+            # all targets are the same, so rmse is always 0
+            rmse = 0.0
+        else:
+            rmse = np.sqrt(mean_squared_error(targets_all, predictions_all))
         scores = {"score": -rmse,
                   "rmse": rmse}
     elif task == "binclass":

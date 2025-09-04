@@ -15,7 +15,7 @@ from omegaconf import DictConfig, OmegaConf
 import transfer_learn_net
 import deep_tabular as dt
 
-N_JOBS_MAX = 1  # Número máximo de jobs do HPC DA USP
+N_JOBS_MAX = 20  # Número máximo de jobs do HPC DA USP
 
 def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
     # Copias independentes para cada job
@@ -63,22 +63,29 @@ def main(cfg: DictConfig):
     model = config["model"]
     hyp = config["hyp"]
     upstream_number = config["number"]
-
-    datasets = [
+    model['model_path'] = config["model_path"]
+    meanDatasets = [
+        "ic_downstream1_Sample5_Imputation_Mean_exp_100_",
+        "ic_downstream1_Sample10_Imputation_Mean_exp_100_",
+        "ic_downstream1_Sample20_Imputation_Mean_exp_100_",
+        "ic_downstream1_Sample50_Imputation_Mean_exp_100_",
+        "ic_downstream1_Sample75_Imputation_Mean_exp_100_"
+    ]
+    gaussianDatasets = [
         "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_",
-        # "ic_downstream1_Sample5_Imputation_Mean_exp_100_",
-        # "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_",
-        # "ic_downstream1_Sample10_Imputation_Mean_exp_100_",
-        # "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_",
-        # "ic_downstream1_Sample20_Imputation_Mean_exp_100_",
-        # "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_",
-        # "ic_downstream1_Sample50_Imputation_Mean_exp_100_",
-        # "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_",
-        # "ic_downstream1_Sample75_Imputation_Mean_exp_100_"
+        "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_",
+        "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_",
+        "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_",
+        "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_"
     ]
 
     # Monta todos os jobs a serem executados
     jobs = []
+    datasets = []
+    if config['imputationMethod'] == 'mean':
+        datasets = meanDatasets
+    elif config['imputationMethod'] == 'gaussian':
+        datasets = gaussianDatasets
 
     for dataset_name in datasets:
         full_name = f"{dataset_name}{upstream_number}"
@@ -91,17 +98,15 @@ def main(cfg: DictConfig):
             "stage": "downstream",
             "y_policy": "mean_std"
         }
-        mlpHead = True
-        freeze = True
-        #for mlpHead in [True, False]: 
-        #    for freeze in [True, False]:
+        for mlpHead in [True, False]: 
+            for freeze in [True, False]:
                 # Cria cópia independente do model para cada job
-        model_cfg = copy.deepcopy(model)
-        model_cfg["use_mlp_head"] = mlpHead
-        model_cfg["freeze_feature_extractor"] = freeze
-        configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}"
-        # Adiciona à lista de jobs
-        jobs.append((model_cfg, dataset_cfg, hyp, configName))
+                model_cfg = copy.deepcopy(model)
+                model_cfg["use_mlp_head"] = mlpHead
+                model_cfg["freeze_feature_extractor"] = freeze
+                configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}"
+                # Adiciona à lista de jobs
+                jobs.append((model_cfg, dataset_cfg, hyp, configName))
 
     # ============================
     # Executa os jobs em paralelo de um mesmo upstream

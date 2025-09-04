@@ -23,32 +23,41 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
     dataset_copy = copy.deepcopy(dataset_cfg)
     hyp_copy = copy.deepcopy(hyp_cfg)
 
-    stats = None
+    result = None
     try:
-        # Inicializa um contexto Hydra para este job
-        with initialize(config_path="config", job_name=f"{configName}_job"):
-            # Compondo a config base do YAML
-            cfgExecution = compose(config_name="transfer_learn_net_config")
-            # Sobrescreve os campos específicos do job
-            cfgExecution.model = model_copy
-            cfgExecution.dataset = dataset_copy
-            cfgExecution.hyp = hyp_copy
-            OmegaConf.set_struct(cfgExecution, False)
-            cfgExecution = OmegaConf.merge(
-                cfgExecution,
-                DictConfig({"run_id": configName})
-            )
-            OmegaConf.set_struct(cfgExecution, True)
+        # Monta a configuração manualmente, sem Hydra.initialize/compose
+        cfgExecution.model = model_copy
+        cfgExecution.dataset = dataset_copy
+        cfgExecution.hyp = hyp_copy
+        OmegaConf.set_struct(cfgExecution, False)
+        cfgExecution = OmegaConf.merge(
+            cfgExecution,
+            DictConfig({"run_id": configName})
+        )
+        OmegaConf.set_struct(cfgExecution, True)
 
-            # Chama a main do módulo transfer_learn_net
-            stats = transfer_learn_net.main(cfgExecution)
+        # Executa a função principal do transfer_learn_net
+        stats = transfer_learn_net.main(cfgExecution)
+
+        # Retorna config + stats em um único objeto
+        result = {
+            "config": OmegaConf.to_container(cfgExecution, resolve=True),
+            "stats": stats
+        }
 
     except Exception as e:
         logging.getLogger().error(f"Erro no job {configName}: {e}")
-        stats = {"config": configName, "error": str(e)}
+        result = {
+            "config": {
+                "model": model_copy,
+                "dataset": dataset_copy,
+                "hyp": hyp_copy,
+                "run_id": f"{configName}_ERROR"
+            },
+            "error": str(e)
+        }
 
-    return stats
-
+    return result
 
 # ============================
 # Hydra main
@@ -119,6 +128,9 @@ def main(cfg: DictConfig):
     log.info("Resultados:")
     for result in results:
         log.info(result)
+
+    with open(os.path.join("results.json"), "w") as fp:
+        json.dump(results, fp, indent=4)
     log.info("Todos os jobs concluídos!")
 
 

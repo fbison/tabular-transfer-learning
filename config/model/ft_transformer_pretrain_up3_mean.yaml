@@ -1,0 +1,17 @@
+name: ft_transformer
+d_embedding: 256
+model_path:
+use_mlp_head: false
+freeze_feature_extractor: false
+token_bias: true
+n_layers: 4
+n_heads: 16
+d_ffn_factor: 1.901677404625367
+attention_dropout: 0.2710149845959008
+ffn_dropout: 0.07563207850262278
+residual_dropout: 0.0
+activation: reglu
+prenormalization: true
+initialization: kaiming
+kv_compression:
+kv_compression_sharing:

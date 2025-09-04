@@ -1,6 +1,8 @@
 {
     "version": "0.2.0",
     "configurations": [    
+
+
         
 
         {
@@ -28,11 +30,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "pre train ic_upstream2",
+            "name": "pre train teste",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": ["model=ft_transformer_pretrain", "dataset=ic_upstream2_ImputacaoEstatistica_exp_100_1"],
+            "args": ["model=ft_transformer_pretrain_up3_mean hyp=hyp_pretrain_up3_mean dataset=ic_upstream3_Imputation_Mean_exp_100_1"],
             "console": "integratedTerminal"
         },
         {

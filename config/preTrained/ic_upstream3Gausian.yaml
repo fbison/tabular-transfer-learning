@@ -1,5 +1,6 @@
-name: ic_upstream4
-number: 4
+name: ic_upstream2
+number: 2
+model_path: 
 normalizer_path: 
 model:
   name: ft_transformer
@@ -33,7 +34,7 @@ hyp:
   seed: 0
   test_batch_size: 256
   train_batch_size: 256
-  use_patience: false
+  use_patience: true
   val_period: 10
   warmup_period: 5
   weight_decay: 2e-4
@@ -41,3 +42,15 @@ hyp:
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
+
+model:
+  d_embedding: 256
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  lr: 0.0006926430133190523
+
+
+  292 0.5..

@@ -2,7 +2,7 @@ name: ic_upstream4gaus
 number: 4
 model_path: '../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream4_Imputation_Gaussian_exp_100_1/model_best.pth'
 normalizer_path: '../../../data/ic_upstream4_Imputation_Gaussian_exp_100_1/normalizer.pkl'
-imputationMethod: gaussian
+imputationMethod: Gaussian
 model:
   name: ft_transformer
   d_embedding: 384

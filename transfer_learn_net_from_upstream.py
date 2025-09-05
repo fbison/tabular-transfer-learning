@@ -75,6 +75,21 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
 
     return result
 
+def select_epoch(samples: int, mlpHead: bool, freeze: bool) -> int:
+    
+    if freeze:
+        return 100 if mlpHead else 200  
+        # Congelando, precisa de mais épocas para ajustar a cabeça e já reduz o risco de overfitting
+        # Se usar mlpHead, são mais parâmetros, então consegue aprender mais rápido
+    if samples <= 10:
+        return 30 
+    elif samples <= 20:
+        return 60
+    elif samples <= 50:
+        return 90
+    else:
+        return 200
+
 # ============================
 # Hydra main
 # ============================
@@ -89,31 +104,14 @@ def main(cfg: DictConfig):
     hyp = config["hyp"]
     upstream_number = config["number"]
     model['model_path'] = config["model_path"]
-    meanDatasets = [
-        "ic_downstream1_Sample5_Imputation_Mean_exp_100_",
-        "ic_downstream1_Sample10_Imputation_Mean_exp_100_",
-        "ic_downstream1_Sample20_Imputation_Mean_exp_100_",
-        "ic_downstream1_Sample50_Imputation_Mean_exp_100_",
-        "ic_downstream1_Sample75_Imputation_Mean_exp_100_"
-    ]
-    gaussianDatasets = [
-        "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_",
-        "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_",
-        "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_",
-        "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_",
-        "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_"
-    ]
-
+    downstreamName= "ic_downstream1"
+    sampleSizes = [5, 10, 20, 50, 75]
     # Monta todos os jobs a serem executados
     jobs = []
-    datasets = []
-    if config['imputationMethod'] == 'mean':
-        datasets = meanDatasets
-    elif config['imputationMethod'] == 'gaussian':
-        datasets = gaussianDatasets
 
-    for dataset_name in datasets:
-        full_name = f"{dataset_name}{upstream_number}"
+    for sample in sampleSizes:
+        dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{config['imputationMethod']}_exp_100_{upstream_number}"
+        full_name = f"{dataset_name}"
         dataset_cfg = {
             "name": full_name,
             "source": "local",
@@ -127,6 +125,8 @@ def main(cfg: DictConfig):
             for freeze in [True, False]:
                 # Cria cópia independente do model para cada job
                 model_cfg = copy.deepcopy(model)
+                hyp_cfg = copy.deepcopy(hyp)
+                hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze)
                 model_cfg["use_mlp_head"] = mlpHead
                 model_cfg["freeze_feature_extractor"] = freeze
                 configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}"

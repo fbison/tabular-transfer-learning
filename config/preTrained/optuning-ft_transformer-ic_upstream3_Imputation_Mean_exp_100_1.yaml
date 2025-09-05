@@ -2,7 +2,7 @@ name: ic_upstream3Mean
 number: 3
 model_path: '../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream3_Imputation_Mean_exp_100_1/model_best.pth'
 normalizer_path: '../../../data/ic_upstream3_Imputation_Mean_exp_100_1/normalizer.pkl'
-imputationMethod: mean
+imputationMethod: Mean
 model:
   name: ft_transformer
   d_embedding: 256

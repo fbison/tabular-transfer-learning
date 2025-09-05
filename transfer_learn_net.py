@@ -127,8 +127,9 @@ def main(cfg: DictConfig):
         writer.close()
 
     log.info("Running Final Evaluation...")
-    checkpoint_path = "model_best.pth"
-    net.load_state_dict(torch.load(checkpoint_path)["net"])
+    if cfg.hyp.use_patience:
+        checkpoint_path = "model_best.pth"
+        net.load_state_dict(torch.load(checkpoint_path)["net"])
     test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                            [loaders["test"], loaders["val"], loaders["train"]],
                                                            cfg.dataset.task,
@@ -146,8 +147,11 @@ def main(cfg: DictConfig):
                          ("test_stats", test_stats),
                          ("train_stats", train_stats),
                          ("val_stats", val_stats)])
-    with open(os.path.join("stats.json"), "w") as fp:
-        json.dump(stats, fp, indent=4)
+    try:
+        with open(os.path.join("stats.json"), "w") as fp:
+            json.dump(stats, fp, indent=4)
+    except Exception as e:
+        log.info(f"Could not save stats.json, error: {e}")
     log.info(json.dumps(stats, indent=4))
     ####################################################
     return stats

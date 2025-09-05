@@ -1,0 +1,381 @@
+[{
+    "dataset": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.2768343944556688,
+        "rmse": 1.2768343944556688
+    },
+    "train_stats": {
+        "score": -0.905088847669264,
+        "rmse": 0.905088847669264
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.1500710778450742,
+        "rmse": 1.1500710778450742
+    },
+    "train_stats": {
+        "score": -0.7705960308080118,
+        "rmse": 0.7705960308080118
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.0663281551313948,
+        "rmse": 1.0663281551313948
+    },
+    "train_stats": {
+        "score": -0.8254046479318343,
+        "rmse": 0.8254046479318343
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.174122005474315,
+        "rmse": 1.174122005474315
+    },
+    "train_stats": {
+        "score": -0.9636744349493843,
+        "rmse": 0.9636744349493843
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.2359563595663363,
+        "rmse": 1.2359563595663363
+    },
+    "train_stats": {
+        "score": -0.23182399055677286,
+        "rmse": 0.23182399055677286
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample5_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.2551852491277122,
+        "rmse": 1.2551852491277122
+    },
+    "train_stats": {
+        "score": -0.27900454491312454,
+        "rmse": 0.27900454491312454
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.2283349460874327,
+        "rmse": 1.2283349460874327
+    },
+    "train_stats": {
+        "score": -0.21672150621240654,
+        "rmse": 0.21672150621240654
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample10_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.1473207501807197,
+        "rmse": 1.1473207501807197
+    },
+    "train_stats": {
+        "score": -0.35166130781036037,
+        "rmse": 0.35166130781036037
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.9243252916884205,
+        "rmse": 0.9243252916884205
+    },
+    "train_stats": {
+        "score": -0.8860396253490113,
+        "rmse": 0.8860396253490113
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.9404264792588637,
+        "rmse": 0.9404264792588637
+    },
+    "train_stats": {
+        "score": -0.9401317254932043,
+        "rmse": 0.9401317254932043
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.0855934683691706,
+        "rmse": 1.0855934683691706
+    },
+    "train_stats": {
+        "score": -0.36738061620645,
+        "rmse": 0.36738061620645
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample20_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.1053856419517274,
+        "rmse": 1.1053856419517274
+    },
+    "train_stats": {
+        "score": -0.3401661183791618,
+        "rmse": 0.3401661183791618
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.1333079467674516,
+        "rmse": 1.1333079467674516
+    },
+    "train_stats": {
+        "score": -0.9472200260902194,
+        "rmse": 0.9472200260902194
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.1447032570902398,
+        "rmse": 1.1447032570902398
+    },
+    "train_stats": {
+        "score": -0.910677504036855,
+        "rmse": 0.910677504036855
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.1359757662631207,
+        "rmse": 1.1359757662631207
+    },
+    "train_stats": {
+        "score": -0.9422041475891887,
+        "rmse": 0.9422041475891887
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeTrue",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.1171222736001556,
+        "rmse": 1.1171222736001556
+    },
+    "train_stats": {
+        "score": -0.9119235694927004,
+        "rmse": 0.9119235694927004
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.202441861347035,
+        "rmse": 1.202441861347035
+    },
+    "train_stats": {
+        "score": -0.38597123887230067,
+        "rmse": 0.38597123887230067
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample50_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.101442952381413,
+        "rmse": 1.101442952381413
+    },
+    "train_stats": {
+        "score": -0.4258342911397381,
+        "rmse": 0.4258342911397381
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadTrue_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.3042599358797162,
+        "rmse": 1.3042599358797162
+    },
+    "train_stats": {
+        "score": -0.5549589603647885,
+        "rmse": 0.5549589603647885
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+},
+{
+    "dataset": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4",
+    "model_name": "ft_transformer",
+    "run_id": "ic_downstream1_Sample75_Imputation_Gaussian_exp_100_4_upstream4_mlpHeadFalse_freezeFalse",
+    "best_epoch": 0,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.2457468123454796,
+        "rmse": 1.2457468123454796
+    },
+    "train_stats": {
+        "score": -0.5447571800096158,
+        "rmse": 0.5447571800096158
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+}
+]

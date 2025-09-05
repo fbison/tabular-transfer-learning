@@ -23,7 +23,7 @@ model:
   kv_compression_sharing:
 hyp:
   epochs: 200
-  lr: 0.00005
+  lr: 0.0008773198575277455
   lr_decay: step
   lr_factor: 0.1
   lr_schedule:

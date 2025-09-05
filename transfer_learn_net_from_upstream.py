@@ -12,6 +12,7 @@ import numpy as np
 import torch
 from icecream import ic
 from omegaconf import DictConfig, OmegaConf
+import train_net_from_scratch
 import transfer_learn_net
 import deep_tabular as dt
 
@@ -37,7 +38,7 @@ def make_serializable(obj):
     else:
         return obj
 
-def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
+def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False, results_file="results.jsonl"):
     # Copias independentes para cada job
     model_copy = copy.deepcopy(model_cfg)
     dataset_copy = copy.deepcopy(dataset_cfg)
@@ -51,13 +52,14 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
             "hyp": hyp_copy,
             "run_id": configName
         })
-
-        # Executa a função principal do transfer_learn_net
-        stats = transfer_learn_net.main(cfgExecution)
+        if from_scratch:
+            stats = train_net_from_scratch.main(cfgExecution)
+        else:
+            stats = transfer_learn_net.main(cfgExecution)
 
         # Retorna config + stats em um único objeto
         result = {
-            "config": OmegaConf.to_object(cfgExecution, resolve=True),
+            "config": OmegaConf.to_object(cfgExecution),
             "stats": stats
         }
 
@@ -73,6 +75,13 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName):
             "error": str(e)
         }
 
+    log.info(result)
+    try:
+        os.makedirs(os.path.dirname(results_file), exist_ok=True)
+        with open(results_file, "a", encoding="utf-8") as fp:
+            fp.write(json.dumps(result, ensure_ascii=False) + "\n")
+    except Exception as e:
+        log.error(f"Erro ao salvar resultado de {configName}: {e}")
     return result
 
 def select_epoch(samples: int, mlpHead: bool, freeze: bool) -> int:
@@ -106,32 +115,45 @@ def main(cfg: DictConfig):
     model['model_path'] = config["model_path"]
     downstreamName= "ic_downstream1"
     sampleSizes = [5, 10, 20, 50, 75]
+    seeds = [2, 12, 22, 32, 42, 52, 62, 72, 82, 92]
     # Monta todos os jobs a serem executados
     jobs = []
 
-    for sample in sampleSizes:
-        dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{config['imputationMethod']}_exp_100_{upstream_number}"
-        full_name = f"{dataset_name}"
-        dataset_cfg = {
-            "name": full_name,
-            "source": "local",
-            "task": "regression",
-            "normalization": "quantile",
-            "normalizer_path": config["normalizer_path"],
-            "stage": "downstream",
-            "y_policy": "mean_std"
-        }
-        for mlpHead in [True, False]: 
-            for freeze in [True, False]:
-                # Cria cópia independente do model para cada job
-                model_cfg = copy.deepcopy(model)
-                hyp_cfg = copy.deepcopy(hyp)
-                hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze)
-                model_cfg["use_mlp_head"] = mlpHead
-                model_cfg["freeze_feature_extractor"] = freeze
-                configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}"
-                # Adiciona à lista de jobs
-                jobs.append((model_cfg, dataset_cfg, hyp, configName))
+    for seed in seeds:
+        for sample in sampleSizes:
+            dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{config['imputationMethod']}_exp_100_{upstream_number}"
+            full_name = f"{dataset_name}"
+            dataset_cfg = {
+                "name": full_name,
+                "source": "local",
+                "task": "regression",
+                "normalization": "quantile",
+                "normalizer_path": config["normalizer_path"],
+                "stage": "downstream",
+                "y_policy": "mean_std"
+            }
+            for mlpHead in [True, False]: 
+                for freeze in [True, False]:
+                    # Cria cópia independente do model para cada job
+                    model_cfg = copy.deepcopy(model)
+                    hyp_cfg = copy.deepcopy(hyp)
+                    hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze)
+                    hyp_cfg["lr"] = 0.00005
+                    hyp_cfg["seed"] = seed
+                    model_cfg["use_mlp_head"] = mlpHead
+                    model_cfg["freeze_feature_extractor"] = freeze
+                    configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}_seed{seed}"
+                    # Adiciona à lista de jobs
+                    jobs.append((model_cfg, dataset_cfg, hyp, log, configName, False))
+            model_from_scratch = copy.deepcopy(model)
+            hyp_from_scratch = copy.deepcopy(hyp)
+            hyp_from_scratch["epochs"] = 200
+            model_from_scratch["model_path"] = None
+            model_from_scratch["use_mlp_head"] = False
+            model_from_scratch["freeze_feature_extractor"] = False
+            hyp_cfg["seed"] = seed
+            configName = f"{dataset_name}_fromScratch_seed{seed}"
+            jobs.append((model_cfg, dataset_cfg, hyp, log, configName, True))
 
     # ============================
     # Executa os jobs em paralelo de um mesmo upstream
@@ -140,13 +162,7 @@ def main(cfg: DictConfig):
     with mp.Pool(processes=N_JOBS_MAX) as pool:
         results = pool.starmap(run_job, jobs)
         all_results.append(results)
-    
-    log.info("Resultados:")
-    for result in results:
-        log.info(result)
 
-    with open(os.path.join("results.json"), "w") as fp:
-        json.dump(results, fp, indent=4)
     log.info("Todos os jobs concluídos!")
 
 

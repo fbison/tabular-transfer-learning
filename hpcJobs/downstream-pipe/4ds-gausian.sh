@@ -12,8 +12,8 @@
 module load Miniconda/biopython
 
 # 2. Criar ou ativar um ambiente virtual dedicado
-conda create -n my_optuna_env --clone Miniconda/biopython --yes
-conda activate my_optuna_env
+#conda create -n my_optuna_env --clone Miniconda/biopython --yes
+#conda activate my_optuna_env
 
 # 3. Instalar as dependências no seu ambiente virtual
 pip install -r requirements.txt
@@ -22,4 +22,4 @@ pip install -r requirements.txt
 python transfer_learn_net_from_upstream.py preTrained=optuning-ft_transformer-ic_upstream4_Imputation_Gaussian_exp_100_1
 
 # 5. (Opcional) Desativar o ambiente após a execução
-conda deactivate
+#conda deactivate

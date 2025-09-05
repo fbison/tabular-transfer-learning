@@ -1,0 +1,1233 @@
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: hydra-core==1.1.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 1)) (1.1.1)
+Requirement already satisfied: icecream~=2.1.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 2)) (2.1.5)
+Requirement already satisfied: matplotlib~=3.5.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 3)) (3.5.3)
+Requirement already satisfied: numpy~=1.21.4 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 4)) (1.21.6)
+Requirement already satisfied: omegaconf~=2.1.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 5)) (2.1.2)
+Requirement already satisfied: pandas~=2.0.3 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 6)) (2.0.3)
+Requirement already satisfied: Pillow==8.2.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 7)) (8.2.0)
+Requirement already satisfied: scipy==1.7.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 8)) (1.7.0)
+Requirement already satisfied: seaborn~=0.11.2 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 9)) (0.11.2)
+Requirement already satisfied: svglib==1.1.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 10)) (1.1.0)
+Requirement already satisfied: tensorboard==2.2.2 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 11)) (2.2.2)
+Requirement already satisfied: tensorboard-plugin-wit==1.8.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 12)) (1.8.0)
+Requirement already satisfied: torch~=2.4.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 13)) (2.4.1)
+Requirement already satisfied: torchvision==0.19.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 14)) (0.19.1)
+Requirement already satisfied: tqdm~=4.62.3 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 15)) (4.62.3)
+Requirement already satisfied: openml in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 16)) (0.15.1)
+Requirement already satisfied: optuna in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 17)) (4.4.0)
+Loading dataset: ic_upstream2_Imputation_Mean_exp_100_1 for task: regression at stage: pretrain
+Target columns: 63
+[09/05/2025 12:56:17 INFO]: Building Dataset
+[09/05/2025 12:56:17 INFO]: pre normalizer.fit
+
+[09/05/2025 12:56:17 INFO]: pos normalizer.fit
+
+Normalizer saved to ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+dataser shape: 282
+x shape: torch.Size([282, 162]), torch.Size([282, 0]), y shape: torch.Size([282, 1])
+[09/05/2025 12:56:19 INFO]: Task: regression, Dataset: ic_upstream2_Imputation_Mean_exp_100_1, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 282, n_val_samples: 66, n_test_samples: 87
+Train set features: torch.Size([282, 162]), 
+Já existem 100 trials concluídos.
+Create trials
+Estudo será iniciado ou continuado.
+Running trial 101/180
+Running trial 102/180
+Running trial 103/180
+Running trial 104/180
+Running trial 105/180
+Running trial 106/180
+Running trial 107/180
+Running trial 108/180
+Running trial 109/180
+Running trial 110/180
+Running trial 111/180
+Running trial 112/180
+Running trial 113/180
+Running trial 114/180
+Running trial 115/180
+Running trial 116/180
+Running trial 117/180
+[09/05/2025 12:56:34 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:34 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:34 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:34 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:34 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2798146619810722
+  attention_dropout: 0.12233701614641516
+  ffn_dropout: 0.022623592826860925
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 9.622908060556484e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_102
+
+[09/05/2025 12:56:34 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.443057568130972
+  attention_dropout: 0.08971831906786282
+  ffn_dropout: 0.005890686953889446
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 9.515392712428087e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: -1
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_103
+
+[09/05/2025 12:56:34 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:34 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:34 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.4962071979302818
+  attention_dropout: 0.08791128272951049
+  ffn_dropout: 0.2682682089097135
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 3.944836928340304e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_101
+
+Running trial 118/180
+Running trial 119/180
+Running trial 120/180
+[09/05/2025 12:56:34 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:34 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:34 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2536355021737338
+  attention_dropout: 0.09070826303058221
+  ffn_dropout: 0.2620695924520524
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 3.941646239328862e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_104
+
+[09/05/2025 12:56:34 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:34 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:34 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.4589134693052916
+  attention_dropout: 0.08376041878227075
+  ffn_dropout: 0.05625714556638073
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 4.5782964502825226e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_105
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.4641046187198716
+  attention_dropout: 0.11706898962940648
+  ffn_dropout: 0.26725498650521046
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 0.0005959530342619059
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_107
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.4554113681945138
+  attention_dropout: 0.12740105947642733
+  ffn_dropout: 0.041365057667901016
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 3.645681462547866e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_110
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2474693284184752
+  attention_dropout: 0.09027076651026024
+  ffn_dropout: 0.26713971890010263
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 3.953539215315953e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_109
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.250230253716887
+  attention_dropout: 0.12224963630221164
+  ffn_dropout: 0.057329938962135445
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 9.360564543061505e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_108
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 0.9563911738316355
+  attention_dropout: 0.12275314641779622
+  ffn_dropout: 0.026800070395931505
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.23182639111105e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_114
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.4832481535963513
+  attention_dropout: 0.12374516791054269
+  ffn_dropout: 0.015841054818030276
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 0.00011836961975539154
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_112
+
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2611419114059337
+  attention_dropout: 0.08670083174350834
+  ffn_dropout: 0.2672270227252406
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 3.6933118527130283e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_111
+
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 8
+  n_heads: 8
+  d_ffn_factor: 1.4372747954727518
+  attention_dropout: 0.05549341971606321
+  ffn_dropout: 0.1518122690047542
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 4.055419659336065e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_106
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2690410280405344
+  attention_dropout: 0.08640261350790429
+  ffn_dropout: 0.0445404400290771
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 0.00011506496390881843
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_113
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.251506058756431
+  attention_dropout: 0.1280898764970239
+  ffn_dropout: 0.04672939722495936
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 4.700124048870521e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_117
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2687902191528868
+  attention_dropout: 0.08230042148057104
+  ffn_dropout: 0.26670821841822306
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 9.391039199764534e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_116
+
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2555890940447754
+  attention_dropout: 0.08576630488755688
+  ffn_dropout: 0.0727843655184861
+  residual_dropout: 0.0
+  activation: relu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 3.8446907982823406e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_115
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.92131476621339
+  attention_dropout: 0.12220259560053175
+  ffn_dropout: 0.2628098503182923
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 4.669373889499682e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_118
+
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: 
+_________________________________________________
+
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2710249809850334
+  attention_dropout: 0.11516199984027285
+  ffn_dropout: 0.031315955231337664
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 4.26681845907294e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_119
+
+[09/05/2025 12:56:35 INFO]: train_net_for_optune.py main() running.
+[09/05/2025 12:56:35 INFO]: model:
+  name: ft_transformer
+  d_embedding: 384
+  model_path: null
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.2503798601212548
+  attention_dropout: 0.08926257541046749
+  ffn_dropout: 0.26624638415492574
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_upstream2_Imputation_Mean_exp_100_1
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl
+  stage: pretrain
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.405280204230043e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: true
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+train_log: train_log
+name: from_scratch_optuna
+run_id: sparoid-Elice_trial_120
+
+[09/05/2025 12:56:37 INFO]: This ft_transformer has 9.834 million parameters.
+[09/05/2025 12:56:37 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:37 INFO]: This ft_transformer has 10.318 million parameters.
+[09/05/2025 12:56:37 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:37 INFO]: This ft_transformer has 12.682 million parameters.
+[09/05/2025 12:56:37 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:37 INFO]: This ft_transformer has 11.609 million parameters.
+[09/05/2025 12:56:37 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 11.586 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 8.261 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 12.497 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 12.543 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 9.803 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 9.749 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 12.520 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 9.765 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 9.749 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 10.434 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 9.803 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 11.643 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 10.293 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 9.749 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 11.726 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:56:38 INFO]: This ft_transformer has 11.690 million parameters.
+[09/05/2025 12:56:38 INFO]: Training will start at epoch 0.
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...
+[09/05/2025 12:57:08 INFO]: ==> Starting training for 200 epochs...

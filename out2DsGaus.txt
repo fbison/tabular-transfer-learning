@@ -1,0 +1,2152 @@
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: hydra-core==1.1.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 1)) (1.1.1)
+Requirement already satisfied: icecream~=2.1.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 2)) (2.1.5)
+Requirement already satisfied: matplotlib~=3.5.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 3)) (3.5.3)
+Requirement already satisfied: numpy~=1.21.4 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 4)) (1.21.6)
+Requirement already satisfied: omegaconf~=2.1.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 5)) (2.1.2)
+Requirement already satisfied: pandas~=2.0.3 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 6)) (2.0.3)
+Requirement already satisfied: Pillow==8.2.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 7)) (8.2.0)
+Requirement already satisfied: scipy==1.7.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 8)) (1.7.0)
+Requirement already satisfied: seaborn~=0.11.2 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 9)) (0.11.2)
+Requirement already satisfied: svglib==1.1.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 10)) (1.1.0)
+Requirement already satisfied: tensorboard==2.2.2 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 11)) (2.2.2)
+Requirement already satisfied: tensorboard-plugin-wit==1.8.0 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 12)) (1.8.0)
+Requirement already satisfied: torch~=2.4.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 13)) (2.4.1)
+Requirement already satisfied: torchvision==0.19.1 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 14)) (0.19.1)
+Requirement already satisfied: tqdm~=4.62.3 in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 15)) (4.62.3)
+Requirement already satisfied: openml in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 16)) (0.15.1)
+Requirement already satisfied: optuna in /temporario2/14570653/.local/lib/python3.9/site-packages (from -r requirements.txt (line 17)) (4.4.0)
+[09/04/2025 22:49:41 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:41 INFO]: train_net_from_scratch.py main() running.
+[09/04/2025 22:49:41 INFO]: preTrained:
+  name: ic_upstream2Gaus
+  number: 2
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  imputationMethod: Gaussian
+  model:
+    name: ft_transformer
+    d_embedding: 256
+    model_path: null
+    use_mlp_head: null
+    freeze_feature_extractor: null
+    token_bias: true
+    n_layers: 2
+    n_heads: 4
+    d_ffn_factor: 1.864002857848663
+    attention_dropout: 0.07447213349093826
+    ffn_dropout: 0.06108340466868334
+    residual_dropout: 0.0
+    activation: gelu
+    prenormalization: true
+    initialization: kaiming
+    kv_compression: null
+    kv_compression_sharing: null
+  hyp:
+    epochs: 200
+    lr: 5.0e-05
+    lr_decay: step
+    lr_factor: 0.1
+    lr_schedule:
+    - 40
+    - 80
+    optimizer: adam
+    patience: 30
+    save_period: 100000000.0
+    seed: 0
+    test_batch_size: 256
+    train_batch_size: 256
+    use_patience: false
+    val_period: 10
+    warmup_period: 5
+    weight_decay: 0.0002
+    momentum: 0.9
+    warmup_type: linear
+    head_warmup_period: 10
+    head_lr: 0.001
+train_log: train_log
+name: transfer-learning-from-upstream
+run_id: fleeceless-Chauncy
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: 
+_________________________________________________
+
+[09/04/2025 22:49:42 INFO]: transfer_learn_net.py main() running.
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: true
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse
+
+[09/04/2025 22:49:42 INFO]: model:
+  name: ft_transformer
+  d_embedding: 256
+  model_path: ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth
+  use_mlp_head: true
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 2
+  n_heads: 4
+  d_ffn_factor: 1.864002857848663
+  attention_dropout: 0.07447213349093826
+  ffn_dropout: 0.06108340466868334
+  residual_dropout: 0.0
+  activation: gelu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression: null
+  kv_compression_sharing: null
+dataset:
+  name: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2
+  source: local
+  task: regression
+  normalization: quantile
+  normalizer_path: ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+  stage: downstream
+  y_policy: mean_std
+hyp:
+  epochs: 200
+  lr: 5.0e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+  - 40
+  - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001
+run_id: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse
+
+Loading dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+[09/04/2025 22:49:42 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+Loading dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+[09/04/2025 22:49:42 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+Loading dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+[09/04/2025 22:49:42 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+Loading dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+[09/04/2025 22:49:42 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:42 INFO]: Building Dataset
+[09/04/2025 22:49:42 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+Loading dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+Loading dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+Loading dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+Loading dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+Loading dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+Loading dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+Loading dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+Loading dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2 for task: regression at stage: downstream
+Target columns: 94
+[09/04/2025 22:49:43 INFO]: Building Dataset
+[09/04/2025 22:49:43 INFO]: pre normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+[09/04/2025 22:49:43 INFO]: pos normalizer.fit
+
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 10
+x shape: torch.Size([10, 162]), torch.Size([10, 0]), y shape: torch.Size([10, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 10, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([10, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 20
+x shape: torch.Size([20, 162]), torch.Size([20, 0]), y shape: torch.Size([20, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 20, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 50
+x shape: torch.Size([50, 162]), torch.Size([50, 0]), y shape: torch.Size([50, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 50, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([50, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 20
+x shape: torch.Size([20, 162]), torch.Size([20, 0]), y shape: torch.Size([20, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 20, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 75
+x shape: torch.Size([75, 162]), torch.Size([75, 0]), y shape: torch.Size([75, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 75, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 5
+x shape: torch.Size([5, 162]), torch.Size([5, 0]), y shape: torch.Size([5, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 5, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([75, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 75
+x shape: torch.Size([75, 162]), torch.Size([75, 0]), y shape: torch.Size([75, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 75, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 5
+x shape: torch.Size([5, 162]), torch.Size([5, 0]), y shape: torch.Size([5, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 5, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([20, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 20
+x shape: torch.Size([20, 162]), torch.Size([20, 0]), y shape: torch.Size([20, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 20, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 10
+x shape: torch.Size([10, 162]), torch.Size([10, 0]), y shape: torch.Size([10, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 10, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([20, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([10, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([5, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 5
+x shape: torch.Size([5, 162]), torch.Size([5, 0]), y shape: torch.Size([5, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 5, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([5, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([20, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([75, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 10
+x shape: torch.Size([10, 162]), torch.Size([10, 0]), y shape: torch.Size([10, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 10, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 50
+x shape: torch.Size([50, 162]), torch.Size([50, 0]), y shape: torch.Size([50, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 50, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 10
+x shape: torch.Size([10, 162]), torch.Size([10, 0]), y shape: torch.Size([10, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 10, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([10, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 5
+x shape: torch.Size([5, 162]), torch.Size([5, 0]), y shape: torch.Size([5, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 5, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 20
+x shape: torch.Size([20, 162]), torch.Size([20, 0]), y shape: torch.Size([20, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 20, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([5, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([50, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 50
+x shape: torch.Size([50, 162]), torch.Size([50, 0]), y shape: torch.Size([50, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 50, n_val_samples: 0, n_test_samples: 30
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 50
+x shape: torch.Size([50, 162]), torch.Size([50, 0]), y shape: torch.Size([50, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 50, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([10, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 75
+x shape: torch.Size([75, 162]), torch.Size([75, 0]), y shape: torch.Size([75, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 75, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([20, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([5, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([50, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([50, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Train set features: torch.Size([75, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+Normalizer loaded from ../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl
+dataser shape: 75
+x shape: torch.Size([75, 162]), torch.Size([75, 0]), y shape: torch.Size([75, 1])
+[09/04/2025 22:49:44 INFO]: Task: regression, Dataset: ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2, n_numerical: 162, n_categorical: 0, n_classes: 1, n_train_samples: 75, n_val_samples: 0, n_test_samples: 30
+Train set features: torch.Size([75, 162]), 
+Original head: head, Linear(in_features=256, out_features=1, bias=True)
+
+[09/04/2025 22:49:44 INFO]: Loading model from checkpoint ../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth...
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample50_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample20_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample75_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadFalse_freezeFalse: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample10_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+[09/04/2025 22:49:55 ERROR]: Erro no job ic_downstream1_Sample5_Imputation_Gaussian_exp_100_2_upstream2_mlpHeadTrue_freezeTrue: Error(s) in loading state_dict for FTTransformer:
+	size mismatch for tokenizer.weight: copying a param with shape torch.Size([163, 320]) from checkpoint, the shape in current model is torch.Size([163, 256]).
+	size mismatch for tokenizer.bias: copying a param with shape torch.Size([162, 320]) from checkpoint, the shape in current model is torch.Size([162, 256]).
+	size mismatch for layers.0.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.0.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.0.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.0.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.0.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.0.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_q.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_q.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_k.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_k.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_v.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_v.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.attention.W_out.weight: copying a param with shape torch.Size([320, 320]) from checkpoint, the shape in current model is torch.Size([256, 256]).
+	size mismatch for layers.1.attention.W_out.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.linear0.weight: copying a param with shape torch.Size([428, 320]) from checkpoint, the shape in current model is torch.Size([477, 256]).
+	size mismatch for layers.1.linear0.bias: copying a param with shape torch.Size([428]) from checkpoint, the shape in current model is torch.Size([477]).
+	size mismatch for layers.1.linear1.weight: copying a param with shape torch.Size([320, 214]) from checkpoint, the shape in current model is torch.Size([256, 477]).
+	size mismatch for layers.1.linear1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm1.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for layers.1.norm0.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.weight: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for last_normalization.bias: copying a param with shape torch.Size([320]) from checkpoint, the shape in current model is torch.Size([256]).

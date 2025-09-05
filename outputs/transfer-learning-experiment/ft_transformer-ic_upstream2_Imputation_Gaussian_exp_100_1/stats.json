@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream2_Imputation_Gaussian_exp_100_1",
+    "model_name": "ft_transformer",
+    "run_id": "gumptious-Lannis",
+    "best_epoch": 61,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.69324247960333,
+        "rmse": 0.69324247960333
+    },
+    "train_stats": {
+        "score": -0.5124658796986596,
+        "rmse": 0.5124658796986596
+    },
+    "val_stats": {
+        "score": -0.6988816899955617,
+        "rmse": 0.6988816899955617
+    }
+}

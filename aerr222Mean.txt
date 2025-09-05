@@ -1,0 +1,202 @@
+
+DirectoryNotFoundError: Miniconda/biopython
+
+usage: conda [-h] [-v] [--no-plugins] [-V] COMMAND ...
+conda: error: argument COMMAND: invalid choice: 'activate' (choose from 'clean', 'compare', 'config', 'create', 'info', 'init', 'install', 'list', 'notices', 'package', 'remove', 'uninstall', 'rename', 'run', 'search', 'update', 'upgrade', 'doctor', 'env')
+ERROR: Could not find a version that satisfies the requirement copy (from versions: none)
+ERROR: No matching distribution found for copy
+[I 2025-09-05 12:56:33,565] Using an existing study with name 'my_study' instead of creating a new one.
+[I 2025-09-05 12:56:33,761] A new study created in memory with name: no-name-d935067d-0a14-4418-b33a-5b5fdcc1364a
+  0%|          | 0/80 [00:00<?, ?it/s]
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A[A[A[A
+  0%|          | 0/2 [00:00<?, ?it/s][A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ... (more hidden) ...[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  0%|          | 0/2 [00:00<?, ?it/s][A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A[A/var/spool/slurmd/job68198142/slurm_script: line 22:  4274 Killed                  python optune_continue.py model=ft_transformer dataset=ic_upstream2_Imputation_Mean_exp_100_1
+usage: conda [-h] [-v] [--no-plugins] [-V] COMMAND ...
+conda: error: argument COMMAND: invalid choice: 'deactivate' (choose from 'clean', 'compare', 'config', 'create', 'info', 'init', 'install', 'list', 'notices', 'package', 'remove', 'uninstall', 'rename', 'run', 'search', 'update', 'upgrade', 'doctor', 'env')

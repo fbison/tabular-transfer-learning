@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=SP2
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=15
+#SBATCH --cpus-per-task=20
 #SBATCH --mem-per-cpu=20000 
 #SBATCH -J ic2DsGaus
 #SBATCH --time=192:00:00

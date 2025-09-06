@@ -16,7 +16,7 @@ import train_net_from_scratch
 import transfer_learn_net
 import deep_tabular as dt
 
-N_JOBS_MAX = 20  # Número máximo de jobs do HPC DA USP
+N_JOBS_MAX = 1  # Número máximo de jobs do HPC DA USP
 import numpy as np
 import torch
 
@@ -77,7 +77,10 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
 
     log.info(result)
     try:
-        os.makedirs(os.path.dirname(results_file), exist_ok=True)
+        results_dir = os.path.dirname(results_file)
+        if results_dir:  # só cria se não for string vazia
+            os.makedirs(results_dir, exist_ok=True)
+
         with open(results_file, "a", encoding="utf-8") as fp:
             fp.write(json.dumps(result, ensure_ascii=False) + "\n")
     except Exception as e:
@@ -144,16 +147,16 @@ def main(cfg: DictConfig):
                     model_cfg["freeze_feature_extractor"] = freeze
                     configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}_seed{seed}"
                     # Adiciona à lista de jobs
-                    jobs.append((model_cfg, dataset_cfg, hyp, log, configName, False))
+                    jobs.append((model_cfg, dataset_cfg, hyp_cfg, configName, log, False))
             model_from_scratch = copy.deepcopy(model)
             hyp_from_scratch = copy.deepcopy(hyp)
             hyp_from_scratch["epochs"] = 200
             model_from_scratch["model_path"] = None
             model_from_scratch["use_mlp_head"] = False
             model_from_scratch["freeze_feature_extractor"] = False
-            hyp_cfg["seed"] = seed
+            hyp_from_scratch["seed"] = seed
             configName = f"{dataset_name}_fromScratch_seed{seed}"
-            jobs.append((model_cfg, dataset_cfg, hyp, log, configName, True))
+            jobs.append((model_cfg, dataset_cfg, hyp_from_scratch, configName, log, True))
 
     # ============================
     # Executa os jobs em paralelo de um mesmo upstream

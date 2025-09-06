@@ -276,8 +276,6 @@ class FTTransformer(nn.Module):
 
     def forward(self, x_num, x_cat):
         x = self.tokenizer(x_num, x_cat)
-        print("Tokenizer output shape:", x.shape)
-        print("Tokenizer  -1:", x.shape[-1])
 
         for layer_idx, layer in enumerate(self.layers):
             is_last_layer = layer_idx + 1 == len(self.layers)

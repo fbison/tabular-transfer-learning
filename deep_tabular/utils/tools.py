@@ -272,6 +272,7 @@ def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_catego
         missing_keys, unexpected_keys = net.load_state_dict(pretrained_feature_extractor_dict, strict = False)
         print('State dict successfully loaded from pretrained checkpoint. Original head reinitialized.')
         print('Missing keys:{}\nUnexpected keys:{}\n'.format(missing_keys, unexpected_keys))
+        # É esperado que a head não seja carregada e esteja em missing keys
         # epoch = state_dict["epoch"] + 1
         # optimizer = state_dict["optimizer"]
     if freeze_feature_extractor:

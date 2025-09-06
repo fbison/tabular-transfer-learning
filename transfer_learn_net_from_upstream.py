@@ -16,7 +16,7 @@ import train_net_from_scratch
 import transfer_learn_net
 import deep_tabular as dt
 
-N_JOBS_MAX = 1  # Número máximo de jobs do HPC DA USP
+N_JOBS_MAX = 20  # Número máximo de jobs do HPC DA USP
 import numpy as np
 import torch
 

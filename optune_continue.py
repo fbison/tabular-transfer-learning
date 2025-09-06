@@ -131,7 +131,7 @@ def objective(trial, cfg: DictConfig, trial_stats,
               trial_counter, n_total_trials, 
               loaders, unique_categories, n_numerical, n_classes, run_id, lock
               ):
-
+    gc.collect()
     # Use a lock to safely get and increment the trial counter
     with lock:
         current_trial = trial_counter[0] + 1
@@ -153,7 +153,9 @@ def objective(trial, cfg: DictConfig, trial_stats,
         if cfg.hyp.save_period < 0:
             cfg.hyp.save_period = 1e8
         beginTime = time.time()
+        print_mem()
         stats = train_net_for_optuna.main(config, loaders, unique_categories, n_numerical, n_classes)
+        print_mem()
         endTime = time.time()
         time_taken = endTime - beginTime
         with lock:
@@ -167,6 +169,7 @@ def objective(trial, cfg: DictConfig, trial_stats,
                 }, f)
                 f.write("\n")
 
+        gc.collect()
         return stats['val_stats']['score']
     except Exception as e:
         print(f"Trial {trial.number} with ID '{trial_run_id}' failed with an error: {e}")
@@ -261,25 +264,8 @@ def main(cfg):
         print("Já atingiu ou ultrapassou o limite de trials.")
     else:
         print("Estudo será iniciado ou continuado.")
-        study.optimize(func, n_trials=(N_TOTAL_TRIALS-n_done), n_jobs=20, show_progress_bar=True)
-
-    in_memory_study = study  # assume it's still available in scope
-
-    # Create a persistent study
-    storage_path = "sqlite:///optuna_study.db"
-    persistent_study = optuna.create_study(
-        study_name="my_study",
-        direction=in_memory_study.direction,
-        sampler=in_memory_study.sampler,
-        pruner=in_memory_study.pruner,
-        storage=storage_path,
-        load_if_exists=True
-    )
-
-    # Copy each trial
-    for trial in in_memory_study.trials:
-        if trial.state == optuna.trial.TrialState.COMPLETE:
-            persistent_study.enqueue_trial(trial.params)
+        print_mem()
+        study.optimize(func, n_trials=(N_TOTAL_TRIALS-n_done), n_jobs=3, show_progress_bar=True)
 
     best_trial = study.best_trial
 
@@ -306,7 +292,7 @@ def main(cfg):
     }
     for filename, plot_func in plots.items():
         try:
-            fig = plot_func(in_memory_study)
+            fig = plot_func(study)
             save_path = os.path.join(filename)
             fig.write_html(save_path + ".html")
             fig.write_image((save_path + ".png"), width=1000, height=600)

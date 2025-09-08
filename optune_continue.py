@@ -264,7 +264,6 @@ def main(cfg):
         print("Já atingiu ou ultrapassou o limite de trials.")
     else:
         print("Estudo será iniciado ou continuado.")
-        print_mem()
         study.optimize(func, n_trials=(N_TOTAL_TRIALS-n_done), n_jobs=3, show_progress_bar=True)
 
     best_trial = study.best_trial

@@ -37,6 +37,7 @@ from optuna.visualization import (
     plot_contour,
     plot_edf,
 )
+import gc
 
 INPUT_PATH = r"all_trials.jsonl"
 STORAGE_PATH = "sqlite:///optuna_study.db"
@@ -153,9 +154,7 @@ def objective(trial, cfg: DictConfig, trial_stats,
         if cfg.hyp.save_period < 0:
             cfg.hyp.save_period = 1e8
         beginTime = time.time()
-        print_mem()
         stats = train_net_for_optuna.main(config, loaders, unique_categories, n_numerical, n_classes)
-        print_mem()
         endTime = time.time()
         time_taken = endTime - beginTime
         with lock:

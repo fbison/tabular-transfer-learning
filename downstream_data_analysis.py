@@ -8,6 +8,7 @@ import seaborn as sns
 from scipy.stats import mannwhitneyu
 import plotly.express as px
 import plotly.io as pio
+import pickle
 
 # ---------------------------
 # Helpers: parsing and mapping
@@ -177,95 +178,88 @@ def build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False):
 def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_order=None):
     os.makedirs(out_dir, exist_ok=True)
     
-    # Escolha de ordem
+    # Strategy and imputation ordering
     if strategies_order is None:
         strategies_order = ['FS', 'LH-E2E', 'MLP-E2E', 'LH', 'MLP']
     if imputations_order is None:
         imputations_order = sorted(rank_df['imputation'].unique())
     
-    # Criar pivot table com MultiIndex (strategy, imputation)
-    pivot = rank_df.pivot_table(index='sample', columns=['imputation', 'strategy'], values='rank')
-    pivot = pivot.reindex(index=sorted(pivot.index), columns=pd.MultiIndex.from_product([imputations_order, strategies_order]))
-    
-    # ---------------- Heatmap com Seaborn ----------------
-    plt.figure(figsize=(max(8, len(strategies_order)*len(imputations_order)*0.8), max(4, len(pivot.index)*0.5)))
-    
-    # Plotando heatmap
-    sns.heatmap(
-        pivot, 
-        annot=True, fmt=".0f", linewidths=0.5, linecolor='gray', 
-        cbar_kws={"label": "Rank"}, cmap="RdYlBu_r",
-        vmin=1, vmax=int(np.nanmax(rank_df['rank'])) if not rank_df['rank'].isna().all() else None
-    )
-        
-    # Adicionar linhas verticais de separação entre imputações
-    for i in range(1, len(imputations_order)):
-        plt.axvline(i * len(strategies_order), color='black', lw=1.2)
-        
-    # Personalizar fonte e rótulos
-    plt.ylabel("Num Samples", fontsize=12, fontname="Times New Roman")
-    plt.xlabel("", fontsize=12, fontname="Times New Roman")
-    
-    # Ajuste das colunas: mostrar apenas estratégia
-    plt.xticks(rotation=45, ha='right', fontsize=12, fontname="Times New Roman")
-    plt.yticks(fontsize=12, fontname="Times New Roman")
-    
-    # Títulos dos blocos de imputação
-    for i, imputation in enumerate(imputations_order):
-        col_start = i * len(strategies_order)
-        col_end = (i+1) * len(strategies_order) - 1
-        plt.text((col_start+col_end)/2 + 0.5, -0.8, imputation.capitalize(), ha='center', va='bottom', fontsize=12, fontname="Times New Roman", fontweight='bold')
-    
-    plt.tight_layout()
-    
-    # Salvar PNG
-    png_path = os.path.join(out_dir, "heatmap.png")
-    plt.savefig(png_path, dpi=300, bbox_inches="tight")
-    print("Saved PNG:", png_path)
-    
-    # ---------------- Heatmap Interativo com Plotly ----------------
-    pivot_for_plotly = pivot.copy()
-    pivot_for_plotly.columns = [c[1] for c in pivot_for_plotly.columns]  # apenas estratégia no x
-    fig = px.imshow(
-        pivot_for_plotly.values,
-        labels=dict(x="Strategy", y="Num Samples", color="Rank"),
-        x=pivot_for_plotly.columns,
-        y=pivot_for_plotly.index.astype(str),
-        text_auto=True,
-        aspect="auto",
-        color_continuous_scale="RdYlBu_r",
-        origin='lower'
-    )
-    # Adiciona títulos para blocos de imputação no Plotly
-    for i, imputation in enumerate(imputations_order):
-        col_start = i * len(strategies_order)
-        col_end = (i+1) * len(strategies_order) - 1
-        fig.add_annotation(
-            x=(col_start + col_end)/2, y=-0.5, text=imputation.capitalize(),
-            showarrow=False, font=dict(family="Times New Roman", size=12, color="black")
-        )
-    
-    html_path = os.path.join(out_dir, "heatmap.html")
-    pio.write_html(fig, file=html_path, auto_open=False)
-    print("Saved interactive HTML:", html_path)
-    
-    plt.show()
+    n_imputations = len(imputations_order)
 
+    # Determine global min/max rank for consistent color scale
+    vmin = rank_df["rank"].min()
+    vmax = rank_df["rank"].max()
+
+    # Equal width for each imputation subplot
+    fig, axes = plt.subplots(
+        1, n_imputations,
+        figsize=(2 * len(strategies_order) * n_imputations, 4),
+        sharey=True,
+        gridspec_kw={"width_ratios": [1] * n_imputations}
+    )
+
+    if n_imputations == 1:
+        axes = [axes]
+
+    for ax, imp in zip(axes, imputations_order):
+        df_imp = rank_df[rank_df['imputation'] == imp].pivot(
+            index="sample", columns="strategy", values="rank"
+        )
+        df_imp = df_imp[strategies_order]
+
+        sns.heatmap(
+            df_imp,
+            ax=ax,
+            annot=True,
+            fmt="d",
+            cmap="RdYlBu_r",
+            vmin=vmin, vmax=vmax,   # keep same color scale
+            cbar=ax == axes[-1],
+            cbar_kws={"label": "Rank"},
+            annot_kws={"fontsize": 10},
+            linewidths=0.5,
+            linecolor="white"
+        )
+
+        # Titles and labels
+        ax.set_title(imp, fontsize=14, fontname="Times New Roman")
+        ax.set_xlabel("")
+        ax.set_ylabel("Num Samples", fontsize=12, fontname="Times New Roman")
+
+        # Clean x-axis labels
+        new_labels = [lab.replace(f"{imp}-", "") for lab in df_imp.columns]
+        ax.set_xticklabels(
+            new_labels, rotation=45, ha="right", fontsize=10, fontname="Times New Roman"
+        )
+
+        ax.set_yticklabels(
+            ax.get_yticklabels(), fontsize=10, fontname="Times New Roman"
+        )
+
+        # Force same aspect for all
+        ax.set_aspect("equal")
+
+    plt.tight_layout()
+    path_complete = os.path.join(out_dir, "heatmap")
+    plt.savefig((path_complete + ".png"), dpi=300, bbox_inches="tight")
+    plt.savefig((path_complete + ".pdf"), bbox_inches="tight")
+    plt.savefig((path_complete + ".svg"), bbox_inches="tight")
+
+    with open((path_complete + ".fig.pickle"), "wb") as f:
+        pickle.dump(fig, f)
+    plt.savefig("heatmap.eps", format="eps", bbox_inches="tight")
+
+    plt.show()
 
 # ---------------------------
 # Example usage
 # ---------------------------
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream3"
+    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream4"
     jsonl = os.path.join(path, "results.jsonl")
 
     df = load_results(jsonl, prefer="test")
-    print("Loaded rows:", len(df))
-    # Quick check
-    counts = df.groupby(['sample','strategy','imputation']).size().reset_index(name='n_seeds')
-    print("\nCounts per config (sample, strategy, imputation):\n", counts.to_string(index=False))
 
     rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    print("\nRank table (first rows):\n", rank_df.head())
     plot_and_save_heatmap(rank_df, out_dir=path)

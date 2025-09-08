@@ -42,6 +42,7 @@ import gc
 INPUT_PATH = r"all_trials.jsonl"
 STORAGE_PATH = "sqlite:///optuna_study.db"
 N_TOTAL_TRIALS = 180
+N_JOBS = 10  # número de processos paralelos
 
 
 def load_completed_trials():
@@ -263,7 +264,7 @@ def main(cfg):
         print("Já atingiu ou ultrapassou o limite de trials.")
     else:
         print("Estudo será iniciado ou continuado.")
-        study.optimize(func, n_trials=(N_TOTAL_TRIALS-n_done), n_jobs=3, show_progress_bar=True)
+        study.optimize(func, n_trials=(N_TOTAL_TRIALS-n_done), n_jobs=N_JOBS, show_progress_bar=True)
 
     best_trial = study.best_trial
 

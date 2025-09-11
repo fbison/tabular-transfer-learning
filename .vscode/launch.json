@@ -2,6 +2,14 @@
     "version": "0.2.0",
     "configurations": [    
 
+        {
+            "name": "pipe analysis",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/downstream_data_analysis.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
 
         {
             "name": "optuna backup",

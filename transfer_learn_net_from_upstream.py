@@ -102,6 +102,11 @@ def select_epoch(samples: int, mlpHead: bool, freeze: bool) -> int:
     else:
         return 200
 
+def selectHeadLearningRate(mlpHead: bool, base_lr: float, upstream_head_lr: float) -> float:
+    if mlpHead:
+        return base_lr
+    return upstream_head_lr
+
 # ============================
 # Hydra main
 # ============================
@@ -141,6 +146,7 @@ def main(cfg: DictConfig):
                     model_cfg = copy.deepcopy(model)
                     hyp_cfg = copy.deepcopy(hyp)
                     hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze)
+                    hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, hyp["lr"], hyp["head_lr"])
                     hyp_cfg["lr"] = 0.00005
                     hyp_cfg["seed"] = seed
                     model_cfg["use_mlp_head"] = mlpHead

@@ -24,7 +24,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_from_scratch.py",
-            "args": ["model=ft_transformer", "dataset=ic_upstream2_ImputacaoEstatistica_exp_100_1"],
+            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_Gaussian_exp_100_1"],
             "console": "integratedTerminal"
         },
         {
@@ -40,7 +40,11 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": ["model=ft_transformer_pretrain_up3_mean hyp=hyp_pretrain_up3_mean dataset=ic_upstream3_Imputation_Mean_exp_100_1"],
+            "args": [
+                    "model=mlp",
+                    "hyp=hyp_pretrain_up3_mean",
+                    "dataset=ic_upstream3_Imputation_Mean_exp_100_1"
+            ],
             "console": "integratedTerminal"
         },
         {

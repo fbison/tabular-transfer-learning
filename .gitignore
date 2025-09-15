@@ -1,6 +1,8 @@
 #*/output*/
 #outputs/
 plots/output.pdf/
+tensorboard/
+.hydra/
 .cml_*temp.sh
 .idea
 .idea/*

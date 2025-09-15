@@ -17,8 +17,9 @@ import json
 import torch
 import multiprocessing
 
+N_JOBS = 20
+N_OPTUNA_TRIALS = 180
 
-SAVE_INTERVAL = 5  # salva a cada 5 trials
 
 def sample_value_with_default(trial, name, distr, min, max, default):
     # chooses suggested or default value with 50/50 chance
@@ -68,7 +69,7 @@ def get_parameters(model, trial):
         layers = d_first + d_middle + d_last
 
         model_params = {
-            'd_embedding':  trial.suggest_int('d_embedding', 32, 512, step=8),
+            'd_embedding':  trial.suggest_int('d_embedding', 64, 512, step=8),
             'd_layers': layers,
             'dropout': sample_value_with_default(trial, 'dropout', 'uniform', 0.0, 0.5, 0.0),
             }
@@ -130,7 +131,6 @@ def objective(trial, cfg: DictConfig, trial_stats,
 
 @hydra.main(config_path="config", config_name="optune_config")
 def main(cfg):
-    n_optuna_trials = 180
     trial_stats = []
     # Use a shared, mutable counter protected by a lock
     manager = multiprocessing.Manager()
@@ -155,9 +155,9 @@ def main(cfg):
     )
 
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
-    func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, n_optuna_trials,
+    func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, N_OPTUNA_TRIALS,
                                    loaders, unique_categories, n_numerical, n_classes, cfg.run_id, lock)
-    study.optimize(func, n_trials=n_optuna_trials, n_jobs=20, show_progress_bar=True)
+    study.optimize(func, n_trials=N_OPTUNA_TRIALS, n_jobs=N_JOBS, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope
 
@@ -210,7 +210,9 @@ def main(cfg):
     for filename, plot_func in plots.items():
         try:
             fig = plot_func(study)
-            fig.write_html(os.path.join(filename))
+            save_path = os.path.join(filename)
+            fig.write_html(save_path + ".html")
+            fig.write_image((save_path + ".png"), width=1000, height=600)
         except Exception as e:
             print(f"Could not generate {filename}: {e}")
 

@@ -2,6 +2,8 @@ dropout: 0.1
 name: mlp
 d_embedding: 100
 model_path:
+use_mlp_head: false
+freeze_feature_extractor: false
 d_layers: # cfg.model.d_layers = [100, 100]
   - 100
   - 100

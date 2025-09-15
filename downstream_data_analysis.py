@@ -233,7 +233,7 @@ def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_o
         )
 
         ax.set_yticklabels(
-            ax.get_yticklabels(), fontsize=10, fontname="Times New Roman"
+            df_imp.index, rotation=0, fontsize=10, fontname="Times New Roman"
         )
 
         # Force same aspect for all
@@ -256,7 +256,7 @@ def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_o
 # ---------------------------
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream4"
+    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream3"
     jsonl = os.path.join(path, "results.jsonl")
 
     df = load_results(jsonl, prefer="test")

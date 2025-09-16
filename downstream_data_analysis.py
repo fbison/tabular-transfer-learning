@@ -256,7 +256,7 @@ def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_o
 # ---------------------------
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream3"
+    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream2"
     jsonl = os.path.join(path, "results.jsonl")
 
     df = load_results(jsonl, prefer="test")

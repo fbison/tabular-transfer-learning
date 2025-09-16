@@ -19,7 +19,7 @@ conda activate my_optuna_env
 pip install -r requirements.txt
 
 # 4. Executar o seu script Python
-python optune_from_scratch.py model=mlp dataset=ic_upstream4_Imputation_Mean_exp_100_1
+python optune_continue.py model=mlp dataset=ic_upstream4_Imputation_Mean_exp_100_1
 
 # 5. (Opcional) Desativar o ambiente após a execução
 conda deactivate

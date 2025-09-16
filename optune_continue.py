@@ -42,7 +42,7 @@ import gc
 INPUT_PATH = r"all_trials.jsonl"
 STORAGE_PATH = "sqlite:///optuna_study.db"
 N_TOTAL_TRIALS = 180
-N_JOBS = 10  # número de processos paralelos
+N_JOBS = 2  # número de processos paralelos
 
 
 def load_completed_trials():
@@ -66,6 +66,8 @@ def sample_value_with_default(trial, name, distr, min, max, default):
     value = value_suggested if trial.suggest_categorical(f'optional_{name}', [False, True]) else default
     return value
 #
+import optuna
+
 def define_search_space(model: str):
     if model == "ft_transformer":
         return {
@@ -93,7 +95,7 @@ def define_search_space(model: str):
 
     elif model == "mlp":
         return {
-            "d_embedding": optuna.distributions.IntDistribution(32, 512, step=8),
+            "d_embedding": optuna.distributions.IntDistribution(64, 512, step=8),
             "n_layers": optuna.distributions.IntDistribution(1, 8),
             "d_first": optuna.distributions.IntDistribution(1, 512),
             "d_middle": optuna.distributions.IntDistribution(1, 512),
@@ -126,6 +128,21 @@ def get_parameters(model, trial: optuna.trial.Trial):
 
     model_params = {k: all_params[k] for k in model_keys}
     training_params = {k: all_params[k] for k in training_keys}
+
+    # reconstruir d_layers como lista coerente
+    if model == "mlp":
+        n_layers = model_params["n_layers"]
+        layers = []
+        if n_layers >= 1:
+            layers.append(model_params["d_first"])
+        if n_layers > 2:
+            layers.extend([model_params["d_middle"]] * (n_layers - 2))
+        if n_layers > 1:
+            layers.append(model_params["d_last"])
+        model_params["d_layers"] = layers
+        # limpar chaves auxiliares
+        for k in ["d_first", "d_middle", "d_last"]:
+            model_params.pop(k)
 
     return model_params, training_params
 

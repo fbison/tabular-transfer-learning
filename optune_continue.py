@@ -42,7 +42,7 @@ import gc
 INPUT_PATH = r"all_trials.jsonl"
 STORAGE_PATH = "sqlite:///optuna_study.db"
 N_TOTAL_TRIALS = 180
-N_JOBS = 2  # número de processos paralelos
+N_JOBS = 1  # número de processos paralelos
 
 
 def load_completed_trials():
@@ -141,7 +141,7 @@ def get_parameters(model, trial: optuna.trial.Trial):
             layers.append(model_params["d_last"])
         model_params["d_layers"] = layers
         # limpar chaves auxiliares
-        for k in ["d_first", "d_middle", "d_last"]:
+        for k in ["d_first", "d_middle", "d_last", "n_layers"]:
             model_params.pop(k)
 
     return model_params, training_params

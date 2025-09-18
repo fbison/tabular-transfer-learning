@@ -19,7 +19,7 @@ conda activate my_optuna_env
 pip install -r requirements.txt
 
 # 4. Executar o seu script Python
-transfer_learn_net.py model=mlp_pretrain_up2_mean hyp=hyp_pretrain_up2_mean dataset=ic_upstream2_Imputation_Mean_exp_100_1
+python transfer_learn_net.py model=mlp_pretrain_up2_mean hyp=hyp_pretrain_up2_mean dataset=ic_upstream2_Imputation_Mean_exp_100_1
 
 # 5. (Opcional) Desativar o ambiente após a execução
 conda deactivate

@@ -9,6 +9,7 @@ model:
   model_path:
   use_mlp_head: false
   freeze_feature_extractor: false
+  dropout: 0.1
   d_layers: [442, 426, 426, 426, 426, 426, 227]
 hyp:
   epochs: 200

@@ -181,4 +181,7 @@ def main(cfg: DictConfig):
 if __name__ == "__main__":
     run_id = dt.utils.generate_run_id()
     sys.argv.append(f"+run_id={run_id}")  # Hydra override
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"Erro fatal no main(): {e}")

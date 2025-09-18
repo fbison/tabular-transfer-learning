@@ -10,6 +10,7 @@ model:
   use_mlp_head: false
   freeze_feature_extractor: false
   d_layers: [398, 130, 130, 130, 130, 155]
+  dropout: 0.1
 hyp:
   epochs: 200
   lr: 0.0007841271605066198

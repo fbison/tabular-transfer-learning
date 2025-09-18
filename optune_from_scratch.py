@@ -16,70 +16,10 @@ from omegaconf import DictConfig, OmegaConf
 import json
 import torch
 import multiprocessing
+from deep_tabular.utils.optuna_tools import get_parameters, save_graphs
 
 N_JOBS = 20
 N_OPTUNA_TRIALS = 180
-
-
-def sample_value_with_default(trial, name, distr, min, max, default):
-    # chooses suggested or default value with 50/50 chance
-    if distr == 'uniform':
-        value_suggested = trial.suggest_uniform(name, min, max)
-    elif distr == 'loguniform':
-        value_suggested = trial.suggest_loguniform(name, min, max)
-    value = value_suggested if trial.suggest_categorical(f'optional_{name}', [False, True]) else default
-    return value
-#
-
-def get_parameters(model, trial):
-    if model=='ft_transformer':
-        model_params = {
-            'd_embedding': trial.suggest_categorical("d_embedding", [64, 128, 256, 320, 384, 512]),
-            'n_heads': trial.suggest_categorical("n_heads", [4, 8, 16]),
-            'n_layers': trial.suggest_int('n_layers', 2, 10, step=2),
-            'd_ffn_factor': trial.suggest_uniform('d_ffn_factor', 2/3, 8/3),
-            'attention_dropout': trial.suggest_uniform('attention_dropout', 0.0, 0.5),
-            'ffn_dropout' : trial.suggest_uniform('ffn_dropout', 0.0, 0.5),
-            "activation": trial.suggest_categorical("activation", ["reglu", "gelu", "relu"]),
-            }
-        training_params = {
-            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3) ##,
-            ##'weight_decay':  trial.suggest_loguniform('weight_decay', 1e-6, 1e-3),
-            }
-
-    if model=='resnet':
-        model_params = {
-            'd_embedding':  trial.suggest_int('d_embedding', 32, 512, step=8),
-            'd_hidden_factor': trial.suggest_uniform('d_hidden_factor', 1.0, 4.0),
-            'n_layers': trial.suggest_int('n_layers', 1, 8,),
-            'hidden_dropout': trial.suggest_uniform('hidden_dropout', 0.0, 0.5),
-            'residual_dropout': sample_value_with_default(trial, 'residual_dropout', 'uniform', 0.0, 0.5, 0.0),
-            }
-        training_params = {
-            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3),
-            'weight_decay':  sample_value_with_default(trial, 'weight_decay', 'loguniform', 1e-6, 1e-3, 0.0),
-            }
-
-    if model=='mlp':
-        n_layers = trial.suggest_int('n_layers', 1, 8)
-        suggest_dim = lambda name: trial.suggest_int(name, 1, 512)
-        d_first = [suggest_dim('d_first')] if n_layers else []
-        d_middle = ([suggest_dim('d_middle')] * (n_layers - 2) if n_layers > 2 else [])
-        d_last = [suggest_dim('d_last')] if n_layers > 1 else []
-        layers = d_first + d_middle + d_last
-
-        model_params = {
-            'd_embedding':  trial.suggest_int('d_embedding', 64, 512, step=8),
-            'd_layers': layers,
-            'dropout': sample_value_with_default(trial, 'dropout', 'uniform', 0.0, 0.5, 0.0),
-            }
-        training_params = {
-            'lr':  trial.suggest_loguniform('lr', 1e-5, 1e-3),
-            'weight_decay':  sample_value_with_default(trial, 'weight_decay', 'loguniform', 1e-6, 1e-3, 0.0),
-            }
-
-    return model_params, training_params
-
 
 
 def objective(trial, cfg: DictConfig, trial_stats, 
@@ -143,7 +83,7 @@ def main(cfg):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes = dt.utils.get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes = get_dataloaders(cfg)
     storage_path = "sqlite:///optuna_study.db"
     study = optuna.create_study(
         study_name="my_study",
@@ -189,32 +129,8 @@ def main(cfg):
     with open(os.path.join("best_config.json"), "w") as fp:
         json.dump(best_trial.params, fp, indent = 4)
     
-    from optuna.visualization import (
-        plot_optimization_history,
-        plot_intermediate_values,
-        plot_param_importances,
-        plot_parallel_coordinate,
-        plot_slice,
-        plot_contour,
-        plot_edf,
-    )
-    plots = {
-        "optimization_history.html": plot_optimization_history,
-        "intermediate_values.html": plot_intermediate_values,
-        "param_importance.html": plot_param_importances,
-        "parallel_coordinate.html": plot_parallel_coordinate,
-        "slice_plot.html": plot_slice,
-        "contour_plot.html": plot_contour,
-        "edf_plot.html": plot_edf,
-    }
-    for filename, plot_func in plots.items():
-        try:
-            fig = plot_func(study)
-            save_path = os.path.join(filename)
-            fig.write_html(save_path + ".html")
-            fig.write_image((save_path + ".png"), width=1000, height=600)
-        except Exception as e:
-            print(f"Could not generate {filename}: {e}")
+    save_graphs(study)
+
 
 
 

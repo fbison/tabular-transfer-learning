@@ -1,0 +1,45 @@
+name: ic_upstream2Mean
+number: 2
+model_path: '../../../outputs/transfer-learning-experiment/ft_transformer-ic_upstream2_Imputation_Mean_exp_100_1/model_best.pth'
+normalizer_path: '../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalizer.pkl'
+imputationMethod: Mean
+model:
+  name: ft_transformer
+  d_embedding: 320
+  model_path:
+  use_mlp_head: false
+  freeze_feature_extractor: false
+  token_bias: true
+  n_layers: 10
+  n_heads: 8
+  d_ffn_factor: 1.4990582239996852
+  attention_dropout: 0.10923359572770841
+  ffn_dropout: 0.008975988338738418
+  residual_dropout: 0.0
+  activation: reglu
+  prenormalization: true
+  initialization: kaiming
+  kv_compression:
+  kv_compression_sharing:
+hyp:
+  epochs: 200
+  lr: 3.5835829264444336e-05
+  lr_decay: step
+  lr_factor: 0.1
+  lr_schedule:
+    - 40
+    - 80
+  optimizer: adam
+  patience: 30
+  save_period: 100000000.0
+  seed: 0
+  test_batch_size: 256
+  train_batch_size: 256
+  use_patience: false
+  val_period: 10
+  warmup_period: 5
+  weight_decay: 0.0002
+  momentum: 0.9
+  warmup_type: linear
+  head_warmup_period: 10
+  head_lr: 0.001

@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "baroque-Elenita_trial_180",
+    "best_epoch": 195,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.7093238606785227,
+        "rmse": 0.7093238606785227
+    },
+    "train_stats": {
+        "score": -0.20565713908451044,
+        "rmse": 0.20565713908451044
+    },
+    "val_stats": {
+        "score": -0.5819558608261145,
+        "rmse": 0.5819558608261145
+    }
+}

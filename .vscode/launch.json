@@ -32,7 +32,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_Gaussian_exp_100_1"],
+            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_Mean_exp_100_1"],
             "console": "integratedTerminal"
         },
         {

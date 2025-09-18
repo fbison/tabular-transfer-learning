@@ -19,7 +19,7 @@ module load Miniconda/biopython
 pip install -r requirements.txt
 
 # 4. Executar o seu script Python
-python transfer_learn_net_from_upstream.py preTrained=optuning-ft_transformer-ic_upstream3_Imputation_Gaussian_exp_100_1
+python transfer_learn_net_from_upstream.py preTrained=optuning-mlp-ic_upstream3_Imputation_Gaussian_exp_100_1
 
 # 5. (Opcional) Desativar o ambiente após a execução
 #conda deactivate

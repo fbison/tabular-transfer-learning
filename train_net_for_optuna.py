@@ -128,8 +128,9 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
         writer.close()
 
     log.info("Running Final Evaluation...")
-    checkpoint_path = os.path.join(trial_output_dir, "model_best.pth")
-    net.load_state_dict(torch.load(checkpoint_path)["net"])
+    if cfg.hyp.use_patience:
+        checkpoint_path = os.path.join(trial_output_dir, "model_best.pth")
+        net.load_state_dict(torch.load(checkpoint_path, weights_only=True)["net"])
     test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                            [loaders["test"], loaders["val"], loaders["train"]],
                                                            cfg.dataset.task,

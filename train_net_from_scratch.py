@@ -136,7 +136,8 @@ def main(cfg: DictConfig):
     if cfg.hyp.use_patience and best_epoch != epoch - 1:
         log.info(f"Loading best model from epoch {best_epoch} for final evaluation...")
         checkpoint_path = "model_best.pth"
-        net.load_state_dict(torch.load(checkpoint_path)["net"])
+        net.load_state_dict(torch.load(checkpoint_path, weights_only=True)["net"])
+        
     test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                            [loaders["test"], loaders["val"], loaders["train"]],
                                                            cfg.dataset.task,

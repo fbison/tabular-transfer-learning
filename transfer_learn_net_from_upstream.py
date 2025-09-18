@@ -119,6 +119,7 @@ def main(cfg: DictConfig):
     config = cfg["preTrained"]
     model = config["model"]
     hyp = config["hyp"]
+    hyp["use_patience"] = False  # Como downstream é muito pequeno, não há dataset de validação, e por isso não se usa paciência
     upstream_number = config["number"]
     model['model_path'] = config["model_path"]
     downstreamName= "ic_downstream1"

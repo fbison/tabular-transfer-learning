@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "onshore-Ranson",
+    "best_epoch": 89,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.6776219913835438,
+        "rmse": 0.6776219913835438
+    },
+    "train_stats": {
+        "score": -0.22958368206917,
+        "rmse": 0.22958368206917
+    },
+    "val_stats": {
+        "score": -0.5726015305463119,
+        "rmse": 0.5726015305463119
+    }
+}

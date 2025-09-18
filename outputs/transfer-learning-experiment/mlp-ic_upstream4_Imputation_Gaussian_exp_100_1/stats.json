@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream4_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "waking-Saleh",
+    "best_epoch": 99,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.7048741802556914,
+        "rmse": 0.7048741802556914
+    },
+    "train_stats": {
+        "score": -0.16123372516908455,
+        "rmse": 0.16123372516908455
+    },
+    "val_stats": {
+        "score": -0.6668662065793111,
+        "rmse": 0.6668662065793111
+    }
+}

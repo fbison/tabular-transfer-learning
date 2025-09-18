@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream2_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "hardened-Taz",
+    "best_epoch": 54,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.637888610727033,
+        "rmse": 0.637888610727033
+    },
+    "train_stats": {
+        "score": -0.47388564389762206,
+        "rmse": 0.47388564389762206
+    },
+    "val_stats": {
+        "score": -0.7047633507777866,
+        "rmse": 0.7047633507777866
+    }
+}

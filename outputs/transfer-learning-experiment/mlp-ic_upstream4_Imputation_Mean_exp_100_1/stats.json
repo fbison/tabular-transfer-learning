@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream4_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "selfsame-Sameul",
+    "best_epoch": 102,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.5924761060427945,
+        "rmse": 0.5924761060427945
+    },
+    "train_stats": {
+        "score": -0.37337296995961333,
+        "rmse": 0.37337296995961333
+    },
+    "val_stats": {
+        "score": -0.6219598247456338,
+        "rmse": 0.6219598247456338
+    }
+}

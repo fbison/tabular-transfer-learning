@@ -5,4 +5,3 @@ use_mlp_head: false
 freeze_feature_extractor: false
 d_layers: [486, 416, 416, 416, 416, 416, 416, 22]
 dropout: 0.1
-model_path:

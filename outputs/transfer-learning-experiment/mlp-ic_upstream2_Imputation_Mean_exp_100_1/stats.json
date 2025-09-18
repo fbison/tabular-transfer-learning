@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream2_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "clasping-Anel",
+    "best_epoch": 70,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.5761998746450222,
+        "rmse": 0.5761998746450222
+    },
+    "train_stats": {
+        "score": -0.4109153192783777,
+        "rmse": 0.4109153192783777
+    },
+    "val_stats": {
+        "score": -0.6655625675050668,
+        "rmse": 0.6655625675050668
+    }
+}

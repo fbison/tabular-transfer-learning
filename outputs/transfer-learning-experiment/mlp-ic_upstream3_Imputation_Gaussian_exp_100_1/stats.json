@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "untapped-Phelicia",
+    "best_epoch": 92,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.7183393794334171,
+        "rmse": 0.7183393794334171
+    },
+    "train_stats": {
+        "score": -0.21796645022194217,
+        "rmse": 0.21796645022194217
+    },
+    "val_stats": {
+        "score": -0.7053753312211078,
+        "rmse": 0.7053753312211078
+    }
+}

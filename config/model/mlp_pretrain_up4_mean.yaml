@@ -1,0 +1,6 @@
+name: mlp
+d_embedding: 144
+model_path:
+use_mlp_head: false
+freeze_feature_extractor: false
+d_layers: [57, 364, 364, 364, 364, 489]

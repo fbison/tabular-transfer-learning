@@ -119,7 +119,10 @@ def main(cfg: DictConfig):
     config = cfg["preTrained"]
     model = config["model"]
     hyp = config["hyp"]
-    hyp["use_patience"] = False  # Como downstream é muito pequeno, não há dataset de validação, e por isso não se usa paciência
+    hyp["use_patience"] = False  
+    # Como downstream é muito pequeno, não há dataset de validação, e por isso não se usa paciência
+    # Caso seja possível usar paciência, ainda assim, é preciso garantir que o model_best.pth seja salvo 
+    # em uma pasta diferente para cada job, de forma a evitar conflitos
     upstream_number = config["number"]
     model['model_path'] = config["model_path"]
     downstreamName= "ic_downstream1"

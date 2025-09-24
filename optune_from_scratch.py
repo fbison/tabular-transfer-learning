@@ -83,7 +83,7 @@ def main(cfg):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes = get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes = dt.utils.get_dataloaders(cfg)
     storage_path = "sqlite:///optuna_study.db"
     study = optuna.create_study(
         study_name="my_study",

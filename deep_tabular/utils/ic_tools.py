@@ -104,61 +104,116 @@ def get_target_columns(dataset_name):
     else:
         raise ValueError(f"Unknown dataset name: {dataset_name}")
 
-def split_ic_dataset(dataset_name, dataset_number, target_columns):
-    base_path = f'../../../data/{dataset_name}/'
-    dataset = pd.read_csv(f'{base_path}exp_100_{dataset_number}.csv', delimiter = '|')
-    dataset = dataset.drop(columns = non_numerical_columns)
+import os
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+# -------------------------------
+# SPLIT DATASETS
+# -------------------------------
+def split_dataset(base_path, dataset_file, target_columns, 
+                  delimiter=';', header='infer', drop_columns=None, prefix='dataset'):
+    """
+    Split a dataset into train/val/test and save to CSV.
+    """
+    dataset = pd.read_csv(os.path.join(base_path, dataset_file), delimiter=delimiter, header=header)
+
+    # Drop non-numerical if provided
+    if drop_columns:
+        dataset = dataset.drop(columns=drop_columns)
 
     dataset = dataset.astype(float)
 
+    # Targets
     y_full = dataset[target_columns].copy()
 
+    # Features (X)
+    X_full = dataset.drop(columns=target_columns, errors='ignore')
 
-    dataset.drop(columns = default_target_columns, inplace = True) #Não retira tudo, pois as outras targets collumns serão usadas como X em outras tasks
-    
-    X_full = dataset.copy()
+    # Train/test split (80/20)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_full, y_full, test_size=0.2, random_state=1
+    )
+    # Train/val split (15% do total = 0.1875 do treino)
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_train, y_train, test_size=0.1875, random_state=1
+    )
 
+    # Save splits
+    splits = {
+        "train_X": X_train, "val_X": X_val, "test_X": X_test,
+        "train_y": y_train, "val_y": y_val, "test_y": y_test
+    }
+    for split_name, df in splits.items():
+        df.to_csv(os.path.join(base_path, f"{prefix}_{split_name}.csv"), 
+                  index=False, header=(header != None))
 
-    X_train, X_test, y_train, y_test = train_test_split(X_full, y_full, test_size=0.2, random_state=1)
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1875, random_state=1) # 0.1875 x 0.8 = 0.15
-
-
-    X_train.to_csv(f'{base_path}ic_train_X.csv', index = False)
-    X_val.to_csv(f'{base_path}ic_val_X.csv', index = False)
-    X_test.to_csv(f'{base_path}ic_test_X.csv', index = False)
-
-    y_train.to_csv(f'{base_path}ic_train_y.csv', index = False)
-    y_val.to_csv(f'{base_path}ic_val_y.csv', index = False)
-    y_test.to_csv(f'{base_path}ic_test_y.csv', index = False)
-    return
-
-
+    return splits
+# IC dataset
 def split_ic_dataset(dataset_name, dataset_number, target_columns):
     base_path = f'../../../data/{dataset_name}/'
-    dataset = pd.read_csv(f'{base_path}exp_100_{dataset_number}.csv', delimiter = '|')
-    dataset = dataset.drop(columns = non_numerical_columns)
+    dataset_file = f'exp_100_{dataset_number}.csv'
+    return split_dataset(
+        base_path=base_path,
+        dataset_file=dataset_file,
+        target_columns=target_columns,
+        delimiter='|',
+        header=0,  # IC tem header
+        drop_columns=non_numerical_columns,
+        prefix='ic'
+    )
 
-    dataset = dataset.astype(float)
+def read_ic_dataset(dataset_name, target_columns, target=0):
+    base_path = f'../../../data/{dataset_name}/'
+    file_paths = {
+        'X_train': os.path.join(base_path, 'ic_train_X.csv'),
+        'X_val': os.path.join(base_path, 'ic_val_X.csv'),
+        'X_test': os.path.join(base_path, 'ic_test_X.csv'),
+        'y_train': os.path.join(base_path, 'ic_train_y.csv'),
+        'y_val': os.path.join(base_path, 'ic_val_y.csv'),
+        'y_test': os.path.join(base_path, 'ic_test_y.csv')
+    }
 
-    y_full = dataset[target_columns].copy()
+    # Leitura
+    X_train, X_val, X_test = [pd.read_csv(file_paths[k]) for k in ['X_train', 'X_val', 'X_test']]
+    y_train_full, y_val_full, y_test_full = [pd.read_csv(file_paths[k]) for k in ['y_train', 'y_val', 'y_test']]
 
-    dataset.drop(columns = default_target_columns, inplace = True) #Não retira tudo, pois as outras targets collumns serão usadas como X em outras tasks
-    
-    X_full = dataset.copy()
+    # Seleciona apenas a coluna-alvo pedida
+    target_name = target_columns[target]
+    y_train, y_val, y_test = [df[[target_name]] for df in [y_train_full, y_val_full, y_test_full]]
 
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
-    X_train, X_test, y_train, y_test = train_test_split(X_full, y_full, test_size=0.2, random_state=1)
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1875, random_state=1) # 0.1875 x 0.8 = 0.15
+# California dataset (só 1 target)
+def split_california_dataset(dataset_name):
+    base_path = f'../../../data/{dataset_name}/'
+    dataset_file = f'{dataset_name}.csv'
+    return split_dataset(
+        base_path=base_path,
+        dataset_file=dataset_file,
+        target_columns=[0],   # primeira coluna
+        delimiter=';',
+        header=None,          # não tem header
+        drop_columns=None,
+        prefix='california'
+    )
 
+def read_california_dataset(dataset_name):
+    base_path = f'../../../data/{dataset_name}/'
+    file_paths = {
+        'X_train': os.path.join(base_path, 'california_train_X.csv'),
+        'X_val': os.path.join(base_path, 'california_val_X.csv'),
+        'X_test': os.path.join(base_path, 'california_test_X.csv'),
+        'y_train': os.path.join(base_path, 'california_train_y.csv'),
+        'y_val': os.path.join(base_path, 'california_val_y.csv'),
+        'y_test': os.path.join(base_path, 'california_test_y.csv')
+    }
 
-    X_train.to_csv(f'{base_path}ic_train_X.csv', index = False)
-    X_val.to_csv(f'{base_path}ic_val_X.csv', index = False)
-    X_test.to_csv(f'{base_path}ic_test_X.csv', index = False)
+    # Leitura
+    X_train, X_val, X_test = [pd.read_csv(file_paths[k], header=None) for k in ['X_train', 'X_val', 'X_test']]
+    y_train, y_val, y_test = [pd.read_csv(file_paths[k], header=None) for k in ['y_train', 'y_val', 'y_test']]
 
-    y_train.to_csv(f'{base_path}ic_train_y.csv', index = False)
-    y_val.to_csv(f'{base_path}ic_val_y.csv', index = False)
-    y_test.to_csv(f'{base_path}ic_test_y.csv', index = False)
-    return
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
 def split_downstream_dataset(dataset_name: str, dataset_number: int):
     target_columns = get_target_columns(dataset_name)
@@ -199,7 +254,7 @@ def train_sample(xTrain, yTrain, sample_size):
         x_sampled, _, y_sampled, _ = train_test_split(xTrain, yTrain, train_size=sample_size, random_state=42)
         return x_sampled, y_sampled
     
-def read_ic_dataset(dataset_name, target_colums, target, stage='pretrain'):
+def read_ic_dataset(dataset_name, target_colums, target):
     """
     Function to read the IC dataset.
     Raises FileNotFoundError if any required CSV file is not found.
@@ -226,33 +281,37 @@ def read_ic_dataset(dataset_name, target_colums, target, stage='pretrain'):
     X_val = pd.read_csv(file_paths['X_val'])
     X_test = pd.read_csv(file_paths['X_test'])
     
-    # TODO: acho que esse drop é inutil
-    y_train_full = pd.read_csv(file_paths['y_train']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
-    y_val_full = pd.read_csv(file_paths['y_val']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
-    y_test_full = pd.read_csv(file_paths['y_test']).drop(columns = (target_colums[target] - default_target_columns[0] if target_colums[target] not in default_target_columns else []))
+    y_train_full = pd.read_csv(file_paths['y_train'])
+    y_val_full   = pd.read_csv(file_paths['y_val'])
+    y_test_full  = pd.read_csv(file_paths['y_test'])
 
     y_train = y_train_full[[target_colums[target]]]
-    y_val = y_val_full[[target_colums[target]]]
-    y_test = y_test_full[[target_colums[target]]]
-
-    if stage == 'ic_downstream1':
-        # Merge validation set into train, keep the dummy validation set for the code not to fail
-        y_train = pd.concat([y_train, y_val], ignore_index=True)
-        X_train = pd.concat([X_train, X_val], ignore_index=True)
+    y_val   = y_val_full[[target_colums[target]]]
+    y_test  = y_test_full[[target_colums[target]]]
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
-def get_datasets(dataset_name, dataset_number, target_columns, target=0, stage='pretrain'):
+def get_datasets(dataset_name, dataset_number=None, target_columns=None, target=0, dataset_type='ic'):
     """
-    Function to get the datasets for a given dataset name and number.
+    dataset_type: 'ic' or 'california'
     """
+    if dataset_type == 'ic':
+        try:
+            return read_ic_dataset(dataset_name, target_columns, target)
+        except FileNotFoundError:
+            split_ic_dataset(dataset_name, dataset_number, target_columns)
+            return read_ic_dataset(dataset_name, target_columns, target)
 
-    try:
-        return read_ic_dataset(dataset_name, target_columns, target, stage)
-    except FileNotFoundError:
-        split_ic_dataset(dataset_name, dataset_number, target_columns)
-        return read_ic_dataset(dataset_name, target_columns, target, stage)
-    
+    elif dataset_type == 'california':
+        try:
+            return read_california_dataset(dataset_name)
+        except FileNotFoundError:
+            split_california_dataset(dataset_name)
+            return read_california_dataset(dataset_name)
+
+    else:
+        raise ValueError(f"Unknown dataset_type: {dataset_type}")
+
 def get_last_char_as_int(s: str) -> int:
     if not s:
         raise ValueError("Input string cannot be empty.")
@@ -264,32 +323,58 @@ def get_last_char_as_int(s: str) -> int:
     except ValueError:
         raise ValueError(f"Last character '{last_char}' cannot be converted to an integer.")
 
+def get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id=None):
+    """
+    Monta a estrutura comum de saída para qualquer dataset.
+    """
+    info = {
+        "name": dataset_id if dataset_id is not None else dataset_name,
+        "task_type": task,
+        "n_num_features": len(X_train.columns),
+        "n_cat_features": 0,   # ambos são regressão, sem categóricas
+        "train_size": X_train.shape[0],
+        "val_size": X_val.shape[0],
+        "test_size": X_test.shape[0],
+        "n_classes": 1
+    }
+
+    numerical_data = {
+        "train": X_train.values.astype("float"),
+        "val": X_val.values.astype("float"),
+        "test": X_test.values.astype("float")
+    }
+
+    categorical_data = None
+    full_cat_data_for_encoder = None
+
+    targets = {
+        "train": y_train.values.astype("float"),
+        "val": y_val.values.astype("float"),
+        "test": y_test.values.astype("float")
+    }
+
+    return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder
+
 def get_ic_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
     dataset_id = get_last_char_as_int(dataset_name)
     target_columns = get_target_columns(dataset_name)
     print(f"Target columns: {len(target_columns)}")
-    X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(dataset_name, dataset_id, target_columns = target_columns, stage=stage)
 
+    X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(
+        dataset_name, dataset_id, target_columns=target_columns, dataset_type="ic"
+    )
 
-    info = {"name": dataset_id,
-            "task_type": task,
-            "n_num_features": len(X_train.columns),
-            "n_cat_features": 0, # Ic is a regreession task, so no categorical features
-            "train_size": X_train.shape[0],
-            "val_size": X_val.shape[0],
-            "test_size": X_test.shape[0]}
-    
-    
-    info["n_classes"] = 1
-    numerical_data = {"train": X_train.values.astype('float'), "val": X_val.values.astype('float'), "test": X_test.values.astype('float')}
-    categorical_data = None
-    full_cat_data_for_encoder = None
+    return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id)
 
-    targets = {"train": y_train.values.astype('float'), "val": y_val.values.astype('float'), "test": y_test.values.astype('float')}        
+def get_california_dataset(dataset_name, task, stage):
+    print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
 
-    return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder
+    X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(
+        dataset_name, target_columns=None, dataset_type="california"
+    )
 
+    return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task)
 
 def get_synthetic_dataset(n_samples=1000, n_features=10, noise=10.0, val_size=0.2, test_size=0.2, random_state=42):
     print(f"Generating synthetic dataset with {n_samples} samples, {n_features} features, noise={noise}")

@@ -79,6 +79,8 @@ def load_results(jsonl_path, prefer="test"):
                 rmse = stats.get("val_stats", {}).get("rmse") or stats.get("test_stats", {}).get("rmse") or stats.get("train_stats", {}).get("rmse")
             else:
                 rmse = stats.get("train_stats", {}).get("rmse") or stats.get("val_stats", {}).get("rmse") or stats.get("test_stats", {}).get("rmse")
+            rmse_train = stats.get("train_stats", {}).get("rmse")
+            rmse_test  = stats.get("test_stats", {}).get("rmse")
 
             # If RMSE still None, skip
             if rmse is None:
@@ -89,6 +91,8 @@ def load_results(jsonl_path, prefer="test"):
                 "strategy": strategy,
                 "imputation": imputation,
                 "rmse": float(rmse),
+                "rmse_train": float(rmse_train) if rmse_train is not None else None,
+                "rmse_test": float(rmse_test) if rmse_test is not None else None,
                 "run_id": run_id
             })
     df = pd.DataFrame(rows)
@@ -251,15 +255,80 @@ def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_o
 
     plt.show()
 
+def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_order=None):
+    """
+    Gera boxplots do overfitting gap (test_rmse - train_rmse) para cada estratégia e imputação.
+    """
+    os.makedirs(out_dir, exist_ok=True)
+
+    if "rmse_train" not in df.columns or "rmse_test" not in df.columns:
+        raise ValueError("O DataFrame precisa conter as colunas rmse_train e rmse_test.")
+
+    df = df.copy()
+    df["overfit_gap"] = df["rmse_test"] - df["rmse_train"]
+
+    if strategies_order is None:
+        strategies_order = ['FS', 'LH-E2E', 'MLP-E2E', 'LH', 'MLP']
+    if imputations_order is None:
+        imputations_order = sorted(df['imputation'].unique())
+
+    n_imputations = len(imputations_order)
+    fig, axes = plt.subplots(
+        1, n_imputations,
+        figsize=(5 * n_imputations, 5),
+        sharey=True
+    )
+    if n_imputations == 1:
+        axes = [axes]
+
+    for ax, imp in zip(axes, imputations_order):
+        df_imp = df[df["imputation"] == imp]
+
+        sns.boxplot(
+            data=df_imp,
+            x="strategy",
+            y="overfit_gap",
+            order=strategies_order,
+            ax=ax,
+            palette="Set2"
+        )
+        sns.stripplot(
+            data=df_imp,
+            x="strategy",
+            y="overfit_gap",
+            order=strategies_order,
+            ax=ax,
+            color="black",
+            alpha=0.5,
+            jitter=True,
+            dodge=True
+        )
+
+        ax.set_title(f"Imputation: {imp}", fontsize=14, fontname="Times New Roman")
+        ax.set_xlabel("Strategy", fontsize=12, fontname="Times New Roman")
+        ax.set_ylabel("Overfitting gap (Test RMSE - Train RMSE)", fontsize=12, fontname="Times New Roman")
+        ax.tick_params(axis="x", rotation=30)
+
+    plt.tight_layout()
+    path_complete = os.path.join(out_dir, "boxplot_overfitting")
+    plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+    plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+    plt.savefig(path_complete + ".svg", bbox_inches="tight")
+    with open(path_complete + ".fig.pickle", "wb") as f:
+        pickle.dump(fig, f)
+
+    plt.show()
+
 # ---------------------------
 # Example usage
 # ---------------------------
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\mlp\all_experiments"
+    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ft-transformer\ic_upstream3"
     jsonl = os.path.join(path, "results.jsonl")
 
     df = load_results(jsonl, prefer="test")
 
-    rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    plot_and_save_heatmap(rank_df, out_dir=path)
+    # rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+    # plot_and_save_heatmap(rank_df, out_dir=path)
+    plot_BoxPlots_overfitting(df, out_dir=path)

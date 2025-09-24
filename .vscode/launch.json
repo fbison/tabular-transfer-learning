@@ -48,6 +48,18 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "pre train california",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                    "model=mlp", 
+                    "hyp=hyp_for_transfer",
+                    "dataset=california"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "train transfering downstream",
             "type": "debugpy",
             "request": "launch",

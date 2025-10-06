@@ -1,0 +1,19 @@
+{
+    "dataset": "japan_Sample100",
+    "model_name": "mlp",
+    "run_id": "japan_Sample100_fromScratch_seed92",
+    "best_epoch": 96,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.7052782425438484,
+        "rmse": 0.7052782425438484
+    },
+    "train_stats": {
+        "score": -0.46588217625538436,
+        "rmse": 0.46588217625538436
+    },
+    "val_stats": {
+        "score": -0.0,
+        "rmse": 0.0
+    }
+}

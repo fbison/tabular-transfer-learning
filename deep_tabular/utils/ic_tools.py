@@ -134,10 +134,15 @@ def split_dataset(base_path, dataset_file, target_columns,
     X_train, X_test, y_train, y_test = train_test_split(
         X_full, y_full, test_size=0.2, random_state=1
     )
-    # Train/val split (15% do total = 0.1875 do treino)
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_train, y_train, test_size=0.1875, random_state=1
-    )
+    
+    if(dataset_file.startswith("japan")): # se for o japan dataset, não tem validação
+        X_val = pd.DataFrame(columns=X_train.columns)
+        if isinstance(y_train, pd.DataFrame):
+            y_val = pd.DataFrame(columns=y_train.columns)
+    else: # Train/val split (15% do total = 0.1875 do treino)
+         X_train, X_val, y_train, y_val = train_test_split(
+            X_train, y_train, test_size=0.1875, random_state=1
+        )
 
     # Save splits
     splits = {
@@ -184,8 +189,8 @@ def read_ic_dataset(dataset_name, target_columns, target=0):
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
-# California dataset (só 1 target)
-def split_california_dataset(dataset_name):
+# cep dataset (só 1 target)
+def split_cep_dataset(dataset_name):
     base_path = f'../../../data/{dataset_name}/'
     dataset_file = f'{dataset_name}.csv'
     return split_dataset(
@@ -195,23 +200,34 @@ def split_california_dataset(dataset_name):
         delimiter=';',
         header=None,          # não tem header
         drop_columns=None,
-        prefix='california'
+        prefix='cep'
     )
 
-def read_california_dataset(dataset_name):
+def safe_read_csv(path, **kwargs):
+    try:
+        df = pd.read_csv(path, **kwargs)
+        # return empty DataFrame if file exists but has no rows
+        if df.empty:
+            return pd.DataFrame()
+        return df
+    except pd.errors.EmptyDataError:
+        # if CSV file exists but is empty
+        return pd.DataFrame()
+    
+def read_cep_dataset(dataset_name):
     base_path = f'../../../data/{dataset_name}/'
     file_paths = {
-        'X_train': os.path.join(base_path, 'california_train_X.csv'),
-        'X_val': os.path.join(base_path, 'california_val_X.csv'),
-        'X_test': os.path.join(base_path, 'california_test_X.csv'),
-        'y_train': os.path.join(base_path, 'california_train_y.csv'),
-        'y_val': os.path.join(base_path, 'california_val_y.csv'),
-        'y_test': os.path.join(base_path, 'california_test_y.csv')
+        'X_train': os.path.join(base_path, 'cep_train_X.csv'),
+        'X_val': os.path.join(base_path, 'cep_val_X.csv'),
+        'X_test': os.path.join(base_path, 'cep_test_X.csv'),
+        'y_train': os.path.join(base_path, 'cep_train_y.csv'),
+        'y_val': os.path.join(base_path, 'cep_val_y.csv'),
+        'y_test': os.path.join(base_path, 'cep_test_y.csv')
     }
 
     # Leitura
-    X_train, X_val, X_test = [pd.read_csv(file_paths[k], header=None) for k in ['X_train', 'X_val', 'X_test']]
-    y_train, y_val, y_test = [pd.read_csv(file_paths[k], header=None) for k in ['y_train', 'y_val', 'y_test']]
+    X_train, X_val, X_test = [ safe_read_csv(file_paths[k], header=None) for k in ['X_train', 'X_val', 'X_test'] ]
+    y_train, y_val, y_test = [ safe_read_csv(file_paths[k], header=None) for k in ['y_train', 'y_val', 'y_test'] ]
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
@@ -293,7 +309,7 @@ def read_ic_dataset(dataset_name, target_colums, target):
 
 def get_datasets(dataset_name, dataset_number=None, target_columns=None, target=0, dataset_type='ic'):
     """
-    dataset_type: 'ic' or 'california'
+    dataset_type: 'ic' or 'cep'
     """
     if dataset_type == 'ic':
         try:
@@ -302,12 +318,12 @@ def get_datasets(dataset_name, dataset_number=None, target_columns=None, target=
             split_ic_dataset(dataset_name, dataset_number, target_columns)
             return read_ic_dataset(dataset_name, target_columns, target)
 
-    elif dataset_type == 'california':
+    elif dataset_type == 'cep':
         try:
-            return read_california_dataset(dataset_name)
+            return read_cep_dataset(dataset_name)
         except FileNotFoundError:
-            split_california_dataset(dataset_name)
-            return read_california_dataset(dataset_name)
+            split_cep_dataset(dataset_name)
+            return read_cep_dataset(dataset_name)
 
     else:
         raise ValueError(f"Unknown dataset_type: {dataset_type}")
@@ -367,11 +383,11 @@ def get_ic_dataset(dataset_name, task, stage):
 
     return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id)
 
-def get_california_dataset(dataset_name, task, stage):
+def get_cep_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
 
     X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(
-        dataset_name, target_columns=None, dataset_type="california"
+        dataset_name, target_columns=None, dataset_type="cep"
     )
 
     return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task)

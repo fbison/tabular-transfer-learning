@@ -68,6 +68,7 @@ def main(cfg: DictConfig):
     ####################################################
     #        Train
     log.info(f"==> Starting training for {max(cfg.hyp.epochs - start_epoch, 0)} epochs...")
+    all_train_stats = [] if cfg.hyp.save_all_epochs else None
     highest_val_acc_so_far = -np.inf
     done = False
     epoch = start_epoch
@@ -104,6 +105,15 @@ def main(cfg: DictConfig):
                                   f"test_acc-{cfg.dataset.name}"],
                                  epoch,
                                  writer)
+            # salva stats de treino, se habilitado
+            if cfg.hyp.save_all_epochs:
+                all_train_stats.append({
+                    "epoch": epoch,
+                    "train_stats": train_stats,
+                    "val_stats": val_stats,
+                    "test_stats": test_stats,
+                    "loss": float(loss)
+                })
 
         if cfg.hyp.use_patience:
             val_stats, test_stats = dt.evaluate_model(net,
@@ -146,7 +156,8 @@ def main(cfg: DictConfig):
                          ("routine", "from_scratch"),
                          ("test_stats", test_stats),
                          ("train_stats", train_stats),
-                         ("val_stats", val_stats)])
+                         ("val_stats", val_stats),
+                         ("all_train_stats", all_train_stats)])
     try:
         with open(os.path.join("stats.json"), "w") as fp:
             json.dump(stats, fp, indent=4)

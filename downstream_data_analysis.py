@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import mannwhitneyu
+from statistics import mode, StatisticsError
 import plotly.express as px
 import plotly.io as pio
 import pickle
@@ -81,7 +82,7 @@ def load_results(jsonl_path, prefer="test"):
                 rmse = stats.get("train_stats", {}).get("rmse") or stats.get("val_stats", {}).get("rmse") or stats.get("test_stats", {}).get("rmse")
             rmse_train = stats.get("train_stats", {}).get("rmse")
             rmse_test  = stats.get("test_stats", {}).get("rmse")
-
+            rmse_val   = stats.get("val_stats", {}).get("rmse")
             # If RMSE still None, skip
             if rmse is None:
                 continue
@@ -319,16 +320,58 @@ def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_or
 
     plt.show()
 
+def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename="summary.csv"):
+    """
+    Gera estatísticas agregadas por configuração.
+
+    Args:
+        df (pd.DataFrame): DataFrame com colunas ["sample", "strategy", "imputation", "rmse", ...]
+        out_dir (str): Caminho onde salvar o CSV.
+        group_cols (list[str], opcional): Colunas para agrupar. Default = ["sample", "strategy", "imputation"].
+        filename (str): Nome do CSV de saída.
+    """
+    if group_cols is None:
+        group_cols = ["sample", "strategy", "imputation"]
+
+    summaries = []
+
+    grouped = df.groupby(group_cols)
+    for keys, group in grouped:
+        rmses = group["rmse"].tolist()
+        try:
+            rmse_mode = mode(rmses)
+        except StatisticsError:
+            rmse_mode = None  # se não houver moda definida
+
+        summaries.append({
+            **dict(zip(group_cols, keys)),
+            "best": min(rmses),
+            "worst": max(rmses),
+            "mean": group["rmse"].mean(),
+            "std": group["rmse"].std(),
+            "mode": rmse_mode,
+            "median": group["rmse"].median(),
+            "count": len(rmses),
+        })
+
+    summary_df = pd.DataFrame(summaries)
+
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, filename)
+    summary_df.to_csv(out_path, index=False)
+
+    return summary_df
 # ---------------------------
 # Example usage
 # ---------------------------
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ft-transformer\ic_upstream3"
+    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\all_experiments"
     jsonl = os.path.join(path, "results.jsonl")
 
     df = load_results(jsonl, prefer="test")
 
-    # rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    # plot_and_save_heatmap(rank_df, out_dir=path)
+    rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+    plot_and_save_heatmap(rank_df, out_dir=path)
     plot_BoxPlots_overfitting(df, out_dir=path)
+    summarize_results(df, out_dir=path)

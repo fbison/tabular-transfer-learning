@@ -1,19 +1,19 @@
 {
     "dataset": "california",
     "model_name": "mlp",
-    "run_id": "starboard-Gerry",
-    "best_epoch": 199,
+    "run_id": "vestral-Herschell",
+    "best_epoch": 95,
     "routine": "from_scratch",
     "test_stats": {
-        "score": -0.5911591839821624,
-        "rmse": 0.5911591839821624
+        "score": -0.3707686999983917,
+        "rmse": 0.3707686999983917
     },
     "train_stats": {
-        "score": -0.5567771430338423,
-        "rmse": 0.5567771430338423
+        "score": -0.3079094300028562,
+        "rmse": 0.3079094300028562
     },
     "val_stats": {
-        "score": -0.491000257569625,
-        "rmse": 0.491000257569625
+        "score": -0.2981441950362578,
+        "rmse": 0.2981441950362578
     }
 }

@@ -16,7 +16,7 @@ import train_net_from_scratch
 import transfer_learn_net
 import deep_tabular as dt
 
-N_JOBS_MAX = 20  # Número máximo de jobs do HPC DA USP
+N_JOBS_MAX = 1  # Número máximo de jobs do HPC DA USP
 import numpy as np
 import torch
 
@@ -88,7 +88,7 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
     return result
 
 def select_epoch(samples: int, mlpHead: bool, freeze: bool) -> int:
-    
+    return 200
     if freeze:
         return 100 if mlpHead else 200  
         # Congelando, precisa de mais épocas para ajustar a cabeça e já reduz o risco de overfitting
@@ -101,6 +101,9 @@ def select_epoch(samples: int, mlpHead: bool, freeze: bool) -> int:
         return 90
     else:
         return 200
+    
+
+
 
 def selectHeadLearningRate(mlpHead: bool, base_lr: float, upstream_head_lr: float) -> float:
     if mlpHead:
@@ -115,25 +118,31 @@ def main(cfg: DictConfig):
     log = logging.getLogger()
     log.info("\n_________________________________________________\n")
     log.info("train_net_from_scratch.py main() running.")
+    benchmark = False
     log.info(OmegaConf.to_yaml(cfg))
     config = cfg["preTrained"]
     model = config["model"]
     hyp = config["hyp"]
     hyp["use_patience"] = False  
+    hyp["save_all_epochs"] = True
+    hyp["val_period"] = 1
     # Como downstream é muito pequeno, não há dataset de validação, e por isso não se usa paciência
     # Caso seja possível usar paciência, ainda assim, é preciso garantir que o model_best.pth seja salvo 
     # em uma pasta diferente para cada job, de forma a evitar conflitos
     upstream_number = config["number"]
     model['model_path'] = config["model_path"]
-    downstreamName= "ic_downstream1"
-    sampleSizes = [5, 10, 20, 50, 75]
+    downstreamName= 'japan' if benchmark else "ic_downstream1"
+    sampleSizes = [25, 50, 75, 100] if benchmark else [5, 10, 20, 50, 75]
     seeds = [2, 12, 22, 32, 42, 52, 62, 72, 82, 92]
     # Monta todos os jobs a serem executados
     jobs = []
 
     for seed in seeds:
         for sample in sampleSizes:
-            dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{config['imputationMethod']}_exp_100_{upstream_number}"
+            if not benchmark:
+                dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{config['imputationMethod']}_exp_100_{upstream_number}"
+            else:
+                dataset_name = f"{downstreamName}_Sample{sample}"
             full_name = f"{dataset_name}"
             dataset_cfg = {
                 "name": full_name,
@@ -151,7 +160,7 @@ def main(cfg: DictConfig):
                     hyp_cfg = copy.deepcopy(hyp)
                     hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze)
                     hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, hyp["lr"], hyp["head_lr"])
-                    hyp_cfg["lr"] = 0.00005
+                    hyp_cfg["lr"] = 0.00005 
                     hyp_cfg["seed"] = seed
                     model_cfg["use_mlp_head"] = mlpHead
                     model_cfg["freeze_feature_extractor"] = freeze

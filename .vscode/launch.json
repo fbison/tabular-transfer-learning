@@ -24,7 +24,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_from_scratch.py",
-            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_Gaussian_exp_100_1"],
+            "args": ["model=mlp", "dataset=california"],
             "console": "integratedTerminal"
         },
         {
@@ -41,9 +41,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                    "model=mlp_pretrain_up2_mean", 
-                    "hyp=hyp_pretrain_up2_mean",
-                    "dataset=ic_upstream2_Imputation_Mean_exp_100_1"
+                    "model=mlp_california", 
+                    "hyp=hyp_california",
+                    "dataset=california"
             ],
             "console": "integratedTerminal"
         },
@@ -88,7 +88,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream3_Imputation_Gaussian_exp_100_1"],
+            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Gaussian_exp_100_1"],
             "console": "integratedTerminal"
         }
     ]

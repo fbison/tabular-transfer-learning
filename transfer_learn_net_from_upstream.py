@@ -1,3 +1,4 @@
+from omegaconf import open_dict
 import json
 import logging
 import os
@@ -123,6 +124,8 @@ def main(cfg: DictConfig):
     config = cfg["preTrained"]
     model = config["model"]
     hyp = config["hyp"]
+    with open_dict(hyp):
+        hyp["save_all_epochs"] = True
     hyp["use_patience"] = False  
     hyp["save_all_epochs"] = True
     hyp["val_period"] = 1
@@ -175,7 +178,7 @@ def main(cfg: DictConfig):
             model_from_scratch["freeze_feature_extractor"] = False
             hyp_from_scratch["seed"] = seed
             configName = f"{dataset_name}_fromScratch_seed{seed}"
-            jobs.append((model_cfg, dataset_cfg, hyp_from_scratch, configName, log, True))
+            jobs.append((model_from_scratch, dataset_cfg, hyp_from_scratch, configName, log, True))
 
     # ============================
     # Executa os jobs em paralelo de um mesmo upstream

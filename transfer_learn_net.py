@@ -110,8 +110,6 @@ def main(cfg: DictConfig):
                 all_train_stats.append({
                     "epoch": epoch,
                     "train_stats": train_stats,
-                    "val_stats": val_stats,
-                    "test_stats": test_stats,
                     "loss": float(loss)
                 })
 

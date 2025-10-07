@@ -83,6 +83,8 @@ def load_results(jsonl_path, prefer="test"):
             rmse_train = stats.get("train_stats", {}).get("rmse")
             rmse_test  = stats.get("test_stats", {}).get("rmse")
             rmse_val   = stats.get("val_stats", {}).get("rmse")
+            all_train_stats = stats.get("all_train_stats", [])
+
             # If RMSE still None, skip
             if rmse is None:
                 continue
@@ -94,7 +96,8 @@ def load_results(jsonl_path, prefer="test"):
                 "rmse": float(rmse),
                 "rmse_train": float(rmse_train) if rmse_train is not None else None,
                 "rmse_test": float(rmse_test) if rmse_test is not None else None,
-                "run_id": run_id
+                "run_id": run_id,
+                "all_train_stats": all_train_stats
             })
     df = pd.DataFrame(rows)
     # drop rows that failed to parse sample or strategy (optional)
@@ -361,6 +364,77 @@ def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename=
     summary_df.to_csv(out_path, index=False)
 
     return summary_df
+
+def analyze_training_curves(df: pd.DataFrame, out_dir: str):
+
+    for (strategy, imputation), group in df.groupby(["strategy", "imputation"]):
+        plt.figure(figsize=(8, 5))
+
+        # plot curvas individuais
+        for _, row in group.iterrows():
+            if not row["all_train_stats"]:
+                continue
+            epochs = [e["epoch"] for e in row["all_train_stats"]]
+            rmses = [e["train_stats"]["rmse"] for e in row["all_train_stats"]]
+            plt.plot(epochs, rmses, alpha=0.3, lw=1)
+
+        plt.title(f"Curvas de Aprendizado — {strategy} / {imputation}")
+        plt.xlabel("Época")
+        plt.ylabel("RMSE de Treino")
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        path_complete = os.path.join(out_dir, f"CurvaAprendizado {strategy} - {imputation}")
+        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+        plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+        plt.savefig(path_complete + ".svg", bbox_inches="tight")
+        plt.show()
+
+        # === curva média ===
+        max_epochs = max(max([e["epoch"] for e in r["all_train_stats"]]) for _, r in group.iterrows())
+        all_rmse = np.zeros((len(group), max_epochs+1)) * np.nan
+        for i, (_, row) in enumerate(group.iterrows()):
+            epochs = [e["epoch"] for e in row["all_train_stats"]]
+            rmses = [e["train_stats"]["rmse"] for e in row["all_train_stats"]]
+            all_rmse[i, epochs] = rmses
+        mean_rmse = np.nanmean(all_rmse, axis=0)
+        std_rmse = np.nanstd(all_rmse, axis=0)
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(range(len(mean_rmse)), mean_rmse, label="Média RMSE", lw=2)
+        plt.fill_between(range(len(mean_rmse)), mean_rmse-std_rmse, mean_rmse+std_rmse, alpha=0.2)
+        plt.title(f"Convergência Média — {strategy} / {imputation}")
+        plt.xlabel("Época")
+        plt.ylabel("RMSE médio de Treino")
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        path_complete = os.path.join(out_dir, f"ConvergenciaMedia- {strategy}- {imputation}")
+        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+        plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+        plt.savefig(path_complete + ".svg", bbox_inches="tight")
+        plt.show()
+
+        # === detecção de plateau ===
+        diffs = np.abs(np.gradient(mean_rmse))
+        plateau_epoch = np.argmax(diffs < 1e-4)  # época onde o gradiente da perda "achata"
+        plt.figure(figsize=(8, 5))
+        plt.plot(mean_rmse, label="RMSE médio")
+        plt.axvline(plateau_epoch, color="red", ls="--", label=f"Plateau ~ Época {plateau_epoch}")
+        plt.title(f"Análise de Plateau — {strategy} - {imputation}")
+        plt.xlabel("Época")
+        plt.ylabel("RMSE")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        path_complete = os.path.join(out_dir, f"Análise de Plateau- {strategy} - {imputation}")
+        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+        plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+        plt.savefig(path_complete + ".svg", bbox_inches="tight")
+        plt.show()
+
+        print(f"→ {strategy}/{imputation}: plateau detectado próximo da época {plateau_epoch}, "
+              f"RMSE médio final = {mean_rmse[-1]:.4f}")
+        
 # ---------------------------
 # Example usage
 # ---------------------------
@@ -375,3 +449,4 @@ if __name__ == "__main__":
     plot_and_save_heatmap(rank_df, out_dir=path)
     plot_BoxPlots_overfitting(df, out_dir=path)
     summarize_results(df, out_dir=path)
+    analyze_training_curves(df, out_dir=path)

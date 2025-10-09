@@ -10,6 +10,7 @@ from statistics import mode, StatisticsError
 import plotly.express as px
 import plotly.io as pio
 import pickle
+import re
 
 # ---------------------------
 # Helpers: parsing and mapping
@@ -23,6 +24,14 @@ def parse_imputation_from_dataset_name(name):
     # split after _Imputation_
     m = re.search(r"_Imputation_([^_]+)", name)
     return m.group(1) if m else "unknown"
+
+def parse_upstream_from_model_path_name(name: str):
+    # pega o trecho que começa com mlp- e termina antes de /model_best.pth
+    if not name:
+        return None
+    match = re.search(r'mlp-(.+?)/model_best\.pth$', name)
+    return match.group(1) if match else None
+
 
 def map_strategy_from_runid(run_id):
     # adapt mapping to cover variants seen in your run_id
@@ -93,6 +102,7 @@ def load_results(jsonl_path, prefer="test"):
                 "sample": sample,
                 "strategy": strategy,
                 "imputation": imputation,
+                "upstream": parse_upstream_from_model_path_name(cfg.get("model", {}).get("model_path", "")),
                 "rmse": float(rmse),
                 "rmse_train": float(rmse_train) if rmse_train is not None else None,
                 "rmse_test": float(rmse_test) if rmse_test is not None else None,
@@ -108,82 +118,111 @@ def load_results(jsonl_path, prefer="test"):
 # ---------------------------
 # Ranking function for one sample
 # ---------------------------
-def compute_ranks_for_sample(df_sample, alpha=0.05, min_seeds=2, verbose=False):
+def compute_ranks_for_sample(df_sample, alpha=0.05, min_seeds=2, group_field=None, verbose=False):
     """
-    df_sample: subset of df with a single sample value; must have columns strategy, imputation, rmse
-    Returns dict: {(strategy, imputation): rank}
+    df_sample: subset of df with a single sample value.
+    group_field: optional column name to subdivide rankings (e.g., 'upstream'). 
+                 If None, behaves like the original function.
+    Returns dict: {(strategy, imputation): mean_rank_across_groups} if group_field provided,
+                  else {(strategy, imputation): rank}.
     """
-    # list of configs
-    configs_df = df_sample[['strategy','imputation']].drop_duplicates().reset_index(drop=True)
-    keys = [tuple(x) for x in configs_df.values.tolist()]
+    # função auxiliar para calcular o ranking de um subconjunto
+    def _rank_subset(sub_df):
+        configs_df = sub_df[['strategy', 'imputation']].drop_duplicates().reset_index(drop=True)
+        keys = [tuple(x) for x in configs_df.values.tolist()]
 
-    # seed counts per config
-    counts = {k: df_sample[(df_sample['strategy']==k[0]) & (df_sample['imputation']==k[1])].shape[0] for k in keys}
-    if verbose:
-        print("Sample:", df_sample['sample'].iloc[0], "config seed counts:", counts)
+        counts = {
+            k: sub_df[(sub_df['strategy'] == k[0]) & (sub_df['imputation'] == k[1])].shape[0]
+            for k in keys
+        }
 
-    # if any config has too few seeds, fall back to mean-based dense ranking
-    if any(v < min_seeds for v in counts.values()):
-        if verbose:
-            print("Not enough seeds for at least one config (min_seeds={}): falling back to mean-based ranking.".format(min_seeds))
-        means = {k: df_sample[(df_sample['strategy']==k[0]) & (df_sample['imputation']==k[1])]['rmse'].mean() for k in keys}
-        # dense ranking by mean (smaller rmse -> better rank 1)
-        sorted_keys = sorted(keys, key=lambda k: means[k])
-        ranks = {}
-        current_rank = 1
-        prev = None
-        for k in sorted_keys:
-            if prev is None or not np.isclose(means[k], prev):
+        if any(v < min_seeds for v in counts.values()):
+            means = {
+                k: sub_df[(sub_df['strategy'] == k[0]) & (sub_df['imputation'] == k[1])]['rmse'].mean()
+                for k in keys
+            }
+            sorted_keys = sorted(keys, key=lambda k: means[k])
+            ranks, current_rank, prev = {}, 1, None
+            for k in sorted_keys:
+                if prev is None or not np.isclose(means[k], prev):
+                    ranks[k] = current_rank
+                    prev = means[k]
+                    current_rank += 1
+                else:
+                    ranks[k] = current_rank - 1
+            return ranks
+
+        ranks, assigned, current_rank = {}, set(), 1
+        while len(assigned) < len(keys):
+            unassigned = [k for k in keys if k not in assigned]
+            best = min(
+                unassigned,
+                key=lambda k: sub_df[(sub_df['strategy'] == k[0]) & (sub_df['imputation'] == k[1])]['rmse'].mean(),
+            )
+
+            same_rank = []
+            for k in unassigned:
+                a = sub_df[(sub_df['strategy'] == best[0]) & (sub_df['imputation'] == best[1])]['rmse'].values
+                b = sub_df[(sub_df['strategy'] == k[0]) & (sub_df['imputation'] == k[1])]['rmse'].values
+                try:
+                    _, p = mannwhitneyu(a, b, alternative="less")
+                except Exception:
+                    p = 1.0
+                if p >= alpha:
+                    same_rank.append(k)
+
+            for k in same_rank:
                 ranks[k] = current_rank
-                prev = means[k]
-                current_rank += 1
-            else:
-                ranks[k] = current_rank - 1
+                assigned.add(k)
+            current_rank += 1
         return ranks
 
-    # Otherwise perform iterative Mann-Whitney grouping as described
-    ranks = {}
-    assigned = set()
-    current_rank = 1
-    while len(assigned) < len(keys):
-        unassigned = [k for k in keys if k not in assigned]
-        # choose the best (lowest mean rmse) among unassigned as reference
-        best = min(unassigned, key=lambda k: df_sample[(df_sample['strategy']==k[0]) & (df_sample['imputation']==k[1])]['rmse'].mean())
+    # sem campo adicional → ranking direto
+    if not group_field:
+        return _rank_subset(df_sample)
 
-        same_rank = []
-        for k in unassigned:
-            a = df_sample[(df_sample['strategy']==best[0]) & (df_sample['imputation']==best[1])]['rmse'].values
-            b = df_sample[(df_sample['strategy']==k[0]) & (df_sample['imputation']==k[1])]['rmse'].values
-            try:
-                stat, p = mannwhitneyu(a, b, alternative="less")
-            except Exception as e:
-                # if mannwhitney fails (e.g., all-values-equal edge cases), treat as non-significant
-                p = 1.0
-            if verbose:
-                print(f"Compare best {best} vs {k} -> p={p:.4f}")
-            if p >= alpha:
-                same_rank.append(k)
+    # com campo adicional → calcula ranking dentro de cada grupo e tira média dos ranks
+    control_rows = df_sample[df_sample[group_field].isna()]
+    grouped_ranks = []
+    for val, sub_df in df_sample.groupby(group_field):
+        # adiciona as linhas None ao grupo atual
+        sub_with_control = pd.concat([sub_df, control_rows], ignore_index=True)
+        sub_ranks = _rank_subset(sub_with_control)
+        grouped_ranks.append(sub_ranks)
 
-        for k in same_rank:
-            ranks[k] = current_rank
-            assigned.add(k)
-        current_rank += 1
+    # média dos ranks para cada config
+    all_keys = set(k for ranks in grouped_ranks for k in ranks.keys())
+    mean_ranks = {
+        k: np.mean([ranks.get(k, np.nan) for ranks in grouped_ranks if k in ranks])
+        for k in all_keys
+    }
+    return mean_ranks
 
-    return ranks
 
 # ---------------------------
 # Build heatmap-ready DataFrame
 # ---------------------------
-def build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False):
+def build_rank_table(df, alpha=0.05, min_seeds=2, group_field=None, verbose=False):
+    """
+    Constrói um DataFrame com os ranks médios por (strategy, imputation)
+    e opcionalmente agrupados por um campo adicional.
+    """
     results = []
     for sample, dfg in df.groupby('sample'):
-        ranks = compute_ranks_for_sample(dfg, alpha=alpha, min_seeds=min_seeds, verbose=verbose)
+        ranks = compute_ranks_for_sample(
+            dfg, alpha=alpha, min_seeds=min_seeds, group_field=group_field, verbose=verbose
+        )
         for (strategy, imputation), rank in ranks.items():
-            results.append({"sample": sample, "strategy": strategy, "imputation": imputation, "rank": rank})
-    rank_df = pd.DataFrame(results)
-    return rank_df
+            results.append({
+                "sample": sample,
+                "strategy": strategy,
+                "imputation": imputation,
+                "rank": rank,
+            })
+    return pd.DataFrame(results)
 
-def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_order=None):
+
+def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imputations_order=None):
     os.makedirs(out_dir, exist_ok=True)
     
     # Strategy and imputation ordering
@@ -219,7 +258,7 @@ def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_o
             df_imp,
             ax=ax,
             annot=True,
-            fmt="d",
+            fmt="0.2f",
             cmap="RdYlBu_r",
             vmin=vmin, vmax=vmax,   # keep same color scale
             cbar=ax == axes[-1],
@@ -248,10 +287,10 @@ def plot_and_save_heatmap(rank_df, out_dir, strategies_order=None, imputations_o
         ax.set_aspect("equal")
 
     plt.tight_layout()
-    path_complete = os.path.join(out_dir, "heatmap")
+    path_complete = os.path.join(out_dir, f"heatmap-{name}")
     plt.savefig((path_complete + ".png"), dpi=300, bbox_inches="tight")
-    plt.savefig((path_complete + ".pdf"), bbox_inches="tight")
-    plt.savefig((path_complete + ".svg"), bbox_inches="tight")
+    #plt.savefig((path_complete + ".pdf"), bbox_inches="tight")
+    #plt.savefig((path_complete + ".svg"), bbox_inches="tight")
 
     with open((path_complete + ".fig.pickle"), "wb") as f:
         pickle.dump(fig, f)
@@ -316,12 +355,12 @@ def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_or
     plt.tight_layout()
     path_complete = os.path.join(out_dir, "boxplot_overfitting")
     plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-    plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-    plt.savefig(path_complete + ".svg", bbox_inches="tight")
+    ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+    ###plt.savefig(path_complete + ".svg", bbox_inches="tight")
     with open(path_complete + ".fig.pickle", "wb") as f:
         pickle.dump(fig, f)
 
-    plt.show()
+    ##plt.show()
 
 def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename="summary.csv"):
     """
@@ -367,31 +406,52 @@ def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename=
 
 def analyze_training_curves(df: pd.DataFrame, out_dir: str):
 
+    # paleta de cores por upstream
+    upstreams = df["upstream"].unique()
+    palette = dict(zip(upstreams, sns.color_palette("tab10", len(upstreams))))
+
+    # armazenar médias para o gráfico comparativo
+    mean_curves = []
+
     for (strategy, imputation), group in df.groupby(["strategy", "imputation"]):
         plt.figure(figsize=(8, 5))
 
         # plot curvas individuais
+        unique_upstreams = df["upstream"].unique()
+        palette = dict(zip(unique_upstreams, sns.color_palette("husl", len(unique_upstreams))))
+
         for _, row in group.iterrows():
             if not row["all_train_stats"]:
                 continue
             epochs = [e["epoch"] for e in row["all_train_stats"]]
             rmses = [e["train_stats"]["rmse"] for e in row["all_train_stats"]]
-            plt.plot(epochs, rmses, alpha=0.3, lw=1)
+            color = palette[row["upstream"]]
+            plt.plot(epochs, rmses, alpha=0.3, lw=1, color=color, label=row["upstream"])
+
+        # remover labels duplicados da legenda
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        plt.legend(by_label.values(), by_label.keys(), title="Upstreams")
 
         plt.title(f"Curvas de Aprendizado — {strategy} / {imputation}")
         plt.xlabel("Época")
         plt.ylabel("RMSE de Treino")
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
-        path_complete = os.path.join(out_dir, f"CurvaAprendizado {strategy} - {imputation}")
+        out_dir_complete = os.path.join(out_dir, "training_curves")
+        os.makedirs(out_dir_complete, exist_ok=True)
+        path_complete = os.path.join(out_dir_complete, f"CurvaAprendizado {strategy} - {imputation}")
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-        plt.savefig(path_complete + ".svg", bbox_inches="tight")
-        plt.show()
+        ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+        ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
+        ##plt.show()
 
         # === curva média ===
+        # // ao invés de gerar n gráfico baseados na combinação de strategy/imputation,
+        # // gerar um gráfico com a curva média de cada uma dessas combinações, para facilitar a comparação
+        # // com isso não é preciso gerar dentro da pasta 
         max_epochs = max(max([e["epoch"] for e in r["all_train_stats"]]) for _, r in group.iterrows())
-        all_rmse = np.zeros((len(group), max_epochs+1)) * np.nan
+        all_rmse = np.zeros((len(group), max_epochs + 1)) * np.nan
         for i, (_, row) in enumerate(group.iterrows()):
             epochs = [e["epoch"] for e in row["all_train_stats"]]
             rmses = [e["train_stats"]["rmse"] for e in row["all_train_stats"]]
@@ -399,20 +459,12 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         mean_rmse = np.nanmean(all_rmse, axis=0)
         std_rmse = np.nanstd(all_rmse, axis=0)
 
-        plt.figure(figsize=(8, 5))
-        plt.plot(range(len(mean_rmse)), mean_rmse, label="Média RMSE", lw=2)
-        plt.fill_between(range(len(mean_rmse)), mean_rmse-std_rmse, mean_rmse+std_rmse, alpha=0.2)
-        plt.title(f"Convergência Média — {strategy} / {imputation}")
-        plt.xlabel("Época")
-        plt.ylabel("RMSE médio de Treino")
-        plt.grid(True, alpha=0.3)
-        plt.legend()
-        plt.tight_layout()
-        path_complete = os.path.join(out_dir, f"ConvergenciaMedia- {strategy}- {imputation}")
-        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-        plt.savefig(path_complete + ".svg", bbox_inches="tight")
-        plt.show()
+        mean_curves.append({
+            "strategy": strategy,
+            "imputation": imputation,
+            "mean_rmse": mean_rmse,
+            "std_rmse": std_rmse
+        })
 
         # === detecção de plateau ===
         diffs = np.abs(np.gradient(mean_rmse))
@@ -426,15 +478,38 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
-        path_complete = os.path.join(out_dir, f"Análise de Plateau- {strategy} - {imputation}")
+        out_dir_complete = os.path.join(out_dir, "plateau")
+        os.makedirs(out_dir_complete, exist_ok=True)
+        path_complete = os.path.join(out_dir_complete, f"Análise de Plateau- {strategy} - {imputation}")
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-        plt.savefig(path_complete + ".svg", bbox_inches="tight")
-        plt.show()
+        ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+        ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
+        ##plt.show()
 
         print(f"→ {strategy}/{imputation}: plateau detectado próximo da época {plateau_epoch}, "
               f"RMSE médio final = {mean_rmse[-1]:.4f}")
-        
+
+    # === gráfico comparativo final com as curvas médias de todas as combinações ===
+    plt.figure(figsize=(10, 6))
+    for c in mean_curves:
+        label = f"{c['strategy']} / {c['imputation']}"
+        plt.plot(range(len(c["mean_rmse"])), c["mean_rmse"], lw=2, label=label)
+        plt.fill_between(range(len(c["mean_rmse"])),
+                         c["mean_rmse"] - c["std_rmse"],
+                         c["mean_rmse"] + c["std_rmse"],
+                         alpha=0.15)
+    plt.title("Convergência Média por Estratégia e Imputação")
+    plt.xlabel("Época")
+    plt.ylabel("RMSE médio de Treino")
+    plt.grid(True, alpha=0.3)
+    plt.legend(title="Combinação", bbox_to_anchor=(1.05, 1), loc="upper left")
+    plt.tight_layout()
+    path_complete = os.path.join(out_dir, "ConvergenciaMedia_Todas")
+    plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+    ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
+    ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
+    ##plt.show()
+
 # ---------------------------
 # Example usage
 # ---------------------------
@@ -445,8 +520,10 @@ if __name__ == "__main__":
 
     df = load_results(jsonl, prefer="test")
 
+    rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
+    plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
     rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    plot_and_save_heatmap(rank_df, out_dir=path)
+    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
     plot_BoxPlots_overfitting(df, out_dir=path)
     summarize_results(df, out_dir=path)
     analyze_training_curves(df, out_dir=path)

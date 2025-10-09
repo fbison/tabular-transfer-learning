@@ -125,6 +125,15 @@
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
             "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Mean_exp_100_1"],
             "console": "integratedTerminal"
+        },
+        
+        {
+            "name": "DownstreamPipeline4g",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Gaussian_exp_100_1"],
+            "console": "integratedTerminal"
         }
     ]
 }

@@ -11,7 +11,8 @@ import plotly.express as px
 import plotly.io as pio
 import pickle
 import re
-
+from typing import List
+NOT_USED = "Not Used"
 # ---------------------------
 # Helpers: parsing and mapping
 # ---------------------------
@@ -23,7 +24,7 @@ def parse_sample_from_dataset_name(name):
 def parse_imputation_from_dataset_name(name):
     # split after _Imputation_
     m = re.search(r"_Imputation_([^_]+)", name)
-    return m.group(1) if m else "unknown"
+    return m.group(1) if m else NOT_USED
 
 def parse_upstream_from_model_path_name(name: str):
     # pega o trecho que começa com mlp- e termina antes de /model_best.pth
@@ -221,13 +222,16 @@ def build_rank_table(df, alpha=0.05, min_seeds=2, group_field=None, verbose=Fals
             })
     return pd.DataFrame(results)
 
+def sum_strategies(imputations_order: List[str]) -> int:
+    strategies = []
+    for imp in imputations_order:
+        strategies.append(strategies_order_per_imputation(imp))
+    return len(strategies)
 
 def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imputations_order=None):
     os.makedirs(out_dir, exist_ok=True)
     
-    # Strategy and imputation ordering
-    if strategies_order is None:
-        strategies_order = ['FS', 'LH-E2E', 'MLP-E2E', 'LH', 'MLP']
+    
     if imputations_order is None:
         imputations_order = sorted(rank_df['imputation'].unique())
     
@@ -240,7 +244,7 @@ def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imp
     # Equal width for each imputation subplot
     fig, axes = plt.subplots(
         1, n_imputations,
-        figsize=(2 * len(strategies_order) * n_imputations, 4),
+        figsize=(2 * sum_strategies(imputations_order), 4),
         sharey=True,
         gridspec_kw={"width_ratios": [1] * n_imputations}
     )
@@ -249,6 +253,7 @@ def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imp
         axes = [axes]
 
     for ax, imp in zip(axes, imputations_order):
+        strategies_order = strategies_order_per_imputation(imp)
         df_imp = rank_df[rank_df['imputation'] == imp].pivot(
             index="sample", columns="strategy", values="rank"
         )
@@ -298,6 +303,12 @@ def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imp
 
     plt.show()
 
+def strategies_order_per_imputation(imputation):
+    if imputation == NOT_USED:
+        return ['FS']
+    else:
+        return ['LH-E2E', 'MLP-E2E', 'LH', 'MLP']
+    
 def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_order=None):
     """
     Gera boxplots do overfitting gap (test_rmse - train_rmse) para cada estratégia e imputação.
@@ -310,8 +321,6 @@ def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_or
     df = df.copy()
     df["overfit_gap"] = df["rmse_test"] - df["rmse_train"]
 
-    if strategies_order is None:
-        strategies_order = ['FS', 'LH-E2E', 'MLP-E2E', 'LH', 'MLP']
     if imputations_order is None:
         imputations_order = sorted(df['imputation'].unique())
 
@@ -326,6 +335,7 @@ def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_or
 
     for ax, imp in zip(axes, imputations_order):
         df_imp = df[df["imputation"] == imp]
+        strategies_order = strategies_order_per_imputation(imp)
 
         sns.boxplot(
             data=df_imp,

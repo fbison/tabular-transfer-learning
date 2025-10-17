@@ -74,6 +74,11 @@ def main(cfg: DictConfig):
     epoch = start_epoch
     best_epoch = epoch
 
+    if cfg.hyp.plateau_stop:
+        plateau_wait = 0
+        plateau_start = False
+        best_train_loss = float("inf")
+    
     while not done and epoch < cfg.hyp.epochs:
         # forward and backward pass for one whole epoch handeld inside dt.default_training_loop()
         loss = dt.default_training_loop(net, loaders["train"], train_setup, device)
@@ -130,6 +135,22 @@ def main(cfg: DictConfig):
 
             if epoch - best_epoch > cfg.hyp.patience:
                 done = True
+        
+                
+        if cfg.hyp.plateau_stop:
+            current_train_loss = loss
+            if current_train_loss < best_train_loss:
+                best_train_loss = current_train_loss
+                plateau_wait = 0
+                plateau_start = False
+            else:
+                plateau_wait += 1
+                plateau_start = True
+
+            if plateau_wait >= cfg.hyp.plateau_patience and plateau_start:
+                log.info(f"Plateau detected in training (no improvement for {cfg.hyp.plateau_patience} epochs). Ending training.")
+                done = True
+
         epoch += 1
         writer.flush()
         writer.close()

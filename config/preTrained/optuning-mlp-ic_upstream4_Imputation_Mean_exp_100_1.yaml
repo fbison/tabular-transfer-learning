@@ -33,3 +33,5 @@ hyp:
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
+  plateau_stop: true
+  plateau_patience: 15

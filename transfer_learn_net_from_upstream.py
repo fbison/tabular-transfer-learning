@@ -88,8 +88,8 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
         log.error(f"Erro ao salvar resultado de {configName}: {e}")
     return result
 
-def select_epoch(samples: int, mlpHead: bool, freeze: bool) -> int:
-    return 200
+def select_epoch(samples: int, mlpHead: bool, freeze: bool, from_scratch: bool) -> int:
+    return 1000
     if freeze:
         return 100 if mlpHead else 200  
         # Congelando, precisa de mais épocas para ajustar a cabeça e já reduz o risco de overfitting
@@ -161,7 +161,7 @@ def main(cfg: DictConfig):
                     # Cria cópia independente do model para cada job
                     model_cfg = copy.deepcopy(model)
                     hyp_cfg = copy.deepcopy(hyp)
-                    hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze)
+                    hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze, False)
                     hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, hyp["lr"], hyp["head_lr"])
                     hyp_cfg["lr"] = 0.00005 
                     hyp_cfg["seed"] = seed
@@ -170,15 +170,18 @@ def main(cfg: DictConfig):
                     configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}_seed{seed}"
                     # Adiciona à lista de jobs
                     jobs.append((model_cfg, dataset_cfg, hyp_cfg, configName, log, False))
+            dataset_fs = copy.deepcopy(dataset_cfg)
+            dataset_fs["name"] = f"{downstreamName}_Sample{sample}"
+            dataset_fs["normalizer_path"] = None
             model_from_scratch = copy.deepcopy(model)
             hyp_from_scratch = copy.deepcopy(hyp)
-            hyp_from_scratch["epochs"] = 200
+            hyp_from_scratch["epochs"] = select_epoch(sample, False, False, True)
             model_from_scratch["model_path"] = None
             model_from_scratch["use_mlp_head"] = False
             model_from_scratch["freeze_feature_extractor"] = False
             hyp_from_scratch["seed"] = seed
-            configName = f"{dataset_name}_fromScratch_seed{seed}"
-            jobs.append((model_from_scratch, dataset_cfg, hyp_from_scratch, configName, log, True))
+            configName = f"{dataset_fs['name']}_fromScratch_seed{seed}"
+            jobs.append((model_from_scratch, dataset_fs, hyp_from_scratch, configName, log, True))
 
     # ============================
     # Executa os jobs em paralelo de um mesmo upstream

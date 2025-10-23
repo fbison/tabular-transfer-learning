@@ -80,13 +80,12 @@ def main(cfg: DictConfig):
     epoch = start_epoch
     best_epoch = epoch
     if cfg.hyp.plateau_stop:
-        plateau_wait = 0
-        plateau_start = False
-        best_train_loss = float("inf")
+        train_loss_history = []
     
     while not done and epoch < cfg.hyp.epochs:
         # forward and backward pass for one whole epoch handeld inside dt.default_training_loop()
         loss = dt.default_training_loop(net, loaders["train"], train_setup, device)
+            
         log.info(f"Training loss at epoch {epoch}: {loss}")
 
         # if the loss is nan, then stop the training
@@ -144,18 +143,15 @@ def main(cfg: DictConfig):
                 done = True
         
         if cfg.hyp.plateau_stop:
-            current_train_loss = loss
-            if current_train_loss < best_train_loss:
-                best_train_loss = current_train_loss
-                plateau_wait = 0
-                plateau_start = False
-            else:
-                plateau_wait += 1
-                plateau_start = True
-
-            if plateau_wait >= cfg.hyp.plateau_patience and plateau_start:
-                log.info(f"Plateau detected in training (no improvement for {cfg.hyp.plateau_patience} epochs). Ending training.")
-                done = True
+            train_loss_history.append(float(loss))
+            window = cfg.hyp.plateau_patience
+            if len(train_loss_history) >= window and cfg.hyp.plateau_min_epochs <= epoch:
+                y = np.array(train_loss_history[-window:])
+                x = np.arange(len(y))
+                slope = np.polyfit(x, y, 1)[0]
+                if slope > -cfg.hyp.plateau_slope_threshold:
+                    log.info(f"Plateau detected (slope {slope:.6f}).")
+                    done = True
 
         epoch += 1
         writer.flush()

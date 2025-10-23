@@ -525,7 +525,7 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
 # ---------------------------
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\all_experiments"
+    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream3Gaus"
     jsonl = os.path.join(path, "results.jsonl")
 
     df = load_results(jsonl, prefer="test")

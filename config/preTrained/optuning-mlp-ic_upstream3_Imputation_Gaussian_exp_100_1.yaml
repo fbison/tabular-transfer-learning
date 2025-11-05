@@ -34,6 +34,10 @@ hyp:
   head_warmup_period: 10
   head_lr: 0.001
   plateau_stop: true
-  plateau_patience: 30
-  plateau_min_epochs: 50
-  plateau_slope_threshold: 0
+  plateau_patience: 5
+  plateau_min_epochs: 75
+  plateau_window: 30
+  plateau_ema_span: 10
+  plateau_min_rel_improvement: 1e-3
+  plateau_slope_significance_threshold: 1
+  plateau_require_negative_slope_to_stop: false

@@ -8,6 +8,7 @@ from .tools import get_head
 from .tools import get_optimizer_for_backbone, get_optimizer_for_single_net
 from .tools import load_transfer_model_from_checkpoint, load_model_from_checkpoint
 from .tools import write_to_tb
+from .plateau import PlateauDetector
 
 __all__ = ["generate_run_id",
            "get_backbone",
@@ -20,5 +21,7 @@ __all__ = ["generate_run_id",
            "get_optimizer_for_single_net",
            "load_transfer_model_from_checkpoint",
            "load_model_from_checkpoint",
+           "calculate_ema",
            "TabularDataset",
-           "write_to_tb"]
+           "write_to_tb",
+           "PlateauDetector"]

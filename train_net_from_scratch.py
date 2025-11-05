@@ -80,7 +80,12 @@ def main(cfg: DictConfig):
     epoch = start_epoch
     best_epoch = epoch
     if cfg.hyp.plateau_stop:
-        train_loss_history = []
+        plateau = dt.utils.PlateauDetector(window_size=cfg.hyp.plateau_window,
+                                            ema_span=cfg.hyp.plateau_ema_span,
+                                            patience_steps=cfg.hyp.plateau_patience,
+                                            min_rel_improvement=cfg.hyp.plateau_min_rel_improvement,
+                                            slope_significance_threshold=cfg.hyp.plateau_slope_significance_threshold,
+                                            require_negative_slope_to_stop=cfg.hyp.plateau_require_negative_slope_to_stop)
     
     while not done and epoch < cfg.hyp.epochs:
         # forward and backward pass for one whole epoch handeld inside dt.default_training_loop()
@@ -123,6 +128,10 @@ def main(cfg: DictConfig):
                     "train_stats": train_stats,
                     "loss": float(loss)
                 })
+            if cfg.hyp.plateau_stop:
+                if plateau.step(float(train_stats["rmse"])):
+                    log.info(f"Plateau detected at epoch {epoch}. Stopping training.")
+                    done = True
 
         if cfg.hyp.use_patience:
             val_stats, test_stats = dt.evaluate_model(net,
@@ -142,16 +151,7 @@ def main(cfg: DictConfig):
             if epoch - best_epoch > cfg.hyp.patience:
                 done = True
         
-        if cfg.hyp.plateau_stop:
-            train_loss_history.append(float(loss))
-            window = cfg.hyp.plateau_patience
-            if len(train_loss_history) >= window and cfg.hyp.plateau_min_epochs <= epoch:
-                y = np.array(train_loss_history[-window:])
-                x = np.arange(len(y))
-                slope = np.polyfit(x, y, 1)[0]
-                if slope > -cfg.hyp.plateau_slope_threshold:
-                    log.info(f"Plateau detected (slope {slope:.6f}).")
-                    done = True
+        
 
         epoch += 1
         writer.flush()

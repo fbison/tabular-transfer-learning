@@ -324,4 +324,3 @@ def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num
         optimizer = state_dict["optimizer"]
 
     return net, epoch, optimizer
-

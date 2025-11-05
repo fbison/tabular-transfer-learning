@@ -525,15 +525,15 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
 # ---------------------------
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream3Gaus"
+    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream2Mean"
     jsonl = os.path.join(path, "results.jsonl")
 
     df = load_results(jsonl, prefer="test")
 
-    rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
-    plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
-    rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-    plot_BoxPlots_overfitting(df, out_dir=path)
+    #rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
+    #plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
+    #rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+    #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+    #plot_BoxPlots_overfitting(df, out_dir=path)
     summarize_results(df, out_dir=path)
     analyze_training_curves(df, out_dir=path)

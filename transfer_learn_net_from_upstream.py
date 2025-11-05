@@ -106,8 +106,8 @@ def select_epoch(samples: int, mlpHead: bool, freeze: bool, from_scratch: bool) 
 
 
 
-def selectHeadLearningRate(mlpHead: bool, base_lr: float, upstream_head_lr: float) -> float:
-    if mlpHead:
+def selectHeadLearningRate(mlpHead: bool, freeze: bool, base_lr: float, upstream_head_lr: float) -> float:
+    if mlpHead or freeze:
         return base_lr
     return upstream_head_lr
 
@@ -162,7 +162,7 @@ def main(cfg: DictConfig):
                     model_cfg = copy.deepcopy(model)
                     hyp_cfg = copy.deepcopy(hyp)
                     hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze, False)
-                    hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, hyp["lr"], hyp["head_lr"])
+                    hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, freeze, hyp["lr"], hyp["head_lr"])
                     hyp_cfg["lr"] = 0.00005 
                     hyp_cfg["seed"] = seed
                     model_cfg["use_mlp_head"] = mlpHead

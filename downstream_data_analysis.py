@@ -1,6 +1,7 @@
 import os
 import re
 import json
+from typing import List
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,7 +12,15 @@ import plotly.express as px
 import plotly.io as pio
 import pickle
 import re
-from typing import List
+from scipy import stats
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
+import numpy as np
+import pandas as pd
+from scipy.stats import spearmanr
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 NOT_USED = "Not Used"
 # ---------------------------
 # Helpers: parsing and mapping
@@ -32,6 +41,14 @@ def parse_upstream_from_model_path_name(name: str):
         return None
     match = re.search(r'mlp-(.+?)/model_best\.pth$', name)
     return match.group(1) if match else None
+
+def extract_upstream(config_name):
+    """
+    Extrai o número de 'upstream' de uma string de configuração.
+    Retorna None se não houver upstream na string.
+    """
+    match = re.search(r'upstream(\d+)', config_name)
+    return (match.group(1)) if match else None
 
 
 def map_strategy_from_runid(run_id):
@@ -103,7 +120,8 @@ def load_results(jsonl_path, prefer="test"):
                 "sample": sample,
                 "strategy": strategy,
                 "imputation": imputation,
-                "upstream": parse_upstream_from_model_path_name(cfg.get("model", {}).get("model_path", "")),
+#                "upstream": parse_upstream_from_model_path_name(cfg.get("model", {}).get("model_path", "")),
+                "upstream": extract_upstream(cfg.get("run_id", "")),
                 "rmse": float(rmse),
                 "rmse_train": float(rmse_train) if rmse_train is not None else None,
                 "rmse_test": float(rmse_test) if rmse_test is not None else None,
@@ -301,7 +319,7 @@ def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imp
         pickle.dump(fig, f)
     plt.savefig("heatmap.eps", format="eps", bbox_inches="tight")
 
-    plt.show()
+    #plt.show()
 
 def strategies_order_per_imputation(imputation):
     if imputation == NOT_USED:
@@ -415,13 +433,18 @@ def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename=
     return summary_df
 
 def analyze_training_curves(df: pd.DataFrame, out_dir: str):
-
     # paleta de cores por upstream
     upstreams = df["upstream"].unique()
     palette = dict(zip(upstreams, sns.color_palette("tab10", len(upstreams))))
 
     # armazenar médias para o gráfico comparativo
     mean_curves = []
+
+    # função auxiliar: preencher épocas pós-stopping com o último valor
+    def pad_with_last_value(values, target_len):
+        if len(values) < target_len:
+            return np.concatenate([values, np.full(target_len - len(values), values[-1])])
+        return np.array(values[:target_len])
 
     for (strategy, imputation), group in df.groupby(["strategy", "imputation"]):
         plt.figure(figsize=(8, 5))
@@ -457,22 +480,27 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         ##plt.show()
 
         # === curva média ===
-        # // ao invés de gerar n gráfico baseados na combinação de strategy/imputation,
-        # // gerar um gráfico com a curva média de cada uma dessas combinações, para facilitar a comparação
-        # // com isso não é preciso gerar dentro da pasta 
         max_epochs = max(max([e["epoch"] for e in r["all_train_stats"]]) for _, r in group.iterrows())
-        all_rmse = np.zeros((len(group), max_epochs + 1)) * np.nan
+        all_rmse = np.full((len(group), max_epochs + 1), np.nan)
+
         for i, (_, row) in enumerate(group.iterrows()):
             epochs = [e["epoch"] for e in row["all_train_stats"]]
             rmses = [e["train_stats"]["rmse"] for e in row["all_train_stats"]]
-            all_rmse[i, epochs] = rmses
+            rmses_padded = pad_with_last_value(rmses, max_epochs + 1)
+            all_rmse[i, :] = rmses_padded
+
+        # calcular estatísticas considerando IC 95%
         mean_rmse = np.nanmean(all_rmse, axis=0)
+        median_rmse = np.nanmedian(all_rmse, axis=0)
+        sem = stats.sem(all_rmse, axis=0, nan_policy="omit")
+        ci95 = 1.96 * sem  # intervalo de confiança de 95%
         std_rmse = np.nanstd(all_rmse, axis=0)
 
         mean_curves.append({
             "strategy": strategy,
             "imputation": imputation,
             "mean_rmse": mean_rmse,
+            "median_rmse": median_rmse,
             "std_rmse": std_rmse
         })
 
@@ -481,11 +509,18 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         plateau_epoch = np.argmax(diffs < 1e-4)  # época onde o gradiente da perda "achata"
         plt.figure(figsize=(8, 5))
         plt.plot(mean_rmse, label="RMSE médio")
+        plt.plot(median_rmse, ls="--", color="gray", lw=1.5, label="Mediana (tracejada)")
+        plt.fill_between(range(len(mean_rmse)),
+                         mean_rmse - ci95,
+                         mean_rmse + ci95,
+                         alpha=0.2,
+                         color="blue",
+                         label="IC 95%")
         plt.axvline(plateau_epoch, color="red", ls="--", label=f"Plateau ~ Época {plateau_epoch}")
         plt.title(f"Análise de Plateau — {strategy} - {imputation}")
         plt.xlabel("Época")
         plt.ylabel("RMSE")
-        plt.legend()
+        plt.legend(title="Legenda")
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
         out_dir_complete = os.path.join(out_dir, "plateau")
@@ -501,39 +536,393 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
 
     # === gráfico comparativo final com as curvas médias de todas as combinações ===
     plt.figure(figsize=(10, 6))
+
     for c in mean_curves:
         label = f"{c['strategy']} / {c['imputation']}"
-        plt.plot(range(len(c["mean_rmse"])), c["mean_rmse"], lw=2, label=label)
-        plt.fill_between(range(len(c["mean_rmse"])),
-                         c["mean_rmse"] - c["std_rmse"],
-                         c["mean_rmse"] + c["std_rmse"],
-                         alpha=0.15)
+        x = range(len(c["mean_rmse"]))
+
+        # Curva média
+        line_mean, = plt.plot(
+            x,
+            c["mean_rmse"],
+            lw=2,
+            label=label
+        )
+
+        color = line_mean.get_color()
+
+        # Curva mediana (tracejada, mesma cor)
+        plt.plot(
+            x,
+            c["median_rmse"],
+            linestyle="--",
+            color=color,
+            lw=1.5
+        )
+
+        # Faixa de ±1 desvio padrão (shaded area)
+        plt.fill_between(
+            x,
+            c["mean_rmse"] - c["std_rmse"],
+            c["mean_rmse"] + c["std_rmse"],
+            color=color,
+            alpha=0.15
+        )
+
+    # === título e legendas ===
     plt.title("Convergência Média por Estratégia e Imputação")
     plt.xlabel("Época")
     plt.ylabel("RMSE médio de Treino")
     plt.grid(True, alpha=0.3)
-    plt.legend(title="Combinação", bbox_to_anchor=(1.05, 1), loc="upper left")
+
+    # === legenda composta ===
+    # Apenas uma vez, explicamos o que significam as texturas
+
+    legend_elements = [
+        Line2D([0], [0], color='black', lw=2, label='Linha contínua: Média das execuções'),
+        Line2D([0], [0], color='black', lw=1.5, linestyle='--', label='Linha tracejada: Mediana das execuções'),
+        Patch(facecolor='gray', alpha=0.15, label='Área sombreada: ±1 desvio padrão'),
+        Line2D([], [], color='none', label='──────────────────────────────'),
+        Line2D([0], [0], color='none', label='Cores: representam cada combinação'),
+    ]
+
+    plt.legend(
+        handles=legend_elements + [
+            Line2D([0], [0], color=plt.cm.tab10(i), lw=2, label=f"{c['strategy']} / {c['imputation']}")
+            for i, c in enumerate(mean_curves)
+        ],
+        title="Texturas e cores:",
+        bbox_to_anchor=(1.05, 1),
+        loc="upper left"
+    )
+
     plt.tight_layout()
+
+    # === salvar ===
     path_complete = os.path.join(out_dir, "ConvergenciaMedia_Todas")
     plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-    ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-    ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
-    ##plt.show()
+    #plt.show()
+
+# ANOVA 2-way (upstream x strategy) dentro de cada imputação
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+def anova_two_way_by_imputation(df, dv="rmse", factor1="upstream", factor2="strategy", min_rows=10, out_dir=None):
+    """
+    Roda ANOVA 2-way (tipo II) para cada imputation separadamente.
+    Imprime a ANOVA table (SS, DF, F, PR(>F)) e effect sizes (eta2, partial eta2).
+    """
+    imputations = df['imputation'].unique()
+    results = {}
+    for imp in sorted(imputations):
+        sub = df[df['imputation'] == imp].dropna(subset=[dv, factor1, factor2])
+        if sub.shape[0] < min_rows:
+            print(f"[ANOVA] imputation={imp}: dados insuficientes ({sub.shape[0]} linhas), pulando.")
+            continue
+
+        # Garantir categorias
+        sub[factor1] = sub[factor1].astype('category')
+        sub[factor2] = sub[factor2].astype('category')
+
+        # Formula: dv ~ C(upstream) * C(strategy)
+        formula = f"{dv} ~ C({factor1}) * C({factor2})"
+        model = smf.ols(formula, data=sub).fit()
+        aov = sm.stats.anova_lm(model, typ=2)  # tipo II
+
+        # effect sizes
+        ss_total = sum(aov['sum_sq'])
+        aov = aov.assign(eta2 = aov['sum_sq'] / ss_total)
+        # partial eta2 = SS_effect / (SS_effect + SS_error)
+        ss_error = aov.loc['Residual', 'sum_sq'] if 'Residual' in aov.index else model.ssr
+        partials = {}
+        for idx in aov.index:
+            if idx == 'Residual':
+                aov.loc[idx, 'partial_eta2'] = np.nan
+            else:
+                ss_effect = aov.loc[idx, 'sum_sq']
+                aov.loc[idx, 'partial_eta2'] = ss_effect / (ss_effect + ss_error)
+
+        print("\n" + "="*80)
+        print(f"ANOVA (2-way) para imputation = {imp}")
+        print("="*80)
+        print(aov)  # se estiver no notebook; senão use print(aov)
+        results[imp] = aov
+
+        # opcional: salvar tabela como csv
+        if out_dir:
+            aov.to_csv(os.path.join(out_dir, f"anova_2way_imputation_{imp}.csv"))
+
+    return results
+
+
+# =========================================================
+#  Função auxiliar: ranking estatístico (Mann-Whitney)
+# =========================================================
+def build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False):
+    """
+    Gera um DataFrame de rank médio por (upstream, strategy, imputation)
+    com base em comparações estatísticas (Mann–Whitney U-test) entre estratégias,
+    controlando para variações de sample.
+    
+    - ignora linhas com upstream=None (ex: FS)
+    - usa teste de significância em cada sample antes de agregar ranks médios
+    """
+    df = df.copy()
+    df = df[df["upstream"].notna()]  # ignorar FS
+
+    results = []
+
+    # loop por sample
+    for sample, dfg_sample in df.groupby("sample"):
+        # loop por imputação
+        for imp, dfg_imp in dfg_sample.groupby("imputation"):
+            # loop por upstream
+            for up, dfg_up in dfg_imp.groupby("upstream"):
+                # obtém todas as estratégias testadas
+                strategies = dfg_up["strategy"].unique()
+
+                # calcula médias de RMSE por strategy (caso haja repetições)
+                mean_rmse = dfg_up.groupby("strategy")["rmse"].mean()
+
+                # inicializa estrutura de ranking
+                ranks = {s: None for s in strategies}
+                assigned = set()
+                current_rank = 1
+
+                # ranking com Mann–Whitney
+                while len(assigned) < len(strategies):
+                    # entre os ainda não ranqueados, pegue o de menor média de RMSE
+                    remaining = [s for s in strategies if s not in assigned]
+                    best = min(remaining, key=lambda s: mean_rmse[s])
+
+                    # encontra estratégias estatisticamente equivalentes
+                    same_rank = []
+                    for s in remaining:
+                        a = dfg_up[dfg_up["strategy"] == best]["rmse"].values
+                        b = dfg_up[dfg_up["strategy"] == s]["rmse"].values
+
+                        if len(a) < min_seeds or len(b) < min_seeds:
+                            continue
+
+                        try:
+                            _, p = mannwhitneyu(a, b, alternative="less")
+                        except Exception:
+                            p = 1.0
+
+                        if p >= alpha:  # diferença não significativa
+                            same_rank.append(s)
+
+                    for s in same_rank:
+                        ranks[s] = current_rank
+                        assigned.add(s)
+
+                    current_rank += 1
+
+                # salva resultados desse sample / upstream / imputação
+                for s, r in ranks.items():
+                    results.append({
+                        "sample": sample,
+                        "upstream": up,
+                        "imputation": imp,
+                        "strategy": s,
+                        "rank": r
+                    })
+
+    rank_df = pd.DataFrame(results)
+
+    # agora média de ranks por upstream (controlando samples)
+    mean_rank_df = (
+        rank_df.groupby(["upstream", "strategy", "imputation"])["rank"]
+        .mean()
+        .reset_index()
+    )
+
+    if verbose:
+        print(f"Gerado mean_rank_df com {len(mean_rank_df)} combinações únicas.")
+    return mean_rank_df
+
+
+# =========================================================
+# 2️⃣ Rank dos upstreams para cada strategy/imputation (comparativo entre upstreams)
+# =========================================================
+def build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2, verbose=False):
+    """
+    Calcula o rank relativo entre upstreams para cada estratégia,
+    controlando o efeito de sample e imputação.
+    """
+    results = []
+    for imp, df_imp in df.groupby("imputation"):
+        for strat, df_strat in df_imp.groupby("strategy"):
+            for sample, df_sample in df_strat.groupby("sample"):
+                df_sample = df_sample[df_sample["upstream"].notna()]
+                upstreams = df_sample["upstream"].unique()
+                if len(upstreams) < 2:
+                    continue
+
+                mean_rmse = {
+                    u: df_sample[df_sample["upstream"] == u]["rmse"].mean()
+                    for u in upstreams
+                }
+
+                ranks, assigned, current_rank = {}, set(), 1
+                while len(assigned) < len(upstreams):
+                    unassigned = [u for u in upstreams if u not in assigned]
+                    best = min(unassigned, key=lambda u: mean_rmse[u])
+                    same_rank = []
+                    for u in unassigned:
+                        a = df_sample[df_sample["upstream"] == best]["rmse"].values
+                        b = df_sample[df_sample["upstream"] == u]["rmse"].values
+                        try:
+                            _, p = mannwhitneyu(a, b, alternative="less")
+                        except Exception:
+                            p = 1.0
+                        if p >= alpha:
+                            same_rank.append(u)
+                    for u in same_rank:
+                        ranks[u] = current_rank
+                        assigned.add(u)
+                    current_rank += 1
+
+                for u, r in ranks.items():
+                    results.append({
+                        "strategy": strat,
+                        "imputation": imp,
+                        "upstream": u,
+                        "sample": sample,
+                        "rank": r,
+                    })
+    df_rank = pd.DataFrame(results)
+    # rank médio global (média dos samples)
+    mean_rank_df = (
+        df_rank.groupby(["strategy", "upstream", "imputation"])["rank"]
+        .mean()
+        .reset_index()
+    )
+    return mean_rank_df
+
+# =========================================================
+# 2️ Correlação de Spearman entre upstreams (baseada nos ranks médios)
+# =========================================================
+def compute_spearman_corr_between_upstreams(mean_rank_df, out_dir="."):
+    """
+    Calcula a correlação de Spearman entre upstreams
+    com base nos ranks médios por (strategy, imputação).
+    """
+    # Pivotar: linhas = upstreams, colunas = strategy + imputação
+    pivot = mean_rank_df.pivot_table(
+        index="upstream", columns=["strategy", "imputation"], values="rank"
+    )
+
+    # Matriz de correlação de Spearman
+    corr_matrix = pivot.T.corr(method="spearman")
+
+    # Visualizar heatmap
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(
+        corr_matrix,
+        annot=True,
+        cmap="coolwarm",
+        center=0,
+        square=True,
+        cbar_kws={"label": "Spearman Correlation"},
+    )
+    plt.title("Correlação de Spearman entre Upstreams (Rank Médio)")
+    plt.tight_layout()
+    path_complete = os.path.join(out_dir, "compute_spearman_corr_between_upstreams")
+    plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+    #plt.show()
+
+    return corr_matrix
+
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# =========================================================
+# 1️⃣ Heatmap de rank médio (Upstream × Strategy)
+#     → Analisa como o UPSTREAM afeta o rank das ESTRATÉGIAS
+# =========================================================
+def plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir):
+    """
+    Plota um heatmap de ranks médios (Upstream × Strategy) para cada imputação.
+    Mostra como diferentes upstreams impactam o desempenho relativo das estratégias.
+    """
+    imputations = mean_rank_df["imputation"].unique()
+    for imp in imputations:
+        subset = mean_rank_df[mean_rank_df["imputation"] == imp]
+        pivot = subset.pivot(index="upstream", columns="strategy", values="rank")
+
+        plt.figure(figsize=(10, 6))
+        sns.heatmap(
+            pivot,
+            annot=True,
+            fmt=".2f",
+            cmap="YlGnBu_r",
+            cbar_kws={"label": "Rank Médio (menor = melhor)"},
+        )
+        plt.title(f"Influência do Upstream no Rank das Estratégias (Imputação: {imp})")
+        plt.xlabel("Strategy")
+        plt.ylabel("Upstream")
+        plt.tight_layout()
+        path_complete = os.path.join(out_dir, f"heatmap_mean_rank_upstream_strategy_imp{imp}")
+        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+        plt.close()
+
+
+def plot_heatmap_mean_rank_strategy_upstream(mean_rank_df, out_dir):
+    """
+    Plota o rank médio dos upstreams para cada estratégia.
+    """
+    imputations = mean_rank_df["imputation"].unique()
+    for imp in imputations:
+        subset = mean_rank_df[mean_rank_df["imputation"] == imp]
+        pivot = subset.pivot(index="strategy", columns="upstream", values="rank")
+
+        plt.figure(figsize=(10, 6))
+        sns.heatmap(
+            pivot,
+            annot=True,
+            fmt=".2f",
+            cmap="YlOrBr_r",
+            cbar_kws={"label": "Rank Médio (Upstream)"},
+        )
+        plt.title(f"Ranking de Upstreams por Estratégia (Imputação: {imp})")
+        plt.xlabel("Upstream")
+        plt.ylabel("Estratégia")
+        plt.tight_layout()
+        path_complete = os.path.join(out_dir, "heatmap_mean_rank_strategy_upstream")
+        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
 
 # ---------------------------
 # Example usage
 # ---------------------------
+
+
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    path = r"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\ic_upstream2Mean"
-    jsonl = os.path.join(path, "results.jsonl")
+    for experiment in ["all_experiments"]: #, "ic_upstream2", "ic_upstream3", "ic_upstream4"]:
+        path = fr"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\{experiment}"
 
-    df = load_results(jsonl, prefer="test")
+        jsonl = os.path.join(path, "results.jsonl")
 
-    #rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
-    #plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
-    #rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-    #plot_BoxPlots_overfitting(df, out_dir=path)
-    summarize_results(df, out_dir=path)
-    analyze_training_curves(df, out_dir=path)
+        df = load_results(jsonl, prefer="test")
+
+        rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+        plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+        plot_BoxPlots_overfitting(df, out_dir=path)
+        summarize_results(df, out_dir=path)
+        #analyze_training_curves(df, out_dir=path)
+        if experiment.startswith("all_experiments"):
+            rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
+            plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
+            
+            mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+
+            corr_upstreams = compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
+
+            plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
+
+            mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
+
+            plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
+            anova_two_way_by_imputation(df, out_dir=path)

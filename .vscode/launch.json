@@ -24,7 +24,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_from_scratch.py",
-            "args": ["model=mlp", "dataset=california"],
+            "args": ["model=mlp", "dataset=ic_upstream4"],
             "console": "integratedTerminal"
         },
         {

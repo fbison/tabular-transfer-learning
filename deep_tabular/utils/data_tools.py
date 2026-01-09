@@ -97,7 +97,7 @@ def get_data(dataset_id, source, task, datasplit=[.65, .15, .2]):
     data, targets = data.reset_index(drop=True), targets.reset_index(drop=True)
     data[categorical_columns] = data[categorical_columns].fillna("___null___")
 
-    if task != 'regression':
+    if task != 'regression' and task != 'multiVariantRegression':
         l_enc = LabelEncoder()
         targets = l_enc.fit_transform(targets)
     else:
@@ -105,7 +105,7 @@ def get_data(dataset_id, source, task, datasplit=[.65, .15, .2]):
 
     # split data into train/val/test
     train_size, test_size, valid_size = datasplit[0], datasplit[2], datasplit[1]/(1-datasplit[2])
-    if task != 'regression':
+    if task != 'regression' and task != 'multiVariantRegression':
         data_train, data_test, targets_train, targets_test = train_test_split(data, targets, test_size=test_size, random_state=seed, stratify = targets)
         data_train, data_val, targets_train, targets_val = train_test_split(data_train, targets_train, test_size=valid_size, random_state=seed, stratify = targets_train)
     else:
@@ -131,7 +131,7 @@ def get_data(dataset_id, source, task, datasplit=[.65, .15, .2]):
             "val_size": data_val.shape[0],
             "test_size": data_test.shape[0]}
 
-    if task == "multiclass":
+    if task == "multiclass" or task == "multiVariantRegression":
         info["n_classes"] = len(set(targets))
     if task == "binclass":
         info["n_classes"] = 1
@@ -261,7 +261,7 @@ class TabularDataset:
 
     @property
     def is_regression(self):
-        return self.info['task_type'] == "regression"
+        return self.info['task_type'] == "regression" or self.info['task_type'] == "multiVariantRegression"
 
     @property
     def n_num_features(self):
@@ -406,7 +406,10 @@ class TabularDataset:
                 warnings.warn('y_policy is not None, but the task is NOT regression')
                 info = None
             elif self.y_policy == 'mean_std':
-                mean, std = self.y['train'].mean(), self.y['train'].std()
+                mean = self.y['train'].mean(axis=0)
+                std = self.y['train'].std(axis=0)
+                std = np.clip(std, 1e-8, None) #protects against std = 0
+
                 y = {k: (v - mean) / std for k, v in y.items()}
                 info = {'policy': self.y_policy, 'mean': mean, 'std': std}
             else:

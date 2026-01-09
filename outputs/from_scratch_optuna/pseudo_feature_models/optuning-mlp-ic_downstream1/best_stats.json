@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_downstream1",
+    "model_name": "mlp",
+    "run_id": "sonsy-Fredrico_trial_182",
+    "best_epoch": 136,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.0232980251312256,
+        "rmse": 1.0232980251312256
+    },
+    "train_stats": {
+        "score": -0.6787028908729553,
+        "rmse": 0.6787028908729553
+    },
+    "val_stats": {
+        "score": -0.9341259598731995,
+        "rmse": 0.9341259598731995
+    }
+}

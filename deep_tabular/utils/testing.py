@@ -16,6 +16,55 @@ import numpy as np
 #     Too many local variables (R0914), Missing docstring (C0116, C0115, C0114).
 # pylint: disable=R0912, R0915, E1101, E1102, C0103, W0702, R0914, C0116, C0115, C0114
 
+def _predict_from_outputs(outputs, task):
+    if task == "multiclass":
+        return torch.argmax(outputs, dim=1)
+    elif task in {"binclass", "regression", "multiVariantRegression"}:
+        return outputs
+    else:
+        raise ValueError(f"Unknown task: {task}")
+
+
+def _compute_scores(targets_all, predictions_all, task):
+    # Maintain in float, because json has problems with float32
+    if task == "multiclass":
+        accuracy = float(accuracy_score(targets_all, predictions_all))
+        balanced_accuracy = float(balanced_accuracy_score(targets_all, predictions_all))
+        balanced_accuracy_adjusted = float(
+            balanced_accuracy_score(targets_all, predictions_all, adjusted=True)
+        )
+        return {
+            "score": accuracy,
+            "accuracy": accuracy,
+            "balanced_accuracy": balanced_accuracy,
+            "balanced_accuracy_adjusted": balanced_accuracy_adjusted,
+        }
+
+    elif task in {"regression", "multiVariantRegression"}:
+        if targets_all.shape[0] <= 1:
+            rmse = 0.0
+        else:
+            rmse = float(
+                np.sqrt(
+                    mean_squared_error(
+                        targets_all,
+                        predictions_all,
+                        multioutput="uniform_average"
+                    )
+                )
+            )
+        return {
+            "score": -rmse,
+            "rmse": rmse,
+        }
+
+    elif task == "binclass":
+        roc_auc = float(roc_auc_score(targets_all, predictions_all))
+        return {
+            "score": roc_auc,
+            "roc_auc": roc_auc,
+        }
+
 
 def evaluate_model(net, loaders, task, device):
     scores = []
@@ -29,92 +78,69 @@ def test_default(net, testloader, task, device):
     net.eval()
     targets_all = []
     predictions_all = []
+
     with torch.no_grad():
-        for batch_idx, (inputs_num, inputs_cat, targets) in enumerate(tqdm(testloader, leave=False)):
-            inputs_num, inputs_cat, targets = inputs_num.to(device).float(), inputs_cat.to(device), targets.to(device)
-            inputs_num, inputs_cat = inputs_num if inputs_num.nelement() != 0 else None, \
-                                     inputs_cat if inputs_cat.nelement() != 0 else None
+        for inputs_num, inputs_cat, targets in testloader:
+            inputs_num = inputs_num.to(device).float()
+            inputs_cat = inputs_cat.to(device)
+            targets = targets.to(device)
+
+            inputs_num = inputs_num if inputs_num.nelement() != 0 else None
+            inputs_cat = inputs_cat if inputs_cat.nelement() != 0 else None
 
             outputs = net(inputs_num, inputs_cat)
-            if task == "multiclass":
-                predicted = torch.argmax(outputs, dim=1)
-            elif task == "binclass":
-                predicted = outputs
-            elif task == "regression":
-                predicted = outputs
-            targets_all.extend(targets.cpu().tolist())
-            predictions_all.extend(predicted.cpu().tolist())
+            predicted = _predict_from_outputs(outputs, task)
 
-    if task == "multiclass":
-        accuracy = accuracy_score(targets_all, predictions_all)
-        balanced_accuracy = balanced_accuracy_score(targets_all, predictions_all, adjusted=False)
-        balanced_accuracy_adjusted = balanced_accuracy_score(targets_all, predictions_all, adjusted=True)
-        scores = {"score": accuracy,
-                  "accuracy": accuracy,
-                  "balanced_accuracy": balanced_accuracy,
-                  "balanced_accuracy_adjusted": balanced_accuracy_adjusted}
-    elif task == "regression":
-        if len(targets_all) <= 1:
-            # all targets are the same, so rmse is always 0
-            rmse = 0.0
-        else:
-            rmse = np.sqrt(mean_squared_error(targets_all, predictions_all))
-        scores = {"score": -rmse,
-                  "rmse": rmse}
-    elif task == "binclass":
-        roc_auc = roc_auc_score(targets_all, predictions_all)
-        scores = {"score": roc_auc,
-                  "roc_auc": roc_auc}
-    return scores
+            targets_all.append(targets.cpu().numpy())
+            predictions_all.append(predicted.cpu().numpy())
+
+    targets_all = np.concatenate(targets_all, axis=0)
+    predictions_all = np.concatenate(predictions_all, axis=0)
+
+    return _compute_scores(targets_all, predictions_all, task)
+
 
 
 def evaluate_backbone(embedders, backbone, heads, loaders, tasks, device):
     scores = {}
-    for k in loaders.keys():
-        score = evaluate_backbone_one_dataset(embedders[k], backbone, heads[k], loaders[k], tasks[k], device)
-        scores[k] = score
+    for k in loaders:
+        scores[k] = evaluate_backbone_one_dataset(
+            embedders[k],
+            backbone,
+            heads[k],
+            loaders[k],
+            tasks[k],
+            device,
+        )
     return scores
-
 
 def evaluate_backbone_one_dataset(embedder, backbone, head, testloader, task, device):
     embedder.eval()
     backbone.eval()
     head.eval()
+
     targets_all = []
     predictions_all = []
+
     with torch.no_grad():
-        for batch_idx, (inputs_num, inputs_cat, targets) in enumerate(tqdm(testloader, leave=False)):
-            inputs_num, inputs_cat, targets = inputs_num.to(device).float(), inputs_cat.to(device), targets.to(device)
-            inputs_num, inputs_cat = inputs_num if inputs_num.nelement() != 0 else None, \
-                                     inputs_cat if inputs_cat.nelement() != 0 else None
+        for inputs_num, inputs_cat, targets in testloader:
+            inputs_num = inputs_num.to(device).float()
+            inputs_cat = inputs_cat.to(device)
+            targets = targets.to(device)
+
+            inputs_num = inputs_num if inputs_num.nelement() != 0 else None
+            inputs_cat = inputs_cat if inputs_cat.nelement() != 0 else None
 
             embedding = embedder(inputs_num, inputs_cat)
             features = backbone(embedding)
             outputs = head(features)
 
-            if task == "multiclass":
-                predicted = torch.argmax(outputs, dim=1)
-            elif task == "binclass":
-                predicted = outputs
-            elif task == "regression":
-                predicted = outputs
-            targets_all.extend(targets.cpu().tolist())
-            predictions_all.extend(predicted.cpu().tolist())
+            predicted = _predict_from_outputs(outputs, task)
 
-    if task == "multiclass":
-        accuracy = accuracy_score(targets_all, predictions_all)
-        balanced_accuracy = balanced_accuracy_score(targets_all, predictions_all, adjusted=False)
-        balanced_accuracy_adjusted = balanced_accuracy_score(targets_all, predictions_all, adjusted=True)
-        scores = {"score": accuracy,
-                  "accuracy": accuracy,
-                  "balanced_accuracy": balanced_accuracy,
-                  "balanced_accuracy_adjusted": balanced_accuracy_adjusted}
-    elif task == "regression":
-        rmse = mean_squared_error(targets_all, predictions_all, squared=False)
-        scores = {"score": -rmse,
-                  "rmse": rmse}
-    elif task == "binclass":
-        roc_auc = roc_auc_score(targets_all, predictions_all)
-        scores = {"score": roc_auc,
-                  "roc_auc": roc_auc}
-    return scores
+            targets_all.append(targets.cpu().numpy())
+            predictions_all.append(predicted.cpu().numpy())
+
+    targets_all = np.concatenate(targets_all, axis=0)
+    predictions_all = np.concatenate(predictions_all, axis=0)
+
+    return _compute_scores(targets_all, predictions_all, task)

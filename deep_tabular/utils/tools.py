@@ -231,7 +231,7 @@ def get_criterion(task):
         criterion = torch.nn.CrossEntropyLoss()
     elif task == "binclass":
         criterion = torch.nn.BCEWithLogitsLoss()
-    elif task == "regression":
+    elif task == "regression" or task == "multiVariantRegression":
         criterion = torch.nn.MSELoss()
     else:
         raise ValueError(f"No loss function implemented for task {task}.")
@@ -276,6 +276,8 @@ def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_catego
         missing_keys, unexpected_keys = net.load_state_dict(pretrained_feature_extractor_dict, strict = False)
         print('State dict successfully loaded from pretrained checkpoint. Original head reinitialized.')
         print('Missing keys:{}\nUnexpected keys:{}\n'.format(missing_keys, unexpected_keys))
+        # TODO: Validar labels aqui
+
         # É esperado que a head não seja carregada e esteja em missing keys
         # epoch = state_dict["epoch"] + 1
         # optimizer = state_dict["optimizer"]
@@ -317,6 +319,7 @@ def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num
     if device == "cuda":
         net = torch.nn.DataParallel(net)
     if model_path is not None:
+        #This isn't used because the load_model_from_checkpoint isn't called in transfer learning applications
         logging.info(f"Loading model from checkpoint {model_path}...")
         state_dict = torch.load(model_path, map_location=device, weights_only=True)
         net.load_state_dict(state_dict["net"])

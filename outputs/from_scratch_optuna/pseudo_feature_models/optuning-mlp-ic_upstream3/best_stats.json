@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream3",
+    "model_name": "mlp",
+    "run_id": "ternate-Amandah_trial_156",
+    "best_epoch": 194,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -10010972.0,
+        "rmse": 10010972.0
+    },
+    "train_stats": {
+        "score": -0.4486824870109558,
+        "rmse": 0.4486824870109558
+    },
+    "val_stats": {
+        "score": -0.5978671908378601,
+        "rmse": 0.5978671908378601
+    }
+}

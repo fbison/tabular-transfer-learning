@@ -1,6 +1,6 @@
 name: ic_downstream1
 source: local
-task: regression
+task: multiVariantRegression
 normalization: quantile
 normalizer_path: 
 stage: 'downstream'

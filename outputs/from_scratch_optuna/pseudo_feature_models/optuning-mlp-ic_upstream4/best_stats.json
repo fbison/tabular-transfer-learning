@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_upstream4",
+    "model_name": "mlp",
+    "run_id": "wreckful-Wei_trial_200",
+    "best_epoch": 199,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -10010972.0,
+        "rmse": 10010972.0
+    },
+    "train_stats": {
+        "score": -0.36191800236701965,
+        "rmse": 0.36191800236701965
+    },
+    "val_stats": {
+        "score": -0.5543075203895569,
+        "rmse": 0.5543075203895569
+    }
+}

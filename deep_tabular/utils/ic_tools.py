@@ -68,22 +68,6 @@ def remove_common_strings(downstream_columns, non_numerical_columns, target_colu
     # Convert the resulting set back to a list (if a list is required for the return)
     return list(result_set)
 
-def get_x_features(dataset_name, target_columns, target=0):
-    """
-    Function to get the features for a given dataset
-    """
-    
-    if 'ic_upstream2' in dataset_name:
-        return remove_common_strings(upstream2_columns, non_numerical_columns, target_columns[target])
-    elif 'ic_upstream3' in dataset_name:
-        return remove_common_strings(upstream3_columns, non_numerical_columns, target_columns[target])
-    elif 'ic_upstream4' in dataset_name:
-        return remove_common_strings(upstream4_columns, non_numerical_columns, target_columns[target])
-    elif 'ic_downstream1' in dataset_name:
-        return remove_common_strings(downstream_columns, non_numerical_columns, target_columns[target])
-    else:
-        raise ValueError(f"Unknown dataset name: {dataset_name}")
-
 def combine_unique_sorted(arr1, arr2, arr3):
     combined = arr1 + arr2 + arr3  # concatena os arrays
     return sorted(set(combined))  # remove repetições e ordena
@@ -168,7 +152,29 @@ def split_ic_dataset(dataset_name, dataset_number, target_columns):
         prefix='ic'
     )
 
-def read_ic_dataset(dataset_name, target_columns, target=0):
+def removeTargetFromFeatures(X, y):
+    """
+    Remove as colunas alvo de X, caso estejam presentes.
+    """
+    target_cols_in_X = [col for col in y.columns if col in X.columns]
+    if target_cols_in_X:
+        X = X.drop(columns=target_cols_in_X)
+    return X
+
+def removeTargetFromFeaturesAllSplits(xTrain, xVal, xTest, yTrain, yVal, yTest):
+    """
+    Remove as colunas alvo de X em todos os splits, caso estejam presentes.
+    """
+    xTrain = removeTargetFromFeatures(xTrain, yTrain)
+    xVal = removeTargetFromFeatures(xVal, yVal)
+    xTest = removeTargetFromFeatures(xTest, yTest)
+    return xTrain, xVal, xTest
+
+def read_ic_dataset(dataset_name, target_columns):
+    """
+    Lê os arquivos de dataset IC e retorna os splits, usando as colunas de target especificadas.
+    target_columns: lista de strings com os nomes das colunas alvo.
+    """
     base_path = f'../../../data/{dataset_name}/'
     file_paths = {
         'X_train': os.path.join(base_path, 'ic_train_X.csv'),
@@ -178,14 +184,25 @@ def read_ic_dataset(dataset_name, target_columns, target=0):
         'y_val': os.path.join(base_path, 'ic_val_y.csv'),
         'y_test': os.path.join(base_path, 'ic_test_y.csv')
     }
+    
+    # Check if all files exist before attempting to read
+    for key, path in file_paths.items():
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Required dataset file not found: {path}")
+
 
     # Leitura
     X_train, X_val, X_test = [pd.read_csv(file_paths[k]) for k in ['X_train', 'X_val', 'X_test']]
     y_train_full, y_val_full, y_test_full = [pd.read_csv(file_paths[k]) for k in ['y_train', 'y_val', 'y_test']]
 
-    # Seleciona apenas a coluna-alvo pedida
-    target_name = target_columns[target]
-    y_train, y_val, y_test = [df[[target_name]] for df in [y_train_full, y_val_full, y_test_full]]
+    # Seleciona as colunas-alvo pedidas (array de targets)
+    y_train = y_train_full[target_columns]
+    y_val = y_val_full[target_columns]
+    y_test = y_test_full[target_columns]
+
+    # Remove as colunas alvo de X, caso estejam presentes, no cenário normal a pIC50 já foi removida dos arquivos, 
+    # mas isso é necessário para o caso de pseudoFeatures
+    X_train, X_val, X_test = removeTargetFromFeaturesAllSplits(X_train, X_val, X_test, y_train, y_val, y_test)
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
@@ -269,54 +286,39 @@ def train_sample(xTrain, yTrain, sample_size):
     else:
         x_sampled, _, y_sampled, _ = train_test_split(xTrain, yTrain, train_size=sample_size, random_state=42)
         return x_sampled, y_sampled
+
+def define_target_for_task(task, dataset_name):
+    """
+    Define o índice da coluna alvo com base na tarefa.
+    """
+    if not task.startswith('multiVariantRegression'):
+        return default_target_columns
     
-def read_ic_dataset(dataset_name, target_colums, target):
-    """
-    Function to read the IC dataset.
-    Raises FileNotFoundError if any required CSV file is not found.
-    """
-    base_path = f'../../../data/{dataset_name}/'
+    if "ic_upstream2" in dataset_name:
+        return missing_features['up2_only']
+    elif 'ic_upstream3' in dataset_name:
+        return missing_features['up3_only']
+    elif 'ic_upstream4' in dataset_name:
+        return missing_features['up4_only']
+    elif 'ic_downstream1' in dataset_name:
+        return combine_unique_sorted(missing_features['up2_missing'], missing_features['up3_missing'], missing_features['up4_missing']) 
     
-    # Define file paths
-    file_paths = {
-        'X_train': os.path.join(base_path, 'ic_train_X.csv'),
-        'X_val': os.path.join(base_path, 'ic_val_X.csv'),
-        'X_test': os.path.join(base_path, 'ic_test_X.csv'),
-        'y_train': os.path.join(base_path, 'ic_train_y.csv'),
-        'y_val': os.path.join(base_path, 'ic_val_y.csv'),
-        'y_test': os.path.join(base_path, 'ic_test_y.csv')
-    }
-
-    # Check if all files exist before attempting to read
-    for key, path in file_paths.items():
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Required dataset file not found: {path}")
-
-    # Read the CSV files
-    X_train = pd.read_csv(file_paths['X_train'])
-    X_val = pd.read_csv(file_paths['X_val'])
-    X_test = pd.read_csv(file_paths['X_test'])
+    return []
     
-    y_train_full = pd.read_csv(file_paths['y_train'])
-    y_val_full   = pd.read_csv(file_paths['y_val'])
-    y_test_full  = pd.read_csv(file_paths['y_test'])
-
-    y_train = y_train_full[[target_colums[target]]]
-    y_val   = y_val_full[[target_colums[target]]]
-    y_test  = y_test_full[[target_colums[target]]]
-
-    return X_train, X_val, X_test, y_train, y_val, y_test
-
-def get_datasets(dataset_name, dataset_number=None, target_columns=None, target=0, dataset_type='ic'):
+def get_datasets(dataset_name, dataset_number=None, target_columnsToSave=None, task="regression", dataset_type='ic'):
     """
-    dataset_type: 'ic' or 'cep'
+    dataset_type: 'ic' ou 'cep'.
+    target_columns: lToSaveista de strings com os nomes das colunas alvo. Default: default_target_columns.
     """
+    target_columns = target_columnsToSave
+
     if dataset_type == 'ic':
+        target_columns = define_target_for_task(task, dataset_name)
         try:
-            return read_ic_dataset(dataset_name, target_columns, target)
+            return read_ic_dataset(dataset_name, target_columns)
         except FileNotFoundError:
-            split_ic_dataset(dataset_name, dataset_number, target_columns)
-            return read_ic_dataset(dataset_name, target_columns, target)
+            split_ic_dataset(dataset_name, dataset_number, target_columnsToSave)
+            return read_ic_dataset(dataset_name, target_columns)
 
     elif dataset_type == 'cep':
         try:
@@ -339,7 +341,7 @@ def get_last_char_as_int(s: str) -> int:
     except ValueError:
         raise ValueError(f"Last character '{last_char}' cannot be converted to an integer.")
 
-def get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id=None):
+def get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id=None, n_classes=1):
     """
     Monta a estrutura comum de saída para qualquer dataset.
     """
@@ -351,7 +353,7 @@ def get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, ta
         "train_size": X_train.shape[0],
         "val_size": X_val.shape[0],
         "test_size": X_test.shape[0],
-        "n_classes": 1
+        "n_classes": n_classes
     }
 
     numerical_data = {
@@ -375,19 +377,19 @@ def get_ic_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
     dataset_id = get_last_char_as_int(dataset_name)
     target_columns = get_target_columns(dataset_name)
-    print(f"Target columns: {len(target_columns)}")
+    print(f"Target columns: {target_columns}")
 
     X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(
-        dataset_name, dataset_id, target_columns=target_columns, dataset_type="ic"
+        dataset_name, dataset_id, target_columnsToSave=target_columns, task=task, dataset_type="ic"
     )
 
-    return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id)
+    return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id, n_classes=len(set(y_train)))
 
 def get_cep_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
 
     X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(
-        dataset_name, target_columns=None, dataset_type="cep"
+        dataset_name, task=task, dataset_type="cep"
     )
 
     return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task)
@@ -435,12 +437,12 @@ def get_synthetic_dataset(n_samples=1000, n_features=10, noise=10.0, val_size=0.
     }
 
     return numerical_data, categorical_data, targets, info, full_cat_data_for_encoder
+
 def get_separator(fileName: str) -> str:
     if fileName.startswith('exp_100'):
         return '|'
     else:
         return ','
-
 
 def list_csv_files(path_dir: str) -> List[str]:
     """Return a list of all CSV files in the given directory."""

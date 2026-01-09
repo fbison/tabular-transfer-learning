@@ -1,6 +1,6 @@
 name: ic_upstream3
 source: local
-task: regression
+task: multiVariantRegression
 normalization: quantile
 normalizer_path: '../../../data/ic_upstream3/normalizer.pkl'
 stage: 'pretrain'

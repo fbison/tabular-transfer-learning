@@ -164,7 +164,7 @@ def main(cfg: DictConfig):
                          ("model_name", cfg.model.name),
                          ("run_id", cfg.run_id),
                          ("best_epoch", best_epoch),
-                         ("routine", "from_scratch"),
+                         ("routine", "transfer_learn_net"),
                          ("test_stats", test_stats),
                          ("train_stats", train_stats),
                          ("val_stats", val_stats),

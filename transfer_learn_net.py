@@ -43,13 +43,14 @@ def main(cfg: DictConfig):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes = dt.utils.get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes, data_schema = dt.utils.get_dataloaders(cfg)
 
     net, start_epoch, optimizer_state_dict = dt.utils.load_transfer_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,
                                                                                  unique_categories,
                                                                                  n_classes,
-                                                                                 device)
+                                                                                 device,
+                                                                                 data_schema)
     pytorch_total_params = sum(p.numel() for p in net.parameters())
 
     log.info(f"This {cfg.model.name} has {pytorch_total_params / 1e6:0.3f} million parameters.")
@@ -136,6 +137,7 @@ def main(cfg: DictConfig):
                 log.info(f"New best epoch, val score: {val_stats['score']}")
                 # save current model
                 state = {"net": net.state_dict(), "epoch": epoch, "optimizer": optimizer.state_dict()}
+                state["data_schema"] = data_schema
                 out_str = "model_best.pth"
                 log.info(f"Saving model to: {out_str}")
                 torch.save(state, out_str)

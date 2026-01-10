@@ -5,6 +5,7 @@
 """
 
 import logging
+import warnings
 import os
 import random
 from collections import OrderedDict
@@ -66,6 +67,7 @@ def get_dataloaders(cfg, which_dataset=None):
         x_numerical, x_categorical, y, info, full_cat_data_for_encoder = get_ic_dataset(dataset_name=cfg_dataset.name,
                                                                                   task=cfg_dataset.task,
                                                                                   stage=cfg_dataset.stage)
+
     elif cfg_dataset.name== 'synthetic':
         x_numerical, x_categorical, y, info, full_cat_data_for_encoder = get_synthetic_dataset()
     elif  cfg_dataset.name.split('_')[0] == 'california' or cfg_dataset.name.split('_')[0] == 'japan':
@@ -77,7 +79,6 @@ def get_dataloaders(cfg, which_dataset=None):
                                                                                   source=cfg_dataset.source,
                                                                                   task=cfg_dataset.task,
                                                                                   datasplit=[.65, .15, .2])
-
     dataset = TabularDataset(x_numerical, x_categorical, y, info, normalization=cfg_dataset.normalization,
                              cat_policy="indices",
                              seed=0,
@@ -107,7 +108,7 @@ def get_dataloaders(cfg, which_dataset=None):
     testloader = DataLoader(testset, batch_size=cfg.hyp.test_batch_size, shuffle=False, drop_last=False)
 
     loaders = {"train": trainloader, "val": valloader, "test": testloader}
-    return loaders, unique_categories, n_numerical, n_classes
+    return loaders, unique_categories, n_numerical, n_classes, info.get("data_schema", None)
 
 
 def get_model(model, num_numerical, unique_categories, num_outputs, d_embedding, model_params):
@@ -255,7 +256,7 @@ def remove_parallel(state_dict):
         new_state_dict[name] = v
     return new_state_dict
 
-def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_categories, num_outputs, device):
+def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_categories, num_outputs, device, data_schema=None):
     model = model_args.name
     model_path = model_args.model_path
     d_embedding = model_args.d_embedding
@@ -276,7 +277,7 @@ def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_catego
         missing_keys, unexpected_keys = net.load_state_dict(pretrained_feature_extractor_dict, strict = False)
         print('State dict successfully loaded from pretrained checkpoint. Original head reinitialized.')
         print('Missing keys:{}\nUnexpected keys:{}\n'.format(missing_keys, unexpected_keys))
-        # TODO: Validar labels aqui
+        validate_ic_data_schema(state_dict.get("data_schema", None), data_schema)
 
         # É esperado que a head não seja carregada e esteja em missing keys
         # epoch = state_dict["epoch"] + 1
@@ -307,7 +308,7 @@ def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_catego
     return net, epoch, optimizer
 
 
-def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num_outputs, device):
+def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num_outputs, device, data_schema=None):
     model = model_args.name
     model_path = model_args.model_path
     d_embedding = model_args.d_embedding
@@ -319,11 +320,95 @@ def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num
     if device == "cuda":
         net = torch.nn.DataParallel(net)
     if model_path is not None:
-        #This isn't used because the load_model_from_checkpoint isn't called in transfer learning applications
+        #This isn't used most of the time because the load_model_from_checkpoint isn't called in transfer learning applications
         logging.info(f"Loading model from checkpoint {model_path}...")
         state_dict = torch.load(model_path, map_location=device, weights_only=True)
+        validate_ic_data_schema(state_dict.get("data_schema", None), data_schema)
         net.load_state_dict(state_dict["net"])
         epoch = state_dict["epoch"] + 1
         optimizer = state_dict["optimizer"]
 
     return net, epoch, optimizer
+
+
+def validate_ic_data_schema(checkpoint_schema, current_schema):
+    """
+    Validates semantic compatibility between checkpoint and current IC dataset schemas.
+
+    This validation is non-blocking:
+    - logs detailed errors on incompatibility
+    - emits warnings
+    - never raises exceptions
+
+    Parameters
+    ----------
+    checkpoint_schema : dict or None
+        data_schema loaded from checkpoint
+    current_schema : dict or None
+        data_schema from current dataset
+    """
+
+    if checkpoint_schema is None or current_schema is None:
+        logging.info(
+            "No compatible data_schema found in checkpoint or current dataset. "
+            "Skipping semantic validation."
+        )
+        return
+
+    # ---- Validate X features ----
+    ckpt_x = checkpoint_schema.get("x", {}).get("features")
+    curr_x = current_schema.get("x", {}).get("features")
+
+    if ckpt_x is None or curr_x is None:
+        logging.warning("Incomplete X schema found. Skipping X feature validation.")
+    else:
+        if len(ckpt_x) != len(curr_x):
+            logging.error(
+                f"X feature count mismatch: "
+                f"checkpoint={len(ckpt_x)} current={len(curr_x)}"
+            )
+            warnings.warn(
+                "X feature incompatibility detected. "
+                "Model input semantic alignment is not guaranteed."
+            )
+        else:
+            for i, (f_ckpt, f_curr) in enumerate(zip(ckpt_x, curr_x)):
+                if f_ckpt != f_curr:
+                    logging.error(
+                        f"X feature mismatch at index {i}: "
+                        f"checkpoint='{f_ckpt}' current='{f_curr}'"
+                    )
+                    warnings.warn(
+                        "X feature incompatibility detected. "
+                        "Model input semantic alignment is not guaranteed."
+                    )
+                    break
+
+    # ---- Validate Y labels ----
+    ckpt_y = checkpoint_schema.get("y", {}).get("labels")
+    curr_y = current_schema.get("y", {}).get("labels")
+
+    if ckpt_y is None or curr_y is None:
+        logging.warning("Incomplete Y schema found. Skipping Y label validation.")
+    else:
+        if len(ckpt_y) != len(curr_y):
+            logging.error(
+                f"Y label count mismatch: "
+                f"checkpoint={len(ckpt_y)} current={len(curr_y)}"
+            )
+            warnings.warn(
+                "Y label incompatibility detected. "
+                "Model output semantic alignment is not guaranteed."
+            )
+        else:
+            for i, (y_ckpt, y_curr) in enumerate(zip(ckpt_y, curr_y)):
+                if y_ckpt != y_curr:
+                    logging.error(
+                        f"Y label mismatch at index {i}: "
+                        f"checkpoint='{y_ckpt}' current='{y_curr}'"
+                    )
+                    warnings.warn(
+                        "Y label incompatibility detected. "
+                        "Model output semantic alignment is not guaranteed."
+                    )
+                    break

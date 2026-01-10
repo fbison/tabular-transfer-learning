@@ -383,7 +383,21 @@ def get_ic_dataset(dataset_name, task, stage):
         dataset_name, dataset_id, target_columnsToSave=target_columns, task=task, dataset_type="ic"
     )
 
-    return get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id, n_classes=len(set(y_train)))
+    # as variáveis acima são pandas e possuem valor semântico das features, para isso não ser perdido ao transformar em arrays, tensores e numpys a dataschema é inserida aqui
+    data_schema = {
+        "x": {
+            "features": list(X_train.columns)
+        },
+        "y": {
+            "labels": list(y_train.columns),
+            "task": task
+        }
+    }
+    x_numerical, x_categorical, y, info, full_cat_data_for_encoder = get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id, n_classes=len(set(y_train)))
+
+    info["data_schema"] = data_schema
+
+    return x_numerical, x_categorical, y, info, full_cat_data_for_encoder
 
 def get_cep_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")

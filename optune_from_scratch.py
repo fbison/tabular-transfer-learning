@@ -18,8 +18,8 @@ import torch
 import multiprocessing
 from deep_tabular.utils.optuna_tools import get_parameters, save_graphs
 
-N_JOBS = 20
-N_OPTUNA_TRIALS = 180
+N_JOBS = 15
+N_OPTUNA_TRIALS = 200
 
 
 def objective(trial, cfg: DictConfig, trial_stats, 
@@ -83,7 +83,7 @@ def main(cfg):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes = dt.utils.get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes, data_schema = dt.utils.get_dataloaders(cfg)
     storage_path = "sqlite:///optuna_study.db"
     study = optuna.create_study(
         study_name="my_study",

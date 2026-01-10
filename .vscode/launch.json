@@ -41,9 +41,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                    "model=mlp_california", 
-                    "hyp=hyp_california",
-                    "dataset=california"
+                    "model=mlp", 
+                    "hyp=hyp_for_transfer",
+                    "dataset=ic_upstream4"
             ],
             "console": "integratedTerminal"
         },

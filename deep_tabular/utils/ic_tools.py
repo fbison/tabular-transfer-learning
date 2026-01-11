@@ -377,11 +377,11 @@ def get_ic_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
     dataset_id = get_last_char_as_int(dataset_name)
     target_columns = get_target_columns(dataset_name)
-    print(f"Target columns: {target_columns}")
 
     X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(
         dataset_name, dataset_id, target_columnsToSave=target_columns, task=task, dataset_type="ic"
     )
+    print(f"Target columns: {y_train.columns}")
 
     # as variáveis acima são pandas e possuem valor semântico das features, para isso não ser perdido ao transformar em arrays, tensores e numpys a dataschema é inserida aqui
     data_schema = {

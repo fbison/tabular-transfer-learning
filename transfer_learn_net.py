@@ -69,13 +69,14 @@ def main(cfg: DictConfig):
     ####################################################
     #        Train
     log.info(f"==> Starting training for {max(cfg.hyp.epochs - start_epoch, 0)} epochs...")
-    all_train_stats = [] if cfg.hyp.save_all_epochs else None
+    save_all_epochs = cfg.hyp.get("save_all_epochs", False)
+    all_train_stats = [] if save_all_epochs else None
     highest_val_acc_so_far = -np.inf
     done = False
     epoch = start_epoch
     best_epoch = epoch
 
-    if cfg.hyp.plateau_stop:
+    if cfg.hyp.get("plateau_stop", False):
         plateau = dt.utils.PlateauDetector(window_size=cfg.hyp.plateau_window,
                                             ema_span=cfg.hyp.plateau_ema_span,
                                             patience_steps=cfg.hyp.plateau_patience,
@@ -121,7 +122,7 @@ def main(cfg: DictConfig):
                     "train_stats": train_stats,
                     "loss": float(loss)
                 })
-            if cfg.hyp.plateau_stop:
+            if cfg.hyp.get("plateau_stop", False):
                 if plateau.step(float(train_stats["rmse"])):
                     log.info(f"Plateau detected at epoch {epoch}. Stopping training.")
                     done = True

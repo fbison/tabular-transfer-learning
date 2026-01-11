@@ -20,11 +20,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "optuna script",
+            "name": "do zero",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/optune_from_scratch.py",
-            "args": ["model=mlp", "dataset=ic_upstream4"],
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": ["model=mlp_pf_downstream1", "dataset=ic_downstream1", "hyp=hyp_pf_downstream1"],
             "console": "integratedTerminal"
         },
         {
@@ -32,7 +32,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_Mean_exp_100_1"],
+            "args": ["model=mlp_pf_upstream4", "dataset=ic_upstream4", "hyp=hyp_pf_upstream4"],
             "console": "integratedTerminal"
         },
         {

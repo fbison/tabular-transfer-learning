@@ -51,7 +51,7 @@ def main(cfg: DictConfig):
     #               Dataset and Network and Optimizer
     loaders, unique_categories, n_numerical, n_classes, data_schema = dt.utils.get_dataloaders(cfg)
     
-    net, start_epoch, optimizer_state_dict = dt.utils.load_model_from_checkpoint(cfg.model,
+    net, start_epoch, optimizer_state_dict, _ = dt.utils.load_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,
                                                                                  unique_categories,
                                                                                  n_classes,
@@ -76,12 +76,13 @@ def main(cfg: DictConfig):
     ####################################################
     #        Train
     log.info(f"==> Starting training for {max(cfg.hyp.epochs - start_epoch, 0)} epochs...")
-    all_train_stats = [] if cfg.hyp.save_all_epochs else None
+    save_all_epochs = cfg.hyp.get("save_all_epochs", False)
+    all_train_stats = [] if save_all_epochs else None
     highest_val_acc_so_far = -np.inf
     done = False
     epoch = start_epoch
     best_epoch = epoch
-    if cfg.hyp.plateau_stop:
+    if cfg.hyp.get("plateau_stop", False):
         plateau = dt.utils.PlateauDetector(window_size=cfg.hyp.plateau_window,
                                             ema_span=cfg.hyp.plateau_ema_span,
                                             patience_steps=cfg.hyp.plateau_patience,
@@ -124,13 +125,13 @@ def main(cfg: DictConfig):
                                  writer)
 
             # salva stats de treino, se habilitado
-            if cfg.hyp.save_all_epochs:
+            if save_all_epochs:
                 all_train_stats.append({
                     "epoch": epoch,
                     "train_stats": train_stats,
                     "loss": float(loss)
                 })
-            if cfg.hyp.plateau_stop:
+            if cfg.hyp.get("plateau_stop", False):
                 if plateau.step(float(train_stats["rmse"])):
                     log.info(f"Plateau detected at epoch {epoch}. Stopping training.")
                     done = True

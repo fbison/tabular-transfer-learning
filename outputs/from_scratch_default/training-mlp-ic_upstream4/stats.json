@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4",
+    "model_name": "mlp",
+    "run_id": "dappled-Arah",
+    "best_epoch": 199,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -10010972.0,
+        "rmse": 10010972.0
+    },
+    "train_stats": {
+        "score": -0.36323055624961853,
+        "rmse": 0.36323055624961853
+    },
+    "val_stats": {
+        "score": -0.5649382472038269,
+        "rmse": 0.5649382472038269
+    },
+    "all_train_stats": null
+}

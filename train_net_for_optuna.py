@@ -46,7 +46,7 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
     # All outputs will be saved inside this directory
     writer = SummaryWriter(log_dir=os.path.join(trial_output_dir, "tensorboard"))
     
-    net, start_epoch, optimizer_state_dict = dt.utils.load_model_from_checkpoint(cfg.model,
+    net, start_epoch, optimizer_state_dict, _ = dt.utils.load_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,
                                                                                  unique_categories,
                                                                                  n_classes,

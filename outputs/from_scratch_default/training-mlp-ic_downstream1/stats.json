@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_downstream1",
+    "model_name": "mlp",
+    "run_id": "unwired-Crosby",
+    "best_epoch": 126,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.0268595218658447,
+        "rmse": 1.0268595218658447
+    },
+    "train_stats": {
+        "score": -0.6924285888671875,
+        "rmse": 0.6924285888671875
+    },
+    "val_stats": {
+        "score": -0.9437493085861206,
+        "rmse": 0.9437493085861206
+    },
+    "all_train_stats": null
+}

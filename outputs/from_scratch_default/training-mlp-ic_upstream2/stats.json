@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2",
+    "model_name": "mlp",
+    "run_id": "unbacked-Erron",
+    "best_epoch": 199,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -0.573642373085022,
+        "rmse": 0.573642373085022
+    },
+    "train_stats": {
+        "score": -0.4211176335811615,
+        "rmse": 0.4211176335811615
+    },
+    "val_stats": {
+        "score": -0.6877092123031616,
+        "rmse": 0.6877092123031616
+    },
+    "all_train_stats": null
+}

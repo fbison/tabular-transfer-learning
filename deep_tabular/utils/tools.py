@@ -319,16 +319,18 @@ def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num
     net = net.to(device)
     if device == "cuda":
         net = torch.nn.DataParallel(net)
-    if model_path is not None:
-        #This isn't used most of the time because the load_model_from_checkpoint isn't called in transfer learning applications
-        logging.info(f"Loading model from checkpoint {model_path}...")
-        state_dict = torch.load(model_path, map_location=device, weights_only=True)
-        validate_ic_data_schema(state_dict.get("data_schema", None), data_schema)
-        net.load_state_dict(state_dict["net"])
-        epoch = state_dict["epoch"] + 1
-        optimizer = state_dict["optimizer"]
+    if model_path is None:
+        return net, epoch, optimizer, None
+    
+    #This isn't used most of the time because the load_model_from_checkpoint isn't called in transfer learning applications
+    logging.info(f"Loading model from checkpoint {model_path}...")
+    state_dict = torch.load(model_path, map_location=device, weights_only=True)
+    validate_ic_data_schema(state_dict.get("data_schema", None), data_schema)
+    net.load_state_dict(state_dict["net"])
+    epoch = state_dict["epoch"] + 1
+    optimizer = state_dict["optimizer"]
 
-    return net, epoch, optimizer
+    return net, epoch, optimizer, state_dict.get("data_schema", None)
 
 
 def validate_ic_data_schema(checkpoint_schema, current_schema):

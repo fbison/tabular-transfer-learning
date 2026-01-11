@@ -133,6 +133,14 @@
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
             "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Gaussian_exp_100_1"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "pseudo feature imputation",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/pseudo_feature.py",
+            "args": [],
+            "console": "integratedTerminal"
         }
     ]
 }

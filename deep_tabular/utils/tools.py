@@ -8,6 +8,8 @@ import logging
 import warnings
 import os
 import random
+import hydra
+
 from collections import OrderedDict
 import torch
 from icecream import ic
@@ -308,6 +310,21 @@ def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_catego
     return net, epoch, optimizer
 
 
+def resolve_model_path(model_path: str) -> str:
+    model_path = os.path.normpath(model_path)
+
+    # Caso 1: path absoluto
+    if os.path.isabs(model_path):
+        return model_path
+
+    # Caso 2: path relativo → relativo à raiz do projeto
+    try:
+        base = hydra.utils.get_original_cwd()
+    except Exception:
+        base = os.getcwd()
+
+    return os.path.join(base, model_path)
+
 def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num_outputs, device, data_schema=None):
     model = model_args.name
     model_path = model_args.model_path
@@ -324,7 +341,13 @@ def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num
     
     #This isn't used most of the time because the load_model_from_checkpoint isn't called in transfer learning applications
     logging.info(f"Loading model from checkpoint {model_path}...")
-    state_dict = torch.load(model_path, map_location=device, weights_only=True)
+    model_path = resolve_model_path(model_path)
+
+    state_dict = torch.load(
+        model_path,
+        map_location=device,
+        weights_only=True
+    )
     validate_ic_data_schema(state_dict.get("data_schema", None), data_schema)
     net.load_state_dict(state_dict["net"])
     epoch = state_dict["epoch"] + 1

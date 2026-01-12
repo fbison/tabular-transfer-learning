@@ -147,7 +147,7 @@ def get_number_from_dataset_name(upstream_name):
 def sufix_for_imputed_dataset(dataset_used_to_train_model):
     if dataset_used_to_train_model is None:
         return ""
-    return f"_exp_100{get_number_from_dataset_name(dataset_used_to_train_model)}"
+    return f"_exp_100_{get_number_from_dataset_name(dataset_used_to_train_model)}"
 
 def save_imputed_dataset(path, dataset, dataset_used_to_train_model, method="pseudo_features"):
     folder_of_file = os.path.dirname(path)
@@ -155,7 +155,6 @@ def save_imputed_dataset(path, dataset, dataset_used_to_train_model, method="pse
     path = path.replace(folder_of_file, folder_new_name)
     if not os.path.exists(folder_new_name):
         os.makedirs(folder_new_name)
-    dataset = dataset.reindex(sorted(dataset.columns), axis=1)
     dataset.to_csv(path, index=False)
 
 def get_dataset_folder(dataset_name):
@@ -228,7 +227,7 @@ def impute_real_values_by_file(file_path):
 
     path_to_original_dataset = "../../../data/alk-5/cd_moleculas_544_833.csv"
 
-    original_dataset = pd.read_csv(path_to_original_dataset)
+    original_dataset = pd.read_csv(path_to_original_dataset, sep='|')
     dataset_to_impute = pd.read_csv(file_path)
 
     # colunas que identificam a molécula

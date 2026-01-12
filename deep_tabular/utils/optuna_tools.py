@@ -120,6 +120,8 @@ def save_graphs(study: optuna.study.Study):
 def load_completed_trials(path: str):
     """Lê os trials salvos em JSONL."""
     trials = []
+    if not os.path.exists(path):
+        return trials
     with open(path, "r") as f:
         for line in f:
             data = json.loads(line)

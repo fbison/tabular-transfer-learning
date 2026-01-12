@@ -32,7 +32,7 @@ import gc
 
 INPUT_PATH = r"all_trials.jsonl"
 STORAGE_PATH = "sqlite:///optuna_study.db"
-N_TOTAL_TRIALS = 180
+N_TOTAL_TRIALS = 200
 N_JOBS = 20  # número de processos paralelos
 
 

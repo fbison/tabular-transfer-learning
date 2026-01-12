@@ -28,11 +28,27 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "optune continue script",
+            "name": "optune continue script4",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp_pf_upstream4", "dataset=ic_upstream4", "hyp=hyp_pf_upstream4"],
+            "args": ["model=mlp", "dataset=ic_upstream4_Imputation_RealValues"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "optune continue script3",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
+            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_RealValues"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "optune continue script2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
+            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_RealValues"],
             "console": "integratedTerminal"
         },
         {

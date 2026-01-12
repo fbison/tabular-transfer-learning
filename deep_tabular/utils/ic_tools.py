@@ -184,12 +184,10 @@ def read_ic_dataset(dataset_name, target_columns):
         'y_val': os.path.join(base_path, 'ic_val_y.csv'),
         'y_test': os.path.join(base_path, 'ic_test_y.csv')
     }
-    
     # Check if all files exist before attempting to read
     for key, path in file_paths.items():
         if not os.path.exists(path):
             raise FileNotFoundError(f"Required dataset file not found: {path}")
-
 
     # Leitura
     X_train, X_val, X_test = [pd.read_csv(file_paths[k]) for k in ['X_train', 'X_val', 'X_test']]
@@ -339,7 +337,8 @@ def get_last_char_as_int(s: str) -> int:
     try:
         return int(last_char)
     except ValueError:
-        raise ValueError(f"Last character '{last_char}' cannot be converted to an integer.")
+        print(f"Last character '{last_char}' cannot be converted to an integer.")
+        return None
 
 def get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, task, dataset_id=None, n_classes=1):
     """

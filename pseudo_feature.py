@@ -277,17 +277,17 @@ def select_x_features(dataset: str, dataset_to_select_features_from: str):
     union = list(set(dataset_features) | set(features_to_add))
 
     return union
-def impute_real_values_by_dataset(dataset_to_impute, x_features):
+def impute_real_values_by_dataset(dataset_to_impute, x_features, dataset_to_select_features_from):
     x_files = get_x_files_in_dataset(dataset_to_impute)
     for x_file in x_files:
-        impute_real_values_by_file(x_file, x_features)
-    clean_y_files("pIC50", dataset_to_impute, None, method="Real_Values")
+        impute_real_values_by_file(x_file, x_features, dataset_to_select_features_from)
+    clean_y_files("pIC50", dataset_to_impute, dataset_to_select_features_from, method="Real_Values")
 
 def impute_real_values(dataset, dataset_to_select_features_from):
     x_features = select_x_features(dataset, dataset_to_select_features_from)
     sampled_dataset_names = get_multiple_samples_dataset_name(dataset)
     for dataset_name in sampled_dataset_names:
-        impute_real_values_by_dataset(dataset_name, x_features)
+        impute_real_values_by_dataset(dataset_name, x_features, dataset_to_select_features_from)
 
 @hydra.main()
 def main(_: DictConfig):

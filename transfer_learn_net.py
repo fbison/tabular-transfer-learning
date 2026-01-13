@@ -116,7 +116,7 @@ def main(cfg: DictConfig):
                                  epoch,
                                  writer)
             # salva stats de treino, se habilitado
-            if cfg.hyp.save_all_epochs:
+            if save_all_epochs:
                 all_train_stats.append({
                     "epoch": epoch,
                     "train_stats": train_stats,

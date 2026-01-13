@@ -57,9 +57,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                    "model=mlp", 
-                    "hyp=hyp_for_transfer",
-                    "dataset=ic_upstream4"
+                    "model=mlp_pretrain_up2_real_values", 
+                    "hyp=hyp_pretrain_up2_real_values",
+                    "dataset=ic_upstream2_Imputation_RealValues"
             ],
             "console": "integratedTerminal"
         },

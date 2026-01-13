@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2_Imputation_pseudo_features_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "abroad-Sora",
+    "best_epoch": 69,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.588083028793335,
+        "rmse": 0.588083028793335
+    },
+    "train_stats": {
+        "score": -0.47082576155662537,
+        "rmse": 0.47082576155662537
+    },
+    "val_stats": {
+        "score": -0.6509121656417847,
+        "rmse": 0.6509121656417847
+    },
+    "all_train_stats": null
+}

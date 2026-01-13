@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_RealValues",
+    "model_name": "mlp",
+    "run_id": "thornless-Ladarrius",
+    "best_epoch": 26,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.582032322883606,
+        "rmse": 0.582032322883606
+    },
+    "train_stats": {
+        "score": -0.44609296321868896,
+        "rmse": 0.44609296321868896
+    },
+    "val_stats": {
+        "score": -0.6244029402732849,
+        "rmse": 0.6244029402732849
+    },
+    "all_train_stats": null
+}

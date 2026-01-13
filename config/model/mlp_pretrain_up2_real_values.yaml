@@ -1,0 +1,11 @@
+name: mlp
+dropout: 0.011933910021887102
+d_embedding: 160
+d_layers:
+  - 484
+  - 508
+  - 508
+  - 448
+use_mlp_head: false
+freeze_feature_extractor: false
+model_path: null

@@ -111,6 +111,10 @@ def selectHeadLearningRate(mlpHead: bool, freeze: bool, base_lr: float, upstream
         return base_lr
     return upstream_head_lr
 
+def getImpuationMethodSufix(imputationMethod: str, upstream_number: int) -> str:
+    if upstream_number < 0 or upstream_number == None:
+        return f"{imputationMethod}"
+    return f"{imputationMethod}_exp_100_{upstream_number}"
 # ============================
 # Hydra main
 # ============================
@@ -143,7 +147,7 @@ def main(cfg: DictConfig):
     for seed in seeds:
         for sample in sampleSizes:
             if not benchmark:
-                dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{config['imputationMethod']}_exp_100_{upstream_number}"
+                dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{getImpuationMethodSufix(config['imputationMethod'], upstream_number)}"
             else:
                 dataset_name = f"{downstreamName}_Sample{sample}"
             full_name = f"{dataset_name}"

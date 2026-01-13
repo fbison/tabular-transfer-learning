@@ -99,6 +99,15 @@
             "args": [],
             "console": "integratedTerminal"
         },
+        
+        {
+            "name": "DownstreamPipelineRV",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Real_Values"],
+            "console": "integratedTerminal"
+        },
         {
             "name": "DownstreamPipeline",
             "type": "debugpy",

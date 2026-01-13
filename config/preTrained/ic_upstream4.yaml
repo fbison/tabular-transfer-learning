@@ -1,12 +1,14 @@
 name: ic_upstream4
 number: 4
-normalizer_path: 
+
+# === CAMPOS ADICIONADOS PARA COMPATIBILIDADE DE SCHEMA ===
+model_path: null
+normalizer_path: null
+imputationMethod: null
+
 model:
   name: ft_transformer
   d_embedding: 128
-  model_path:
-  use_mlp_head:
-  freeze_feature_extractor:
   token_bias: true
   n_layers: 1
   n_heads: 16
@@ -17,8 +19,7 @@ model:
   activation: gelu
   prenormalization: true
   initialization: kaiming
-  kv_compression:
-  kv_compression_sharing:
+
 hyp:
   epochs: 200
   lr: 2.3875087429508465e-05
@@ -41,3 +42,13 @@ hyp:
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
+
+  # === CAMPOS DE PLATEAU (IGUAIS AOS OUTROS SCHEMAS) ===
+  plateau_stop: null
+  plateau_patience: null
+  plateau_min_epochs: null
+  plateau_window: null
+  plateau_ema_span: null
+  plateau_min_rel_improvement: null
+  plateau_slope_significance_threshold: null
+  plateau_require_negative_slope_to_stop: null

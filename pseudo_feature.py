@@ -222,9 +222,12 @@ def impute_pseudo_features(dataset_to_impute, dataset_name_used_to_train_imputat
             data_schema_loaded
         )
 
-def impute_real_values_by_file(file_path):
-    x_features =["SpMax_A","VE1_A","AATS8dv","AATS8s","AATS2i","ATSC1dv","ATSC8d","ATSC0p","ATSC0i","MATS1c","MATS2s","MATS3s","MATS6s","MATS7s","MATS8s","GATS4c","GATS1dv","GATS5dv","GATS7dv","GATS6d","GATS7d","GATS2s","GATS3s","GATS2v","GATS3v","GATS1p","GATS6p","GATS3i","GATS6i","GATS8i","BCUTc-1h","BCUTd-1l","BCUTs-1h","RPCG","Xch-5d","Xch-7d","Xc-5d","Xc-5dv","Xc-6dv","AXp-1d","SdssC","SaasC","SaaaC","SssssC","SsNH2","SssNH","SsOH","SssO","SdS","SddssS","MAXaaCH","AETA_beta_s","AETA_eta_L","AETA_eta_F","ETA_epsilon_5","IC1","IC2","CIC2","ZMIC1","PEOE_VSA1","PEOE_VSA2","PEOE_VSA9","SlogP_VSA1","SlogP_VSA2","SlogP_VSA10","EState_VSA1","EState_VSA2","EState_VSA3","EState_VSA6","EState_VSA9","VSA_EState3","VSA_EState7","VSA_EState8","MDEC-33","TopoPSA(NO)","GGI3","GGI5","GGI6","GGI7","GGI8","GGI9","JGI2","JGI5","FPSA3","RPCS","Mor02m","Mor03m","Mor06m","Mor08m","Mor11m","Mor13m","Mor16m","Mor23m","XLOGP3","Silicos-IT_Log_P","ESOL_Log_S","ESOL_Solubility_(mg/ml)","Ali_Log_S","Ali_Solubility_(mg/ml)","Silicos-IT_Solubility_(mg/ml)","AATS1i","AATS3i","AATS4i","AATS5d","AATS6i","AATS7s","AATSC0v","AETA_alpha","AETA_beta_ns_d","AMID_C","ATSC1d","ATSC7d","ATSC8dv","AXp-0d","CIC1","EState_VSA4","EState_VSA5","ETA_dAlpha_B","ETA_dEpsilon_D","GATS1d","GATS1i","GATS1v","GATS2c","GATS2d","GATS2i","GATS3c","GATS3dv","GATS4dv","GATS4i","GATS4s","GATS5d","GATS5i","GATS5p","GATS6dv","GATS6s","GATS7i","GATS7p","GATS8c","GATS8dv","JGI4","MLOGP","MOMI-Z","Mor26m","Mor30m","Mor31m","PEOE_VSA4","PEOE_VSA6","RNCG","RNCS","SMR_VSA1","SMR_VSA3","SMR_VSA4","SMR_VSA9","SaaS","SdO","SlogP_VSA3","SlogP_VSA4","SpDiam_A","SssS","VSA_EState9","Xc-3dv","ZMIC2"]
+downstream_features = ["SpDiam_A","AATS5d","AATS7s","AATS8s","AATS1i","AATS2i","AATS3i","AATS4i","AATS6i","ATSC1dv","ATSC8dv","ATSC1d","ATSC7d","AATSC0v","MATS6s","MATS7s","MATS8s","GATS2c","GATS3c","GATS8c","GATS1dv","GATS3dv","GATS4dv","GATS6dv","GATS7dv","GATS8dv","GATS1d","GATS2d","GATS5d","GATS2s","GATS3s","GATS4s","GATS6s","GATS1v","GATS2v","GATS5p","GATS6p","GATS7p","GATS1i","GATS2i","GATS3i","GATS4i","GATS5i","GATS7i","GATS8i","RNCG","RPCG","Xc-3dv","Xc-5dv","Xc-6dv","AXp-0d","SdssC","SsNH2","SdO","SssO","SssS","SaaS","SddssS","MAXaaCH","AETA_alpha","AETA_beta_ns_d","ETA_dAlpha_B","ETA_epsilon_5","ETA_dEpsilon_D","IC1","CIC1","CIC2","ZMIC2","PEOE_VSA1","PEOE_VSA4","PEOE_VSA6","PEOE_VSA9","SMR_VSA1","SMR_VSA3","SMR_VSA4","SMR_VSA9","SlogP_VSA2","SlogP_VSA3","SlogP_VSA4","SlogP_VSA10","EState_VSA4","EState_VSA5","VSA_EState8","VSA_EState9","AMID_C","TopoPSA(NO)","GGI6","GGI7","JGI4","RNCS","Mor02m","Mor03m","Mor13m","Mor26m","Mor30m","Mor31m","MOMI-Z","MLOGP","ESOL_Solubility_(mg/ml)","Ali_Log_S"]
+upstream2_features = ["SpMax_A","VE1_A","AATS8dv","AATS8s","AATS2i","ATSC1dv","ATSC8d","ATSC0p","ATSC0i","MATS1c","MATS2s","MATS3s","MATS6s","MATS7s","MATS8s","GATS4c","GATS1dv","GATS5dv","GATS7dv","GATS6d","GATS7d","GATS2s","GATS3s","GATS2v","GATS3v","GATS1p","GATS6p","GATS3i","GATS6i","GATS8i","BCUTc-1h","BCUTd-1l","BCUTs-1h","RPCG","Xch-5d","Xch-7d","Xc-5d","Xc-5dv","Xc-6dv","AXp-1d","SdssC","SaasC","SaaaC","SssssC","SsNH2","SssNH","SsOH","SssO","SdS","SddssS","MAXaaCH","AETA_beta_s","AETA_eta_L","AETA_eta_F","ETA_epsilon_5","IC1","IC2","CIC2","ZMIC1","PEOE_VSA1","PEOE_VSA2","PEOE_VSA9","SlogP_VSA1","SlogP_VSA2","SlogP_VSA10","EState_VSA1","EState_VSA2","EState_VSA3","EState_VSA6","EState_VSA9","VSA_EState3","VSA_EState7","VSA_EState8","MDEC-33","TopoPSA(NO)","GGI3","GGI5","GGI6","GGI7","GGI8","GGI9","JGI2","JGI5","FPSA3","RPCS","Mor02m","Mor03m","Mor06m","Mor08m","Mor11m","Mor13m","Mor16m","Mor23m","XLOGP3","Silicos-IT_Log_P","ESOL_Log_S","ESOL_Solubility_(mg/ml)","Ali_Log_S","Ali_Solubility_(mg/ml)","Silicos-IT_Solubility_(mg/ml)"]
+upstream3_features= ["SpDiam_A","AATS3d","AATS2s","AATS3v","AATS1i","AATS2i","AATS3i","AATS4i","ATSC8dv","ATSC1d","ATSC8d","ATSC0i","AATSC0c","MATS1c","MATS2s","MATS7s","GATS1c","GATS2c","GATS5c","GATS7c","GATS8c","GATS2dv","GATS5dv","GATS7dv","GATS8dv","GATS1d","GATS3d","GATS5d","GATS6d","GATS7d","GATS8d","GATS2s","GATS6s","GATS6v","GATS3p","GATS5p","GATS1i","GATS6i","BCUTs-1h","BCUTs-1l","BCUTi-1h","BCUTi-1l","RPCG","Xch-6d","Xc-5d","Xc-3dv","Xc-4dv","AXp-1d","SsCH3","SdCH2","SdsCH","SsssCH","SaaNH","SdsN","SsOH","SssO","SdS","SaaS","SddssS","MINaasC","AETA_alpha","AETA_beta_ns_d","ETA_epsilon_5","ETA_dEpsilon_C","IC2","ZMIC2","PEOE_VSA1","PEOE_VSA2","PEOE_VSA3","PEOE_VSA6","PEOE_VSA7","PEOE_VSA11","SMR_VSA5","SMR_VSA6","SlogP_VSA2","SlogP_VSA3","EState_VSA1","EState_VSA2","EState_VSA3","EState_VSA6","VSA_EState7","AMID_C","TopoPSA(NO)","GGI5","GGI7","GGI8","GGI9","JGI3","TSRW10","TASA","Mor02m","Mor10m","Mor11m","Mor12m","Mor16m","Mor21m","Mor22m","Mor23m","iLOGP","Silicos-IT_Log_P"]
+upstream4_features=["SpMax_A","VE1_A","AATS7d","AATS6s","AATS8s","AATS3p","AATS1i","AATS3i","AATS4i","AATS6i","ATSC1d","AATSC0c","MATS1c","MATS5s","MATS6s","MATS7s","GATS1c","GATS6c","GATS7c","GATS1dv","GATS3dv","GATS5dv","GATS6dv","GATS3d","GATS4d","GATS6d","GATS1s","GATS2s","GATS8s","GATS2v","GATS3v","GATS7v","GATS4p","GATS8i","BCUTc-1l","BCUTd-1l","BCUTs-1h","BCUTs-1l","RNCG","RPCG","Xc-5dv","Xc-6dv","SsCH3","SdCH2","SdsCH","SsssCH","SaaaC","SssssC","SssNH","SsssN","SsOH","SssO","SdS","SsCl","MAXaasC","MINaaCH","ETA_shape_y","AETA_beta_s","AETA_eta_L","ETA_dEpsilon_D","fMF","ZMIC2","PEOE_VSA3","PEOE_VSA4","PEOE_VSA6","PEOE_VSA7","PEOE_VSA8","PEOE_VSA10","SMR_VSA1","SMR_VSA9","SlogP_VSA1","SlogP_VSA2","SlogP_VSA4","SlogP_VSA5","SlogP_VSA10","EState_VSA1","VSA_EState1","VSA_EState8","VSA_EState9","MDEC-22","MDEC-23","TopoPSA(NO)","GGI3","GGI4","GGI6","GGI8","GGI9","GGI10","JGI2","FNSA1","RASA","Mor02m","Mor08m","Mor10m","Mor12m","Mor23m","Mor24m","MOMI-Z","Silicos-IT_Log_P","ESOL_Solubility_(mg/ml)"]
 
+def impute_real_values_by_file(file_path, x_features, dataset_to_select_features_from):
     path_to_original_dataset = "../../../data/alk-5/cd_moleculas_544_833.csv"
 
     original_dataset = pd.read_csv(path_to_original_dataset, sep='|')
@@ -253,34 +256,52 @@ def impute_real_values_by_file(file_path):
     save_imputed_dataset(
             file_path,
             dataset_to_impute,
-            None,
-            "RealValues"
+            dataset_to_select_features_from,
+            "Real_Values"
         )
     return dataset_to_impute
 
-def impute_real_values_by_dataset(dataset_to_impute):
+def features_of_dataset(dataset_name):
+    if "downstream1" in dataset_name:
+        return downstream_features
+    elif "upstream2" in dataset_name:
+        return upstream2_features
+    elif "upstream3" in dataset_name:
+        return upstream3_features
+    elif "upstream4" in dataset_name:
+        return upstream4_features
+    
+def select_x_features(dataset: str, dataset_to_select_features_from: str):
+    dataset_features = features_of_dataset(dataset)
+    features_to_add = features_of_dataset(dataset_to_select_features_from)
+    union = list(set(dataset_features) | set(features_to_add))
+
+    return union
+def impute_real_values_by_dataset(dataset_to_impute, x_features):
     x_files = get_x_files_in_dataset(dataset_to_impute)
     for x_file in x_files:
-        impute_real_values_by_file(x_file)
-    clean_y_files("pIC50", dataset_to_impute, None, method="RealValues")
+        impute_real_values_by_file(x_file, x_features)
+    clean_y_files("pIC50", dataset_to_impute, None, method="Real_Values")
 
-def impute_real_values(dataset):
+def impute_real_values(dataset, dataset_to_select_features_from):
+    x_features = select_x_features(dataset, dataset_to_select_features_from)
     sampled_dataset_names = get_multiple_samples_dataset_name(dataset)
     for dataset_name in sampled_dataset_names:
-        impute_real_values_by_dataset(dataset_name)
+        impute_real_values_by_dataset(dataset_name, x_features)
 
 @hydra.main()
 def main(_: DictConfig):
-    impute_pseudo_features("ic_downstream1", "ic_upstream2")
-    impute_real_values("ic_downstream1")
-    impute_pseudo_features("ic_downstream1", "ic_upstream3")
-    impute_pseudo_features("ic_downstream1", "ic_upstream4")
-    impute_pseudo_features("ic_upstream2", "ic_downstream1")
-    impute_real_values("ic_upstream2")
-    impute_pseudo_features("ic_upstream3", "ic_downstream1")
-    impute_real_values("ic_upstream3")
-    impute_pseudo_features("ic_upstream4", "ic_downstream1")
-    impute_real_values("ic_upstream4")
-
+    #impute_pseudo_features("ic_downstream1", "ic_upstream2")
+    impute_real_values("ic_downstream1", "ic_upstream2")
+    #impute_pseudo_features("ic_downstream1", "ic_upstream3")
+    impute_real_values("ic_downstream1", "ic_upstream3")
+    #impute_pseudo_features("ic_downstream1", "ic_upstream4")
+    impute_real_values("ic_downstream1", "ic_upstream4")
+    #impute_pseudo_features("ic_upstream2", "ic_downstream1")
+    impute_real_values("ic_upstream2", "ic_downstream1")
+    #impute_pseudo_features("ic_upstream3", "ic_downstream1")
+    impute_real_values("ic_upstream3", "ic_downstream1")
+    #impute_pseudo_features("ic_upstream4", "ic_downstream1")
+    impute_real_values("ic_upstream4", "ic_downstream1")
 if __name__ == "__main__":
     main()

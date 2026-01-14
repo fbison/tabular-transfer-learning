@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_Real_Values_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "ramal-Nimisha",
+    "best_epoch": 62,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.6191712617874146,
+        "rmse": 0.6191712617874146
+    },
+    "train_stats": {
+        "score": -0.3857586979866028,
+        "rmse": 0.3857586979866028
+    },
+    "val_stats": {
+        "score": -0.6058123707771301,
+        "rmse": 0.6058123707771301
+    },
+    "all_train_stats": null
+}

@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2_Imputation_Real_Values_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "downwind-Jameisha",
+    "best_epoch": 55,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.5921086072921753,
+        "rmse": 0.5921086072921753
+    },
+    "train_stats": {
+        "score": -0.3297657370567322,
+        "rmse": 0.3297657370567322
+    },
+    "val_stats": {
+        "score": -0.6289861798286438,
+        "rmse": 0.6289861798286438
+    },
+    "all_train_stats": null
+}

@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "hobnailed-Vicken",
+    "best_epoch": 70,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.5761998891830444,
+        "rmse": 0.5761998891830444
+    },
+    "train_stats": {
+        "score": -0.4109153151512146,
+        "rmse": 0.4109153151512146
+    },
+    "val_stats": {
+        "score": -0.6655625700950623,
+        "rmse": 0.6655625700950623
+    },
+    "all_train_stats": null
+}

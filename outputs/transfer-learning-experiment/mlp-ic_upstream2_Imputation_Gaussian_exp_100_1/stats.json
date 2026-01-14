@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "unbought-Robbi",
+    "best_epoch": 54,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.6378886699676514,
+        "rmse": 0.6378886699676514
+    },
+    "train_stats": {
+        "score": -0.4738856554031372,
+        "rmse": 0.4738856554031372
+    },
+    "val_stats": {
+        "score": -0.7047633528709412,
+        "rmse": 0.7047633528709412
+    },
+    "all_train_stats": null
+}

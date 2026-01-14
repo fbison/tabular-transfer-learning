@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_Real_Values_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "hugest-Virginia",
+    "best_epoch": 144,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.692192792892456,
+        "rmse": 0.692192792892456
+    },
+    "train_stats": {
+        "score": -0.14627699553966522,
+        "rmse": 0.14627699553966522
+    },
+    "val_stats": {
+        "score": -0.5783141851425171,
+        "rmse": 0.5783141851425171
+    },
+    "all_train_stats": null
+}

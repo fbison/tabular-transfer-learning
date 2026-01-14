@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "harmful-Cherity",
+    "best_epoch": 99,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.7048741579055786,
+        "rmse": 0.7048741579055786
+    },
+    "train_stats": {
+        "score": -0.16123372316360474,
+        "rmse": 0.16123372316360474
+    },
+    "val_stats": {
+        "score": -0.6668662428855896,
+        "rmse": 0.6668662428855896
+    },
+    "all_train_stats": null
+}

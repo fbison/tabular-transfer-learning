@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "cloddy-Jashua",
+    "best_epoch": 102,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.5924761295318604,
+        "rmse": 0.5924761295318604
+    },
+    "train_stats": {
+        "score": -0.37337297201156616,
+        "rmse": 0.37337297201156616
+    },
+    "val_stats": {
+        "score": -0.6219598054885864,
+        "rmse": 0.6219598054885864
+    },
+    "all_train_stats": null
+}

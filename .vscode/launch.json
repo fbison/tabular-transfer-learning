@@ -52,26 +52,50 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "pre train teste",
+            "name": "pre train real values",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                    "model=mlp_pretrain_up2_real_values", 
-                    "hyp=hyp_pretrain_up2_real_values",
-                    "dataset=ic_upstream2_Imputation_RealValues"
+                    "model=mlp_pretrain_up4_real_values", 
+                    "hyp=hyp_pretrain_up4_real_values",
+                    "dataset=ic_upstream4_Imputation_Real_Values_exp_100_1"
             ],
             "console": "integratedTerminal"
         },
         {
-            "name": "pre train california",
+            "name": "pre train pseudo features",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                    "model=mlp", 
-                    "hyp=hyp_for_transfer",
-                    "dataset=california"
+                    "model=mlp_pretrain_up4_pseudo_features", 
+                    "hyp=hyp_pretrain_up4_pseudo_features",
+                    "dataset=ic_upstream4_Imputation_pseudo_features_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "pre train gaussian",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                    "model=mlp_pretrain_up4_gaussian", 
+                    "hyp=hyp_pretrain_up4_gaussian",
+                    "dataset=ic_upstream4_Imputation_Gaussian_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "pre train mean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                    "model=mlp_pretrain_up4_mean", 
+                    "hyp=hyp_pretrain_up4_mean",
+                    "dataset=ic_upstream4_Imputation_Mean_exp_100_1"
             ],
             "console": "integratedTerminal"
         },
@@ -101,11 +125,11 @@
         },
         
         {
-            "name": "DownstreamPipelinePF",
+            "name": "DownstreamPipelineRV",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream2_Imputation_Pseudo_Features_exp_100_1"],
+            "args": ["preTrained=optuning-mlp-ic_upstream2_Imputation_Real_Values_exp_100_1"],
             "console": "integratedTerminal"
         },
         {

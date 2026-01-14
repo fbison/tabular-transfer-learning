@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "plumy-Latish",
+    "best_epoch": 92,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.7183393836021423,
+        "rmse": 0.7183393836021423
+    },
+    "train_stats": {
+        "score": -0.2179664522409439,
+        "rmse": 0.2179664522409439
+    },
+    "val_stats": {
+        "score": -0.7053753137588501,
+        "rmse": 0.7053753137588501
+    },
+    "all_train_stats": null
+}

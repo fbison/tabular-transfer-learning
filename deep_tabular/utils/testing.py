@@ -94,6 +94,12 @@ def test_default(net, testloader, task, device):
             targets_all.append(targets.cpu().numpy())
             predictions_all.append(predicted.cpu().numpy())
 
+    if len(targets_all) == 0:
+        # loader vazio → nenhuma amostra
+        return {
+            "score": None,
+        } 
+
     targets_all = np.concatenate(targets_all, axis=0)
     predictions_all = np.concatenate(predictions_all, axis=0)
 

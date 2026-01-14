@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "shifty-Paula",
+    "best_epoch": 89,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.6776220202445984,
+        "rmse": 0.6776220202445984
+    },
+    "train_stats": {
+        "score": -0.22958368062973022,
+        "rmse": 0.22958368062973022
+    },
+    "val_stats": {
+        "score": -0.5726015567779541,
+        "rmse": 0.5726015567779541
+    },
+    "all_train_stats": null
+}

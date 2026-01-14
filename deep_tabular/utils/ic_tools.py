@@ -170,6 +170,12 @@ def removeTargetFromFeaturesAllSplits(xTrain, xVal, xTest, yTrain, yVal, yTest):
     xTest = removeTargetFromFeatures(xTest, yTest)
     return xTrain, xVal, xTest
 
+def orderColumsAlphabetically(X: pd.DataFrame):
+    """
+    Ordena as colunas do DataFrame em ordem alfabética.
+    """
+    return X.reindex(sorted(X.columns), axis=1)
+
 def read_ic_dataset(dataset_name, target_columns):
     """
     Lê os arquivos de dataset IC e retorna os splits, usando as colunas de target especificadas.
@@ -190,7 +196,8 @@ def read_ic_dataset(dataset_name, target_columns):
             raise FileNotFoundError(f"Required dataset file not found: {path}")
 
     # Leitura
-    X_train, X_val, X_test = [pd.read_csv(file_paths[k]) for k in ['X_train', 'X_val', 'X_test']]
+    X_train, X_val, X_test = [orderColumsAlphabetically(pd.read_csv(file_paths[k])) for k in ['X_train', 'X_val', 'X_test']]
+
     y_train_full, y_val_full, y_test_full = [pd.read_csv(file_paths[k]) for k in ['y_train', 'y_val', 'y_test']]
 
     # Seleciona as colunas-alvo pedidas (array de targets)

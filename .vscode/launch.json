@@ -32,7 +32,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream4_Imputation_RealValues"],
+            "args": ["model=mlp", "dataset=ic_upstream4_Imputation_Real_Values_exp_100_1"],
             "console": "integratedTerminal"
         },
         {
@@ -40,7 +40,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_RealValues"],
+            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_Real_Values_exp_100_1"],
             "console": "integratedTerminal"
         },
         {
@@ -48,7 +48,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_RealValues"],
+            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_Real_Values_exp_100_1"],
             "console": "integratedTerminal"
         },
         {
@@ -101,11 +101,11 @@
         },
         
         {
-            "name": "DownstreamPipelineRV",
+            "name": "DownstreamPipelinePF",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Real_Values"],
+            "args": ["preTrained=optuning-mlp-ic_upstream2_Imputation_Pseudo_Features_exp_100_1"],
             "console": "integratedTerminal"
         },
         {

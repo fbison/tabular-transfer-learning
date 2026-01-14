@@ -97,7 +97,7 @@ def test_default(net, testloader, task, device):
     if len(targets_all) == 0:
         # loader vazio → nenhuma amostra
         return {
-            "score": None,
+            "score": -0,
         } 
 
     targets_all = np.concatenate(targets_all, axis=0)

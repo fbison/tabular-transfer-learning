@@ -39,6 +39,10 @@ def make_serializable(obj):
     else:
         return obj
 
+def omegaconf_to_serializable(oc):
+    if OmegaConf.is_config(oc):
+        oc = OmegaConf.to_container(oc, resolve=True)
+    return make_serializable(oc)
 def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False, results_file="results.jsonl"):
     # Copias independentes para cada job
     model_copy = copy.deepcopy(model_cfg)
@@ -60,7 +64,7 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
 
         # Retorna config + stats em um único objeto
         result = {
-            "config": OmegaConf.to_object(cfgExecution),
+            "config": omegaconf_to_serializable(cfgExecution),
             "stats": stats
         }
 
@@ -68,9 +72,9 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
         logging.getLogger().error(f"Erro no job {configName}: {e}")
         result = {
             "config": make_serializable({
-                "model": OmegaConf.to_object(model_copy),
-                "dataset": OmegaConf.to_object(dataset_copy),
-                "hyp": OmegaConf.to_object(hyp_copy),
+                "model": omegaconf_to_serializable(model_copy),
+                "dataset": omegaconf_to_serializable(dataset_copy),
+                "hyp": omegaconf_to_serializable(hyp_copy),
                 "run_id": f"{configName}_ERROR"
             }),
             "error": str(e)

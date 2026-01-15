@@ -1346,34 +1346,59 @@ def analysis_gain_by_transfer_learning(df: pd.DataFrame, out_path: str):
 
 
 
+def get_jsonl_files(base_path: str):
+    """
+    Retorna a lista de arquivos .jsonl dentro de subpastas do base_path.
+    """
+    jsonl_files = []
+    for root, dirs, files in os.walk(base_path):
+        for file in files:
+            if file.endswith(".jsonl"):
+                jsonl_files.append(os.path.join(root, file))
+    return jsonl_files
+
+def load_all_results(base_path: str) -> pd.DataFrame:
+
+    files = get_jsonl_files(base_path)
+    for file in files:
+        df_part = load_results(file, prefer="test")
+        if 'df' not in locals():
+            df = df_part
+        else:
+            df = pd.concat([df, df_part], ignore_index=True)
+
+    return df
 
 if __name__ == "__main__":
     # path to folder containing results.jsonl
-    for experiment in ["all_experiments"]: #, "ic_upstream2", "ic_upstream3", "ic_upstream4"]:
-        path = fr"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\{experiment}"
+    ##for experiment in ["all_experiments"]: #, "ic_upstream2", "ic_upstream3", "ic_upstream4"]:
 
-        jsonl = os.path.join(path, "results.jsonl")
+    experiment= "ic_upstream2"
+    path = fr"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\{experiment}"
 
-        df = load_results(jsonl, prefer="test")
+    df = load_all_results(path)
 
-        ##rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-        #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-        #plot_BoxPlots_overfitting(df, out_dir=path)
-        #summarize_results(df, out_dir=path)
-        #analyze_training_curves(df, out_dir=path)
-        if experiment.startswith("all_experiments"):
-            analysis_gain_by_transfer_learning(df, out_path=path)
+    rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+    plot_BoxPlots_overfitting(df, out_dir=path)
+    summarize_results(df, out_dir=path)
+    analyze_training_curves(df, out_dir=path)
 
-            ##rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
-            ##plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
-            ##
-            ##mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+    has_multiple_upstreams = False
+    if has_multiple_upstreams:
+        print("Múltiplos upstreams detectados — executando análises adicionais...")
 
-            ##corr_upstreams = compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
+        rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
+        plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
+    
+        mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
 
-            ##plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
+        corr_upstreams = compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
 
-            ##mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
+        plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
+        mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
 
-            ##plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
-            ##anova_two_way_by_imputation(df, out_dir=path)
+        plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
+        anova_two_way_by_imputation(df, out_dir=path)
+        analysis_gain_by_transfer_learning(df, out_path=path)
+

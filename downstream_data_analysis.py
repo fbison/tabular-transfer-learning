@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import mannwhitneyu
 from statistics import mode, StatisticsError
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
 import plotly.express as px
 import plotly.io as pio
 import pickle
@@ -37,6 +39,10 @@ def parse_sample_from_dataset_name(name):
 def parse_imputation_from_dataset_name(name):
     # split after _Imputation_
     m = re.search(r"_Imputation_([^_]+)", name)
+    if 'real' in name.lower():
+        return 'RealValue'
+    if 'pseudo' in name.lower():
+        return 'PseudoFeature'
     return m.group(1) if m else NOT_USED
 
 def parse_upstream_from_model_path_name(name: str):
@@ -249,7 +255,12 @@ def sum_strategies(imputations_order: List[str]) -> int:
         strategies.append(strategies_order_per_imputation(imp))
     return len(strategies)
 
-def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imputations_order=None):
+def plot_and_save_heatmap(
+        rank_df,
+        out_dir,
+        name= "",
+        strategies_order=None,
+        imputations_order=None):
     os.makedirs(out_dir, exist_ok=True)
     
     
@@ -262,13 +273,23 @@ def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imp
     vmin = rank_df["rank"].min()
     vmax = rank_df["rank"].max()
 
-    # Equal width for each imputation subplot
+    # Proportional width for each imputation subplot
+    n_imputations = len(imputations_order)
+
+    width_ratios = [
+        len(strategies_order_per_imputation(imp))
+        for imp in imputations_order
+    ]
+    cbar_compensation = 0.9  # ajuste fino (0.4–0.8 costuma funcionar bem)
+    width_ratios[-1] += cbar_compensation
+
     fig, axes = plt.subplots(
         1, n_imputations,
         figsize=(2 * sum_strategies(imputations_order), 4),
         sharey=True,
-        gridspec_kw={"width_ratios": [1] * n_imputations}
+        gridspec_kw={"width_ratios": width_ratios}
     )
+    fig.subplots_adjust(right=0.92)
 
     if n_imputations == 1:
         axes = [axes]
@@ -288,7 +309,7 @@ def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imp
             cmap="RdYlBu_r",
             vmin=vmin, vmax=vmax,   # keep same color scale
             cbar=ax == axes[-1],
-            cbar_kws={"label": "Rank"},
+            cbar_kws={"label": "Rank", "shrink": 0.75, "anchor": (0.0, 0.5)},
             annot_kws={"fontsize": 10},
             linewidths=0.5,
             linecolor="white"
@@ -322,7 +343,7 @@ def plot_and_save_heatmap(rank_df, out_dir, name= "", strategies_order=None, imp
         pickle.dump(fig, f)
     plt.savefig("heatmap.eps", format="eps", bbox_inches="tight")
 
-    #plt.show()
+    plt.close()
 
 def strategies_order_per_imputation(imputation):
     if imputation == NOT_USED:
@@ -538,124 +559,263 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
               f"RMSE médio final = {mean_rmse[-1]:.4f}")
 
     # === gráfico comparativo final com as curvas médias de todas as combinações ===
-    plt.figure(figsize=(10, 6))
-
-    for c in mean_curves:
-        label = f"{c['strategy']} / {c['imputation']}"
-        x = range(len(c["mean_rmse"]))
-
-        # Curva média
-        line_mean, = plt.plot(
-            x,
-            c["mean_rmse"],
-            lw=2,
-            label=label
-        )
-
-        color = line_mean.get_color()
-
-        # Curva mediana (tracejada, mesma cor)
-        plt.plot(
-            x,
-            c["median_rmse"],
-            linestyle="--",
-            color=color,
-            lw=1.5
-        )
-
-        # Faixa de ±1 desvio padrão (shaded area)
-        plt.fill_between(
-            x,
-            c["mean_rmse"] - c["std_rmse"],
-            c["mean_rmse"] + c["std_rmse"],
-            color=color,
-            alpha=0.15
-        )
-
-    # === título e legendas ===
-    plt.title("Convergência Média por Estratégia e Imputação")
-    plt.xlabel("Época")
-    plt.ylabel("RMSE médio de Treino")
-    plt.grid(True, alpha=0.3)
-
-    # === legenda composta ===
-    # Apenas uma vez, explicamos o que significam as texturas
-
-    legend_elements = [
-        Line2D([0], [0], color='black', lw=2, label='Linha contínua: Média das execuções'),
-        Line2D([0], [0], color='black', lw=1.5, linestyle='--', label='Linha tracejada: Mediana das execuções'),
-        Patch(facecolor='gray', alpha=0.15, label='Área sombreada: ±1 desvio padrão'),
-        Line2D([], [], color='none', label='──────────────────────────────'),
-        Line2D([0], [0], color='none', label='Cores: representam cada combinação'),
+    plot_configs = [
+        {"max_epochs": None, "suffix": "", "title_suffix": ""},
+        {"max_epochs": 100, "suffix": "_EpocasIniciais100", "title_suffix": " (100 Épocas Iniciais)"},
+        {"max_epochs": 20, "suffix": "_EpocasIniciais20", "title_suffix": " (20 Épocas Iniciais)"},
+        {"max_epochs": 10, "suffix": "_EpocasIniciais10", "title_suffix": " (10 Épocas Iniciais)"}
     ]
 
-    plt.legend(
-        handles=legend_elements + [
-            Line2D([0], [0], color=plt.cm.tab10(i), lw=2, label=f"{c['strategy']} / {c['imputation']}")
-            for i, c in enumerate(mean_curves)
-        ],
-        title="Texturas e cores:",
-        bbox_to_anchor=(1.05, 1),
-        loc="upper left"
-    )
+    for cfg in plot_configs:
 
-    plt.tight_layout()
+        plt.figure(figsize=(10, 6))
+        legend_lines = []
 
-    # === salvar ===
-    path_complete = os.path.join(out_dir, "ConvergenciaMedia_Todas")
-    plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-    #plt.show()
+        for c in mean_curves:
+            label = f"{c['strategy']} / {c['imputation']}"
+            if cfg["max_epochs"] is None:
+                x = range(len(c["mean_rmse"]))
+                mean = c["mean_rmse"]
+                median = c["median_rmse"]
+                std = c["std_rmse"]
+            else:
+                x = range(cfg["max_epochs"])
+                mean = c["mean_rmse"][:cfg["max_epochs"]]
+                median = c["median_rmse"][:cfg["max_epochs"]]
+                std = c["std_rmse"][:cfg["max_epochs"]]
+
+            line_mean, = plt.plot(x, mean, lw=2, label=label)
+            color = line_mean.get_color()
+            legend_lines.append((color, label))
+
+
+            plt.plot(x, median, linestyle="--", color=color, lw=1.5)
+
+            plt.fill_between(
+                x,
+                mean - std,
+                mean + std,
+                color=color,
+                alpha=0.15
+            )
+
+        # === título e legendas ===
+        plt.title("Convergência Média por Estratégia e Imputação" + cfg["title_suffix"])
+        plt.xlabel("Época")
+        plt.ylabel("RMSE médio de Treino")
+        plt.grid(True, alpha=0.3)
+
+        # === legenda composta ===
+        # Apenas uma vez, explicamos o que significam as texturas
+
+        legend_elements = [
+            Line2D([0], [0], color='black', lw=2, label='Linha contínua: Média das execuções'),
+            Line2D([0], [0], color='black', lw=1.5, linestyle='--', label='Linha tracejada: Mediana das execuções'),
+            Patch(facecolor='gray', alpha=0.15, label='Área sombreada: ±1 desvio padrão'),
+            Line2D([], [], color='none', label='──────────────────────────────'),
+            Line2D([0], [0], color='none', label='Cores: representam cada combinação'),
+        ]
+
+        plt.legend(
+            handles=legend_elements + [
+                Line2D([0], [0], color=color, lw=2, label=label)
+                for color, label in legend_lines
+            ],
+            title="Texturas e cores:",
+            bbox_to_anchor=(1.05, 1),
+            loc="upper left"
+        )
+
+        plt.tight_layout()
+
+        # === salvar ===
+        path_complete = os.path.join(out_dir, f"ConvergenciaMedia_Todas{cfg['suffix']}")
+        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+        plt.close()
+        #plt.show()
 
 # ANOVA 2-way (upstream x strategy) dentro de cada imputação
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
 
-def anova_two_way_by_imputation(df, dv="rmse", factor1="upstream", factor2="strategy", min_rows=10, out_dir=None):
+def _run_two_way_anova(
+    df,
+    dv,
+    factor1,
+    factor2,
+    min_rows=10,
+):
     """
-    Roda ANOVA 2-way (tipo II) para cada imputation separadamente.
-    Imprime a ANOVA table (SS, DF, F, PR(>F)) e effect sizes (eta2, partial eta2).
+    Executa ANOVA 2-way (tipo II) e retorna a tabela com eta² e partial eta².
     """
-    imputations = df['imputation'].unique()
+    sub = (df.dropna(subset=[dv, factor1, factor2])).copy()
+
+    if sub.shape[0] < min_rows:
+        return None
+
+    sub[factor1] = sub[factor1].astype("category")    
+    sub[factor2] = sub[factor2].astype("category")
+
+
+    formula = f"{dv} ~ C({factor1}) * C({factor2})"
+    model = smf.ols(formula, data=sub).fit()
+    aov = sm.stats.anova_lm(model, typ=2)
+    # Effect sizes
+    ss_total = aov["sum_sq"].sum()
+    aov["eta2"] = aov["sum_sq"] / ss_total
+
+    ss_error = (
+        aov.loc["Residual", "sum_sq"]
+        if "Residual" in aov.index
+        else model.ssr
+    )
+
+    aov["partial_eta2"] = np.nan
+    for idx in aov.index:
+        if idx != "Residual":
+            ss_effect = aov.loc[idx, "sum_sq"]
+            aov.loc[idx, "partial_eta2"] = ss_effect / (ss_effect + ss_error)
+
+    return aov
+
+def anova_upstream_strategy_all(
+    df,
+    dv="rmse",
+    out_dir=None,
+    min_rows=10,
+):
+    aov = _run_two_way_anova(
+        df=df,
+        dv=dv,
+        factor1="upstream",
+        factor2="strategy",
+        min_rows=min_rows,
+    )
+
+    if aov is None:
+        return None
+
+    if out_dir:
+        aov.to_csv(
+            os.path.join(out_dir, f"anova_{dv}_2way_upstream_strategy_all.csv")
+        )
+
+    return aov
+
+def anova_strategy_imputation_all(
+    df,
+    dv="rmse",
+    out_dir=None,
+    min_rows=10,
+):
+    aov = _run_two_way_anova(
+        df=df,
+        dv=dv,
+        factor1="strategy",
+        factor2="imputation",
+        min_rows=min_rows,
+    )
+
+    if aov is None:
+        return None
+
+    if out_dir:
+        aov.to_csv(
+            os.path.join(out_dir, f"anova_{dv}_2way_strategy_imputation_all.csv")
+        )
+
+    return aov
+def anova_upstream_imputation_all(
+    df,
+    dv="rmse",
+    out_dir=None,
+    min_rows=10,
+):
+    aov = _run_two_way_anova(
+        df=df,
+        dv=dv,
+        factor1="upstream",
+        factor2="imputation",
+        min_rows=min_rows,
+    )
+
+    if aov is None:
+        return None
+
+    if out_dir:
+        aov.to_csv(
+            os.path.join(out_dir, f"anova_{dv}_2way_upstream_imputation_all.csv")
+        )
+
+    return aov
+
+def anova_two_way_by_imputation(
+    df,
+    dv="rmse",
+    factor1="upstream",
+    factor2="strategy",
+    min_rows=10,
+    out_dir=None,
+):
     results = {}
-    for imp in sorted(imputations):
-        sub = df[df['imputation'] == imp].dropna(subset=[dv, factor1, factor2])
-        if sub.shape[0] < min_rows:
-            print(f"[ANOVA] imputation={imp}: dados insuficientes ({sub.shape[0]} linhas), pulando.")
+
+    for imp in sorted(df["imputation"].unique()):
+        sub = df[df["imputation"] == imp]
+
+        aov = _run_two_way_anova(
+            df=sub,
+            dv=dv,
+            factor1=factor1,
+            factor2=factor2,
+            min_rows=min_rows,
+        )
+
+        if aov is None:
             continue
 
-        # Garantir categorias
-        sub[factor1] = sub[factor1].astype('category')
-        sub[factor2] = sub[factor2].astype('category')
-
-        # Formula: dv ~ C(upstream) * C(strategy)
-        formula = f"{dv} ~ C({factor1}) * C({factor2})"
-        model = smf.ols(formula, data=sub).fit()
-        aov = sm.stats.anova_lm(model, typ=2)  # tipo II
-
-        # effect sizes
-        ss_total = sum(aov['sum_sq'])
-        aov = aov.assign(eta2 = aov['sum_sq'] / ss_total)
-        # partial eta2 = SS_effect / (SS_effect + SS_error)
-        ss_error = aov.loc['Residual', 'sum_sq'] if 'Residual' in aov.index else model.ssr
-        partials = {}
-        for idx in aov.index:
-            if idx == 'Residual':
-                aov.loc[idx, 'partial_eta2'] = np.nan
-            else:
-                ss_effect = aov.loc[idx, 'sum_sq']
-                aov.loc[idx, 'partial_eta2'] = ss_effect / (ss_effect + ss_error)
-
-        print("\n" + "="*80)
-        print(f"ANOVA (2-way) para imputation = {imp}")
-        print("="*80)
-        print(aov)  # se estiver no notebook; senão use print(aov)
         results[imp] = aov
 
-        # opcional: salvar tabela como csv
         if out_dir:
-            aov.to_csv(os.path.join(out_dir, f"anova_2way_imputation_{imp}.csv"))
+            aov.to_csv(
+                os.path.join(
+                    out_dir,
+                    f"anova_{dv}_2way_imputation_{imp}.csv",
+                )
+            )
 
     return results
+
+def anova_analysis(df, out_dir, dv="rmse"):
+    """
+    Executa todas as análises de ANOVA e salva os resultados em:
+    out_dir/anova_analysis/
+    """
+    out_dir = os.path.join(out_dir, "anova_analysis")
+    _ensure_outdir(out_dir)
+
+    filtered_df = df[df["upstream"].notna()] ##remove situações sem transferências
+
+    anova_upstream_strategy_all(
+        df=filtered_df,
+        dv=dv,
+        out_dir=out_dir,
+    )
+
+    anova_upstream_imputation_all(
+        df=filtered_df,
+        dv=dv,
+        out_dir=out_dir,
+    )
+
+    anova_two_way_by_imputation(
+        df=filtered_df,
+        dv=dv,
+        out_dir=out_dir,
+    )
+
+    anova_strategy_imputation_all(
+        df=filtered_df,
+        dv=dv,
+        out_dir=out_dir,
+    )
 
 
 def build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False):
@@ -923,7 +1083,6 @@ def compute_best_tl_per_group(df: pd.DataFrame, rmse_col: str = "rmse_test") -> 
     return best_tl
 
 # construção de dataframe com ganhos de transferência
-def build_tl_gain_df(df: pd.DataFrame, rmse_col: str = "rmse_test") -> pd.DataFrame:
     """
     Returns a DataFrame with columns:
     sample, strategy, imputation, upstream, best_tl_rmse, best_st_rmse, abs_gain, pct_gain
@@ -949,6 +1108,53 @@ def build_tl_gain_df(df: pd.DataFrame, rmse_col: str = "rmse_test") -> pd.DataFr
         "sample","strategy","imputation","upstream","best_tl_rmse","best_st_rmse","abs_gain","pct_gain"
     ]]
     return merged
+
+def build_tl_gain_per_run_df(
+    df: pd.DataFrame,
+    rmse_col: str = "rmse_test"
+) -> pd.DataFrame:
+    """
+    Returns a DataFrame with gains computed PER EXECUTION.
+
+    Columns:
+    sample, strategy, imputation, upstream, rmse_test,
+    best_st_rmse, abs_gain, pct_gain
+
+    - Keeps all TL executions (upstream not None)
+    - Uses best ST (min rmse) per sample as baseline
+    """
+    # best ST per sample (single value per sample)
+    best_st = compute_best_st_per_sample(df, rmse_col=rmse_col)
+
+    if best_st.empty:
+        return pd.DataFrame(columns=[
+            "sample","strategy","imputation","upstream",
+            rmse_col,"best_st_rmse","abs_gain","pct_gain"
+        ])
+
+    # keep all TL executions
+    tl_runs = df[df["upstream"].notna()].dropna(subset=[rmse_col]).copy()
+
+    if tl_runs.empty:
+        return pd.DataFrame(columns=[
+            "sample","strategy","imputation","upstream",
+            rmse_col,"best_st_rmse","abs_gain","pct_gain"
+        ])
+
+    # merge ST baseline
+    tl_runs = tl_runs.merge(best_st, on="sample", how="left")
+
+    # drop TL runs without ST baseline
+    tl_runs = tl_runs.dropna(subset=["best_st_rmse"]).copy()
+
+    # gains per execution
+    tl_runs["abs_gain"] = tl_runs["best_st_rmse"] - tl_runs[rmse_col]
+    tl_runs["pct_gain"] = tl_runs["abs_gain"] / tl_runs["best_st_rmse"]
+
+    return tl_runs[[
+        "sample","strategy","imputation","upstream",
+        rmse_col,"best_st_rmse","abs_gain","pct_gain"
+    ]]
 
 ## ===============================
 ## graphs gain of transfer
@@ -1068,22 +1274,35 @@ def plot_heatmap_gain_facets_upstream(tl_gain_df: pd.DataFrame, out_dir: str,
         plt.savefig(fname, dpi=300, bbox_inches="tight")
         plt.close()
 
-def plot_heatmap_best_gain_overall(tl_gain_df: pd.DataFrame, out_dir: str,
-                                   title: str = "Best Percent Gain across Upstreams (per sample,strategy)",
-                                   save_name: str = "heatmap_best_gain_overall.png"):
-    """
-    For each (sample, strategy) choose the best TL (max pct_gain). Build heatmap sample x strategy.
-    Values are percent gain (%) for the best upstream.
-    """
+def _plot_heatmap_gain_generic(
+    df: pd.DataFrame,
+    row_factor: str,
+    col_factor: str,
+    out_dir: str,
+    title: str,
+    save_name: str,
+    agg_fn,
+):
     _ensure_outdir(out_dir)
-    df = tl_gain_df.copy()
-    df["pct_gain_pct"] = df["pct_gain"] * 100.0
 
-    best = df.groupby(["sample", "strategy"])["pct_gain_pct"].max().reset_index()
-    pivot = best.pivot(index="sample", columns="strategy", values="pct_gain_pct")
+    # regra: imputation sempre no eixo X e deve ter >1 nível
+    if col_factor == "imputation" and df["imputation"].nunique() <= 1:
+        print(f"[SKIP] Apenas uma imputação encontrada. Ignorando: {save_name}")
+        return
 
-    vmin = np.nanmin(best["pct_gain_pct"])
-    vmax = np.nanmax(best["pct_gain_pct"])
+    work = df.copy()
+    work["pct_gain_pct"] = work["pct_gain"] * 100.0
+
+    agg = (
+        work.groupby([row_factor, col_factor])["pct_gain_pct"]
+        .agg(agg_fn)
+        .reset_index()
+    )
+
+    pivot = agg.pivot(index=row_factor, columns=col_factor, values="pct_gain_pct")
+
+    vmin = np.nanmin(agg["pct_gain_pct"])
+    vmax = np.nanmax(agg["pct_gain_pct"])
 
     plt.figure(figsize=(2 * max(4, pivot.shape[1]), max(4, pivot.shape[0] * 0.3)))
     sns.heatmap(
@@ -1094,82 +1313,174 @@ def plot_heatmap_best_gain_overall(tl_gain_df: pd.DataFrame, out_dir: str,
         vmin=vmin,
         vmax=vmax,
         cbar_kws={"label": "Percent Gain (%)"},
-        linewidths=0.4, linecolor="white"
+        linewidths=0.4,
+        linecolor="white",
     )
+
     plt.title(title, fontsize=14)
-    plt.xlabel("Strategy")
-    plt.ylabel("Sample")
+    plt.xlabel(col_factor.capitalize())
+    plt.ylabel(row_factor.capitalize())
     plt.tight_layout()
+
     path_complete = os.path.join(out_dir, save_name)
     plt.savefig(path_complete, dpi=300, bbox_inches="tight")
     plt.close()
 
-def plot_barplot_best_tl_vs_best_st(
+def _plot_heatmap_best_gain(
     df: pd.DataFrame,
+    row_factor: str,
+    col_factor: str,
+    out_dir: str,
+    title: str,
+    save_name: str,
+):
+    _plot_heatmap_gain_generic(
+        df=df,
+        row_factor=row_factor,
+        col_factor=col_factor,
+        out_dir=out_dir,
+        title=title,
+        save_name=save_name,
+        agg_fn="max",
+    )
+
+def _plot_heatmap_mean_gain(
+    df: pd.DataFrame,
+    row_factor: str,
+    col_factor: str,
+    out_dir: str,
+    title: str,
+    save_name: str,
+):
+    _plot_heatmap_gain_generic(
+        df=df,
+        row_factor=row_factor,
+        col_factor=col_factor,
+        out_dir=out_dir,
+        title=title,
+        save_name=save_name,
+        agg_fn="mean",
+    )
+
+def plot_heatmap_sample_x_strategy_best(tl_gain_df, out_dir):
+    _plot_heatmap_best_gain(
+        tl_gain_df, "sample", "strategy", out_dir,
+        "Best Percent Gain (Sample x Strategy)",
+        "heatmap_best_sample_x_strategy.png"
+    )
+
+
+def plot_heatmap_sample_x_imputation_best(tl_gain_df, out_dir):
+    _plot_heatmap_best_gain(
+        tl_gain_df, "sample", "imputation", out_dir,
+        "Best Percent Gain (Sample x Imputation)",
+        "heatmap_best_sample_x_imputation.png"
+    )
+
+
+def plot_heatmap_strategy_x_imputation_best(tl_gain_df, out_dir):
+    _plot_heatmap_best_gain(
+        tl_gain_df, "strategy", "imputation", out_dir,
+        "Best Percent Gain (Strategy x Imputation)",
+        "heatmap_best_strategy_x_imputation.png"
+    )
+
+def plot_heatmap_sample_x_strategy_mean(tl_gain_df, out_dir):
+    _plot_heatmap_mean_gain(
+        tl_gain_df, "sample", "strategy", out_dir,
+        "Mean Percent Gain (Sample x Strategy)",
+        "heatmap_mean_sample_x_strategy.png"
+    )
+
+
+def plot_heatmap_sample_x_imputation_mean(tl_gain_df, out_dir):
+    _plot_heatmap_mean_gain(
+        tl_gain_df, "sample", "imputation", out_dir,
+        "Mean Percent Gain (Sample x Imputation)",
+        "heatmap_mean_sample_x_imputation.png"
+    )
+
+
+def plot_heatmap_strategy_x_imputation_mean(tl_gain_df, out_dir):
+    _plot_heatmap_mean_gain(
+        tl_gain_df, "strategy", "imputation", out_dir,
+        "Mean Percent Gain (Strategy x Imputation)",
+        "heatmap_mean_strategy_x_imputation.png"
+    )
+
+def plot_heatmap_best_gain_overall(tl_gain_df: pd.DataFrame, out_dir: str):
+    plot_heatmap_sample_x_strategy_best(tl_gain_df, out_dir)
+    plot_heatmap_sample_x_imputation_best(tl_gain_df, out_dir)
+    plot_heatmap_strategy_x_imputation_best(tl_gain_df, out_dir)
+
+def plot_heatmap_mean_gain_overall(tl_gain_df: pd.DataFrame, out_dir: str):
+    plot_heatmap_sample_x_strategy_mean(tl_gain_df, out_dir)
+    plot_heatmap_sample_x_imputation_mean(tl_gain_df, out_dir)
+    plot_heatmap_strategy_x_imputation_mean(tl_gain_df, out_dir)
+
+def select_best_tl_run(
+    tl_gain_df: pd.DataFrame,
+    rmse_col: str = "rmse_test"
+) -> pd.DataFrame:
+    """
+    Selects the best TL execution per
+    (sample, strategy, imputation, upstream).
+
+    Best = minimal rmse_test (which also implies max gain).
+    """
+    if tl_gain_df.empty:
+        return tl_gain_df.copy()
+
+    idx = (
+        tl_gain_df
+        .groupby(["sample", "strategy", "imputation", "upstream"])[rmse_col]
+        .idxmin()
+    )
+
+    return tl_gain_df.loc[idx].reset_index(drop=True)
+
+def plot_barplot_best_tl_vs_best_st(
     tl_gain_df: pd.DataFrame,
     out_dir: str,
     title_template: str = "Best TL vs FS (Upstream: {up})",
     save_prefix: str = "barplot_best_vs_st"
 ):
     """
-    Para cada upstream:
-        x-axis → tuplas (strategy, sample)
-        barras:
-            - TL  (melhor TL para aquele sample & strategy)
-            - FS  (melhor FS para aquele sample)
-        cores: 2 cores (FS vs TL)
-        sample escrito acima das barras
-        salva:
-            - 1 figura por upstream
-            - 1 figura com grid (FacetGrid)
+    Plota Best TL vs From Scratch (FS) por upstream.
+
+    Espera tl_gain_df no nível PER RUN.
+    Internamente:
+        - seleciona a melhor execução via select_best_tl_run
+        - assume best_st_rmse constante por sample
     """
+    out_dir = os.path.join(out_dir, "barplot_by_upstream")
     _ensure_outdir(out_dir)
 
-    # best FS por sample
-    best_FS = compute_best_st_per_sample(df, rmse_col="best_tl_rmse")
-
-    # Pegamos o índice do menor RMSE_test dentro de cada grupo
-    best_tl_idx = (
-        tl_gain_df
-        .groupby(["strategy", "upstream", "sample"])["best_tl_rmse"]
-        .idxmin()
-    )
-
-    # Monta o dataframe correto com best_tl_rmse
-    best_TL = (
-        tl_gain_df.loc[best_tl_idx]
-        .rename(columns={"rmse_test": "best_tl_rmse"})
-        [["strategy", "upstream", "sample", "best_tl_rmse"]]
-    )
-
-    rows = []
-    for (_, row) in best_TL.iterrows():
-        sample = row["sample"]
-        strat  = row["strategy"]
-        up     = row["upstream"]
-        best_tl = row["best_tl_rmse"]
-
-        # FS correspondente ao mesmo sample
-        st_row = best_FS[best_FS["sample"] == sample]
-        if st_row.empty:
-            continue
-
-        best_st = st_row["best_st_rmse"].iloc[0]
-
-        rows.append({
-            "upstream": up,
-            "strategy": strat,
-            "sample": sample,
-            "tl_rmse": best_tl,
-            "st_rmse": best_st
-        })
-
-    if len(rows) == 0:
+    if tl_gain_df.empty:
         return
 
-    comp_df = pd.DataFrame(rows)
+    # ----------------------------------
+    # Seleciona melhor TL por configuração
+    # ----------------------------------
+    best_tl = select_best_tl_run(tl_gain_df)
 
-    # Melt para TL/FS
+    # ----------------------------------
+    # Prepara DF TL vs FS
+    # ----------------------------------
+    comp_df = best_tl[[
+        "upstream",
+        "strategy",
+        "sample",
+        "rmse_test",
+        "best_st_rmse"
+    ]].rename(columns={
+        "rmse_test": "tl_rmse",
+        "best_st_rmse": "st_rmse"
+    })
+
+    # ----------------------------------
+    # Melt para formato longo
+    # ----------------------------------
     plot_df = comp_df.melt(
         id_vars=["upstream", "strategy", "sample"],
         value_vars=["tl_rmse", "st_rmse"],
@@ -1185,14 +1496,12 @@ def plot_barplot_best_tl_vs_best_st(
     # Score = -RMSE
     plot_df["score"] = -plot_df["rmse"]
 
-    # Criar coluna X como tupla (strategy, sample)
-    # Build x-axis labels
+    # Eixo X = (strategy, sample)
     plot_df["x"] = plot_df.apply(
         lambda r: f"{r['strategy']}-{r['sample']}",
         axis=1
     )
 
-    # Order x-axis by strategy → sample → kind
     ordered_categories = (
         plot_df
         .sort_values(["strategy", "sample", "kind"])["x"]
@@ -1204,7 +1513,6 @@ def plot_barplot_best_tl_vs_best_st(
         categories=ordered_categories,
         ordered=True
     )
-
 
     # -----------------------------
     # PLOTS INDIVIDUAIS POR UPSTREAM
@@ -1218,12 +1526,12 @@ def plot_barplot_best_tl_vs_best_st(
         ax.set_ylabel("Score (-RMSE — higher is better)")
         plt.xticks(rotation=45, ha="right")
 
-        # Escrever sample acima da barra
+        # Annotar sample acima das barras
         for p, (_, row) in zip(ax.patches, grp.iterrows()):
             ax.annotate(
                 str(row["sample"]),
                 (p.get_x() + p.get_width() / 2, p.get_height()),
-                ha="center", va="bottom", fontsize=8, rotation=0
+                ha="center", va="bottom", fontsize=8
             )
 
         plt.tight_layout()
@@ -1234,7 +1542,7 @@ def plot_barplot_best_tl_vs_best_st(
         plt.close()
 
     # -----------------------------
-    # FACETGRID — um arquivo com todos os upstreams
+    # FACETGRID — todos upstreams
     # -----------------------------
     g = sns.FacetGrid(
         plot_df,
@@ -1245,7 +1553,7 @@ def plot_barplot_best_tl_vs_best_st(
     )
     g.map_dataframe(
         sns.barplot,
-        x="x", y="score", hue="kind", dodge=True, palette="deep"
+        x="x", y="score", hue="kind", dodge=True
     )
 
     for ax in g.axes.flatten():
@@ -1256,8 +1564,10 @@ def plot_barplot_best_tl_vs_best_st(
     g.add_legend()
     g.fig.suptitle("Best TL vs From Scratch — All Upstreams", y=1.03)
 
-    out_grid = os.path.join(out_dir, f"{save_prefix}_facetgrid.png")
-    plt.savefig(out_grid, dpi=300, bbox_inches="tight")
+    plt.savefig(
+        os.path.join(out_dir, f"{save_prefix}_facetgrid.png"),
+        dpi=300, bbox_inches="tight"
+    )
     plt.close()
 
 def graphs_analysis_gain_by_transfer_learning(df: pd.DataFrame, tl_gain_df: pd.DataFrame, out_path: str):
@@ -1268,26 +1578,14 @@ def graphs_analysis_gain_by_transfer_learning(df: pd.DataFrame, tl_gain_df: pd.D
     # 2) Heatmap facets by upstream: sample x strategy with percent gain
     plot_heatmap_gain_facets_upstream(tl_gain_df, out_dir=out_path)
 
-    plot_barplot_best_tl_vs_best_st(
-        df,
-        tl_gain_df,
-        out_dir=os.path.join(out_path, "barplot_by_upstream")
-    )
-
-    #plot_barplot_best_tl_vs_best_st_by_strategy(
-    #    df,
-    #    tl_gain_df,
-    #    out_dir=os.path.join(out_path, "barplot_by_strategy")
-    #)
-
     # 3) Heatmap facets by strategy: sample x upstream with percent gain
     plot_heatmap_gain_facets_strategies(tl_gain_df, out_dir=out_path)
 
     # 4) Heatmap best gain overall (best across upstreams)
     plot_heatmap_best_gain_overall(tl_gain_df, out_dir=out_path)
-
+    plot_heatmap_mean_gain_overall(tl_gain_df, out_dir=out_path)
     # 5) Barplot grouped: Best TL vs Best ST per strategy (per upstream facet)
-    plot_barplot_best_tl_vs_best_st(df, tl_gain_df, out_dir=out_path)
+    plot_barplot_best_tl_vs_best_st(tl_gain_df, out_dir=out_path)
 
 def analysis_gain_by_transfer_learning(df: pd.DataFrame, out_path: str):
     """
@@ -1304,12 +1602,14 @@ def analysis_gain_by_transfer_learning(df: pd.DataFrame, out_path: str):
     _ensure_outdir(base_out)
 
     # Prepare the TL gain DataFrame
-    tl_gain_df = build_tl_gain_df(df, rmse_col="rmse_test")
+    tl_gain_df = build_tl_gain_per_run_df(df, rmse_col="rmse_test")
     tl_gain_csv = os.path.join(base_out, "tl_gain_df.csv")
     tl_gain_df.to_csv(tl_gain_csv, index=False)
 
-    graphs_analysis_gain_by_transfer_learning(df, tl_gain_df, out_path=base_out)
-
+    out_path_all = os.path.join(base_out, "all_data")
+    _ensure_outdir(out_path_all)
+    graphs_analysis_gain_by_transfer_learning(df, tl_gain_df, out_path=out_path_all)
+    anova_analysis(tl_gain_df, out_dir=out_path_all, dv="pct_gain")
     # ==============================================================
     # 2. PROCESSO POR IMPUTAÇÃO (RECORTES)
     # ==============================================================
@@ -1373,32 +1673,32 @@ if __name__ == "__main__":
     # path to folder containing results.jsonl
     ##for experiment in ["all_experiments"]: #, "ic_upstream2", "ic_upstream3", "ic_upstream4"]:
 
-    experiment= "ic_upstream2"
+    experiment= "all_experiments"
     path = fr"C:\usp\tabular-transfer-learning\outputs\transfer-learning-from-upstream\{experiment}"
 
     df = load_all_results(path)
 
-    rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-    plot_BoxPlots_overfitting(df, out_dir=path)
-    summarize_results(df, out_dir=path)
-    analyze_training_curves(df, out_dir=path)
+    #rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+    #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+    #plot_BoxPlots_overfitting(df, out_dir=path)
+    #summarize_results(df, out_dir=path)
+    #analyze_training_curves(df, out_dir=path)
 
-    has_multiple_upstreams = False
+    has_multiple_upstreams = True
     if has_multiple_upstreams:
         print("Múltiplos upstreams detectados — executando análises adicionais...")
 
-        rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
-        plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
+        #rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
+        #plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
     
-        mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+        #mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
 
-        corr_upstreams = compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
+        #compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
 
-        plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
-        mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
+        #plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
+        #mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
 
-        plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
-        anova_two_way_by_imputation(df, out_dir=path)
+        #plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
+        #anova_analysis(df, out_dir=path)
         analysis_gain_by_transfer_learning(df, out_path=path)
 

@@ -4,12 +4,13 @@ from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.utils import resample
 
-def compute_mi_importance(X, y):
+def compute_mi_importance(X, y, normalize=True):
     """Retorna MI normalizado via MinMax."""
     mi = mutual_info_regression(X, y, random_state=42)
     mi = np.nan_to_num(mi, nan=0.0)
-    scaled = MinMaxScaler().fit_transform(mi.reshape(-1,1)).flatten()
-    return scaled
+    if normalize:
+        mi = MinMaxScaler().fit_transform(mi.reshape(-1,1)).flatten()
+    return mi
 
 def feature_stability_pipeline(
     csv_path,
@@ -17,7 +18,8 @@ def feature_stability_pipeline(
     n_subsets=30,
     subset_sizes=(0.5, 0.7, 0.9),  # percentuais do dataset
     random_state=42,
-    output_csv="feature_stability_mi.csv"
+    output_csv="feature_stability_mi.csv",
+    normalize=True
 ):
 
     # -----------------------------
@@ -48,7 +50,7 @@ def feature_stability_pipeline(
     # -----------------------------
     # 2. MI global
     # -----------------------------
-    global_mi = compute_mi_importance(X, y)
+    global_mi = compute_mi_importance(X, y, normalize)
 
     # ordem de importância
     sorted_idx = np.argsort(global_mi)[::-1]
@@ -155,84 +157,109 @@ def compare_sets(global_imp, upstream, downstream):
     upstream = set(upstream)
     downstream = set(downstream)
 
-    # Soma das importâncias dos dois lados
-    sum_upstream = global_imp.loc[list(upstream)].sum()
-    sum_downstream = global_imp.loc[list(downstream)].sum()
-
-    # Weighted Jaccard
+    # Vetores e Jaccard
     vec_up = build_weighted_vector(global_imp, upstream)
     vec_down = build_weighted_vector(global_imp, downstream)
     wj = weighted_jaccard(vec_up, vec_down)
 
-    # Diferenças (imputed)
+    # Partições
     only_up = upstream - downstream
     only_down = downstream - upstream
     inter = upstream & downstream
 
-    # Cálculos
     def stats(features):
         if len(features) == 0:
             return 0.0, 0, 0.0
         values = global_imp.loc[list(features)]
         return values.sum(), len(values), values.mean()
-    sum_upstream, count_upstream, mean_upstream = stats(upstream)
-    sum_downstream, count_downstream, mean_downstream = stats(downstream)
-    sum_only_up, count_only_up, mean_only_up = stats(only_up)
-    sum_only_down, count_only_down, mean_only_down = stats(only_down)
-    sum_inter, count_inter, mean_inter = stats(inter)
+
+    sum_up, cnt_up, mean_up = stats(upstream)
+    sum_down, cnt_down, mean_down = stats(downstream)
+    sum_ou, cnt_ou, mean_ou = stats(only_up)
+    sum_od, cnt_od, mean_od = stats(only_down)
+    sum_i, cnt_i, mean_i = stats(inter)
+
+    # ---- Novas métricas ----
+    transfer_ratio_up = sum_i / sum_up if sum_up > 0 else 0.0
+    transfer_ratio_down = sum_i / sum_down if sum_down > 0 else 0.0
+    dispersion_index = 1 - (sum_i / (sum_ou + sum_od)) if (sum_ou + sum_od) > 0 else 0.0
+    efficiency_index = mean_i / mean_up if mean_up > 0 else 0.0
 
     return {
-        "sum_importance_upstream": sum_upstream,
-        "count_upstream": count_upstream,
-        "mean_importance_upstream": mean_upstream,
-        "sum_importance_downstream": sum_downstream,
-        "count_downstream": count_downstream,
-        "mean_importance_downstream": mean_downstream,
+        "sum_importance_upstream": sum_up,
+        "count_upstream": cnt_up,
+        "mean_importance_upstream": mean_up,
+        "sum_importance_downstream": sum_down,
+        "count_downstream": cnt_down,
+        "mean_importance_downstream": mean_down,
         "weighted_jaccard": wj,
-        "sum_importance_only_upstream": sum_only_up,
-        "count_only_upstream": count_only_up,
-        "mean_importance_only_upstream": mean_only_up,
-        "sum_importance_only_downstream": sum_only_down,
-        "count_only_downstream": count_only_down,
-        "mean_importance_only_downstream": mean_only_down,
-        "sum_importance_intersection": sum_inter,
-        "count_intersection": count_inter,
-        "mean_importance_intersection": mean_inter
+        "sum_importance_only_upstream": sum_ou,
+        "count_only_upstream": cnt_ou,
+        "mean_importance_only_upstream": mean_ou,
+        "sum_importance_only_downstream": sum_od,
+        "count_only_downstream": cnt_od,
+        "mean_importance_only_downstream": mean_od,
+        "sum_importance_intersection": sum_i,
+        "count_intersection": cnt_i,
+        "mean_importance_intersection": mean_i,
+        "transfer_ratio_upstream": transfer_ratio_up,
+        "transfer_ratio_downstream": transfer_ratio_down,
+        "dispersion_index": dispersion_index,
+        "efficiency_index": efficiency_index
     }
 
 # ---------------------------------------------------------
 # Função principal
 # ---------------------------------------------------------
 def compare_all(csv_importances_path, upstream_lists, downstream_list, output_csv_path):
-    # Lê CSV de importâncias
     df = pd.read_csv(csv_importances_path)
     df = df.set_index("feature")
 
     global_imp = df["importance_global"]
+    global_set = set(global_imp.index)
 
     results = []
     for i, upstream in enumerate(upstream_lists, start=2):
-        stats = compare_sets(global_imp, upstream, downstream_list)
-        stats["upstream_id"] = f"upstream_{i}"
-        stats["downstream_id"] = "downstream"
-        results.append(stats)
 
-    # Salva resultados
+        # 1) Upstream x Downstream (já existente)
+        stats_ud = compare_sets(global_imp, upstream, downstream_list)
+        stats_ud["scenario"] = "upstream_vs_downstream"
+        stats_ud["upstream_id"] = f"upstream_{i}"
+        stats_ud["downstream_id"] = "downstream"
+        results.append(stats_ud)
+
+        # 2) Upstream x Global
+        stats_ug = compare_sets(global_imp, upstream, global_set)
+        stats_ug["scenario"] = "upstream_vs_global"
+        stats_ug["upstream_id"] = f"upstream_{i}"
+        stats_ug["downstream_id"] = "global"
+        results.append(stats_ug)
+
+        # 3) (Upstream ∪ Downstream) x Global
+        union_set = set(upstream) | set(downstream_list)
+        stats_union_g = compare_sets(global_imp, union_set, global_set)
+        stats_union_g["scenario"] = "union_vs_global"
+        stats_union_g["upstream_id"] = f"upstream_{i}"
+        stats_union_g["downstream_id"] = "global"
+        results.append(stats_union_g)
+
     out = pd.DataFrame(results)
     out.to_csv(output_csv_path, index=False)
     print(f"Resultado salvo em {output_csv_path}")
 
+
 import os
 if __name__ == "__main__":
     path = rf"C:\usp\tabular-transfer-learning\data"
-    output_importances_csv = os.path.join(path, rf"high-dimension\mi_feature_stability.csv")
-    #df_result = feature_stability_pipeline(
-    #    csv_path=os.path.join(path, rf"high-dimension\cd_moleculas_544_833.csv"),
-    #    target_name="pIC50",
-    #    n_subsets=30,
-    #    subset_sizes=(0.2, 0.4, 0.6, 0.8, 1.0),
-    #    output_csv=output_importances_csv
-    #)
+    output_importances_csv = os.path.join(path, rf"high-dimension\mi_feature_stability_bruto.csv")
+    df_result = feature_stability_pipeline(
+        csv_path=os.path.join(path, rf"high-dimension\cd_moleculas_544_833.csv"),
+        target_name="pIC50",
+        n_subsets=30,
+        subset_sizes=(0.2, 0.4, 0.6, 0.8, 1.0),
+        output_csv=output_importances_csv,
+        normalize=False
+    )
 
     downstream_features = ["SpDiam_A","AATS5d","AATS7s","AATS8s","AATS1i","AATS2i","AATS3i","AATS4i","AATS6i","ATSC1dv","ATSC8dv","ATSC1d","ATSC7d","AATSC0v","MATS6s","MATS7s","MATS8s","GATS2c","GATS3c","GATS8c","GATS1dv","GATS3dv","GATS4dv","GATS6dv","GATS7dv","GATS8dv","GATS1d","GATS2d","GATS5d","GATS2s","GATS3s","GATS4s","GATS6s","GATS1v","GATS2v","GATS5p","GATS6p","GATS7p","GATS1i","GATS2i","GATS3i","GATS4i","GATS5i","GATS7i","GATS8i","RNCG","RPCG","Xc-3dv","Xc-5dv","Xc-6dv","AXp-0d","SdssC","SsNH2","SdO","SssO","SssS","SaaS","SddssS","MAXaaCH","AETA_alpha","AETA_beta_ns_d","ETA_dAlpha_B","ETA_epsilon_5","ETA_dEpsilon_D","IC1","CIC1","CIC2","ZMIC2","PEOE_VSA1","PEOE_VSA4","PEOE_VSA6","PEOE_VSA9","SMR_VSA1","SMR_VSA3","SMR_VSA4","SMR_VSA9","SlogP_VSA2","SlogP_VSA3","SlogP_VSA4","SlogP_VSA10","EState_VSA4","EState_VSA5","VSA_EState8","VSA_EState9","AMID_C","TopoPSA(NO)","GGI6","GGI7","JGI4","RNCS","Mor02m","Mor03m","Mor13m","Mor26m","Mor30m","Mor31m","MOMI-Z","MLOGP","ESOL_Solubility_(mg/ml)","Ali_Log_S"]
     upstream2_features = ["SpMax_A","VE1_A","AATS8dv","AATS8s","AATS2i","ATSC1dv","ATSC8d","ATSC0p","ATSC0i","MATS1c","MATS2s","MATS3s","MATS6s","MATS7s","MATS8s","GATS4c","GATS1dv","GATS5dv","GATS7dv","GATS6d","GATS7d","GATS2s","GATS3s","GATS2v","GATS3v","GATS1p","GATS6p","GATS3i","GATS6i","GATS8i","BCUTc-1h","BCUTd-1l","BCUTs-1h","RPCG","Xch-5d","Xch-7d","Xc-5d","Xc-5dv","Xc-6dv","AXp-1d","SdssC","SaasC","SaaaC","SssssC","SsNH2","SssNH","SsOH","SssO","SdS","SddssS","MAXaaCH","AETA_beta_s","AETA_eta_L","AETA_eta_F","ETA_epsilon_5","IC1","IC2","CIC2","ZMIC1","PEOE_VSA1","PEOE_VSA2","PEOE_VSA9","SlogP_VSA1","SlogP_VSA2","SlogP_VSA10","EState_VSA1","EState_VSA2","EState_VSA3","EState_VSA6","EState_VSA9","VSA_EState3","VSA_EState7","VSA_EState8","MDEC-33","TopoPSA(NO)","GGI3","GGI5","GGI6","GGI7","GGI8","GGI9","JGI2","JGI5","FPSA3","RPCS","Mor02m","Mor03m","Mor06m","Mor08m","Mor11m","Mor13m","Mor16m","Mor23m","XLOGP3","Silicos-IT_Log_P","ESOL_Log_S","ESOL_Solubility_(mg/ml)","Ali_Log_S","Ali_Solubility_(mg/ml)","Silicos-IT_Solubility_(mg/ml)"]
@@ -244,6 +271,6 @@ if __name__ == "__main__":
         csv_importances_path=output_importances_csv,
         upstream_lists=[upstream2_features, upstream3_features, upstream4_features],
         downstream_list=downstream_features,
-        output_csv_path=os.path.join(path, "comparacao_output.csv")
+        output_csv_path=os.path.join(path, "comparacao_output_bruto.csv")
     )
 

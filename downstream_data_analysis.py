@@ -957,6 +957,90 @@ def build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2, verbose=False):
     )
     return mean_rank_df
 
+def build_upstream_rank_by_imputation(df, alpha=0.05, min_seeds=2, verbose=False):
+    """
+    Calcula o rank relativo entre upstreams para cada imputação,
+    controlando o efeito de sample e estratégia.
+    """
+    results = []
+    for imp, df_imp in df.groupby("imputation"):
+        for strat, df_strat in df_imp.groupby("strategy"):
+            for sample, df_sample in df_strat.groupby("sample"):
+                df_sample = df_sample[df_sample["upstream"].notna()]
+                upstreams = df_sample["upstream"].unique()
+                if len(upstreams) < 2:
+                    continue
+
+                mean_rmse = {
+                    u: df_sample[df_sample["upstream"] == u]["rmse"].mean()
+                    for u in upstreams
+                }
+
+                ranks, assigned, current_rank = {}, set(), 1
+                while len(assigned) < len(upstreams):
+                    unassigned = [u for u in upstreams if u not in assigned]
+                    best = min(unassigned, key=lambda u: mean_rmse[u])
+                    same_rank = []
+                    for u in unassigned:
+                        a = df_sample[df_sample["upstream"] == best]["rmse"].values
+                        b = df_sample[df_sample["upstream"] == u]["rmse"].values
+                        try:
+                            _, p = mannwhitneyu(a, b, alternative="less")
+                        except Exception:
+                            p = 1.0
+                        if p >= alpha:
+                            same_rank.append(u)
+                    for u in same_rank:
+                        ranks[u] = current_rank
+                        assigned.add(u)
+                    current_rank += 1
+
+                for u, r in ranks.items():
+                    results.append({
+                        "imputation": imp,
+                        "upstream": u,
+                        "strategy": strat,
+                        "sample": sample,
+                        "rank": r,
+                    })
+
+    df_rank = pd.DataFrame(results)
+
+    # média global colapsando estratégias e samples
+    mean_rank_df = (
+        df_rank.groupby(["imputation", "upstream"])["rank"]
+        .mean()
+        .reset_index()
+    )
+    return mean_rank_df
+
+def plot_heatmap_mean_rank_imputation_upstream(mean_rank_df, out_dir):
+    """
+    Plota um único heatmap com o rank médio global dos upstreams por imputação.
+    """
+    pivot = mean_rank_df.pivot(
+        index="imputation",
+        columns="upstream",
+        values="rank"
+    )
+
+    plt.figure(figsize=(11, 6))
+    sns.heatmap(
+        pivot,
+        annot=True,
+        fmt=".2f",
+        cmap="YlOrBr_r",
+        cbar_kws={"label": "Rank Médio (Upstream)"},
+    )
+    plt.title("Ranking Médio Global de Upstreams por Imputação")
+    plt.xlabel("Upstream")
+    plt.ylabel("Imputação")
+    plt.tight_layout()
+
+    path_complete = os.path.join(out_dir, "heatmap_mean_rank_imputation_upstream.png")
+    plt.savefig(path_complete, dpi=300, bbox_inches="tight")
+    plt.close()
+
 # =========================================================
 # 2️ Correlação de Spearman entre upstreams (baseada nos ranks médios)
 # =========================================================
@@ -1043,7 +1127,7 @@ def plot_heatmap_mean_rank_strategy_upstream(mean_rank_df, out_dir):
             cmap="YlOrBr_r",
             cbar_kws={"label": "Rank Médio (Upstream)"},
         )
-        plt.title(f"Ranking de Upstreams por Estratégia (Imputação: {imp})")
+        plt.title(f"Ranking Médio de Upstreams por Estratégia (Imputação: {imp})")
         plt.xlabel("Upstream")
         plt.ylabel("Estratégia")
         plt.tight_layout()
@@ -1160,7 +1244,7 @@ def build_tl_gain_per_run_df(
 ## graphs gain of transfer
 ## ===============================
 
-def plot_boxplot_gain(tl_gain_df: pd.DataFrame, out_dir: str, hue: str = "upstream",
+def plot_boxplot_gain(tl_gain_df: pd.DataFrame, out_dir: str, x_name: str = "strategy", hue: str = "upstream",
                       title: str = "Transfer Learning Gain by Strategy", save_name: str = "boxplot_gain.png"):
     """
     Boxplot (or violin) of pct_gain grouped by strategy.
@@ -1173,8 +1257,8 @@ def plot_boxplot_gain(tl_gain_df: pd.DataFrame, out_dir: str, hue: str = "upstre
     df["pct_gain_pct"] = df["pct_gain"] * 100.0
 
     plt.figure(figsize=(10, 6))
-    ax = sns.boxplot(data=df, x="strategy", y="pct_gain_pct", hue=hue, dodge=True)
-    sns.stripplot(data=df, x="strategy", y="pct_gain_pct", hue=hue, dodge=True, color="black", size=3, alpha=0.3, linewidth=0)
+    ax = sns.boxplot(data=df, x=x_name, y="pct_gain_pct", hue=hue, dodge=True)
+    sns.stripplot(data=df, x=x_name, y="pct_gain_pct", hue=hue, dodge=True, color="black", size=3, alpha=0.3, linewidth=0)
     # Remove duplicate legend entries (stripplot added)
     handles, labels = ax.get_legend_handles_labels()
     # keep only first set
@@ -1185,7 +1269,7 @@ def plot_boxplot_gain(tl_gain_df: pd.DataFrame, out_dir: str, hue: str = "upstre
         ax.get_legend().remove()
 
     ax.set_ylabel("Transfer Gain (%)", fontsize=12)
-    ax.set_xlabel("Strategy", fontsize=12)
+    ax.set_xlabel(x_name.capitalize(), fontsize=12)
     ax.set_title(title, fontsize=14)
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
@@ -1572,9 +1656,16 @@ def plot_barplot_best_tl_vs_best_st(
 
 def graphs_analysis_gain_by_transfer_learning(df: pd.DataFrame, tl_gain_df: pd.DataFrame, out_path: str):
     # 1) Boxplot: gain by strategy, hue=upstream 
-    plot_boxplot_gain(tl_gain_df, out_dir=out_path, hue="upstream", title="Transfer Learning Gain by Strategy (hue=upstream)",
+    plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="strategy", hue="upstream", title="Transfer Learning Gain by Strategy (hue=upstream)",
                       save_name="boxplot_gain_by_strategy_hue_upstream.png")
 
+    
+    plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="strategy", hue="imputation", title="Transfer Learning Gain by Strategy (hue=imputation)",
+                      save_name="boxplot_gain_by_strategy_hue_imputation.png")
+    
+    plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="imputation", hue="upstream", title="Transfer Learning Gain by Imputation (hue=upstream)",
+                      save_name="boxplot_gain_by_imputation_hue_upstream.png")
+    
     # 2) Heatmap facets by upstream: sample x strategy with percent gain
     plot_heatmap_gain_facets_upstream(tl_gain_df, out_dir=out_path)
 
@@ -1691,14 +1782,17 @@ if __name__ == "__main__":
         #rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
         #plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
     
-        #mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+        mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
 
         #compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
 
         #plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
-        #mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
+        mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
 
-        #plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
+        plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
+        
+        mean_rank_imp_up = build_upstream_rank_by_imputation(df)
+        plot_heatmap_mean_rank_imputation_upstream(mean_rank_imp_up, out_dir=path)
         #anova_analysis(df, out_dir=path)
-        analysis_gain_by_transfer_learning(df, out_path=path)
+        #analysis_gain_by_transfer_learning(df, out_path=path)
 

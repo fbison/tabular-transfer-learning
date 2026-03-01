@@ -196,6 +196,18 @@
             "program": "${workspaceFolder}/pseudo_feature.py",
             "args": [],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "train to impute pseudo features",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": [
+                "model=mlp_pf_ic_upstream3", 
+                    "hyp=hyp_pf_ic_upstream3",
+                    "dataset=ic_upstream3"
+            ],
+            "console": "integratedTerminal"
         }
     ]
 }

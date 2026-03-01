@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3",
+    "model_name": "mlp",
+    "run_id": "grummer-Matthews",
+    "best_epoch": 199,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -24.009288787841797,
+        "rmse": 24.009288787841797
+    },
+    "train_stats": {
+        "score": -22.44767189025879,
+        "rmse": 22.44767189025879
+    },
+    "val_stats": {
+        "score": -26.919536590576172,
+        "rmse": 26.919536590576172
+    },
+    "all_train_stats": null
+}

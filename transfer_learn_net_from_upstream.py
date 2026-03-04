@@ -162,7 +162,7 @@ def main(cfg: DictConfig):
                 "normalization": "quantile",
                 "normalizer_path": config["normalizer_path"],
                 "stage": "downstream",
-                "y_policy": "mean_std"
+                "y_policy": ""
             }
             for mlpHead in [True, False]: 
                 for freeze in [True, False]:

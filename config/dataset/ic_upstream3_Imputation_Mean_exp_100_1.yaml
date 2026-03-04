@@ -4,4 +4,4 @@ task: regression
 normalization: quantile
 normalizer_path: '../../../data/ic_upstream3_Imputation_Mean_exp_100_1/normalizer.pkl'
 stage: 'pretrain'
-y_policy: 'mean_std'
+y_policy: ''

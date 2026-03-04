@@ -90,7 +90,7 @@ def get_dataloaders(cfg, which_dataset=None):
                              stage=cfg_dataset.stage)
 
     X = dataset.preprocess_data()
-    Y, y_info = dataset.build_y()
+    Y, _ = dataset.build_y()
     unique_categories = get_categories_full_cat_data(full_cat_data_for_encoder)
     print(f"dataser shape: {len(X[0]['train'])}")
     print(f"x shape: {X[0]['train'].shape}, {X[1]['train'].shape}, y shape: {Y['train'].shape}")

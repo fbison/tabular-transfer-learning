@@ -398,22 +398,14 @@ class TabularDataset:
         return result
 
     def build_y(self):
-        if self.is_regression:
-            assert self.y_policy == 'mean_std'
         y = deepcopy(self.y)
-        if self.y_policy:
-            if not self.is_regression:
-                warnings.warn('y_policy is not None, but the task is NOT regression')
-                info = None
-            elif self.y_policy == 'mean_std':
-                mean = y['train'].mean(axis=0)
-                std = y['train'].std(axis=0)
-                std = np.clip(std, 1e-8, None) #protects against std = 0
-                ##TODO: aqui tá o problema do y_policy, se a gente normaliza o y, tem que guardar a média e o desvio padrão para depois desnormalizar as predições e calcular as métricas corretamente. Se a gente não normaliza o y, não tem problema, mas aí a gente perde a possibilidade de usar o y_policy para ajudar na convergência do modelo. Talvez a gente possa deixar o y_policy como uma opção para o usuário, e se ele escolher 'mean_std', a gente normaliza o y e guarda a média e o desvio padrão no info para depois usar na avaliação. Se ele escolher None, a gente não normaliza o y e não guarda nada no info. O importante é que na avaliação a gente saiba se o y foi normalizado ou não, para poder desnormalizar as predições antes de calcular as métricas.
-                ##y = {k: (v - mean) / std for k, v in y.items()}
-                info = {'policy': self.y_policy, 'mean': mean, 'std': std}
-            else:
-                raise ValueError('Unknown y policy')
+        if self.y_policy == 'mean_std':
+            mean = y['train'].mean(axis=0)
+            std = y['train'].std(axis=0)
+            std = np.clip(std, 1e-8, None) #protects against std = 0
+            ##TODO: se isso for usado no transfer learning é preciso transfeir a normalização
+            y = {k: (v - mean) / std for k, v in y.items()}
+            info = {'policy': self.y_policy, 'mean': mean, 'std': std}
         else:
             info = None
 

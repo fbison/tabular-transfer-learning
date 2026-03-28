@@ -1166,33 +1166,6 @@ def compute_best_tl_per_group(df: pd.DataFrame, rmse_col: str = "rmse_test") -> 
     )
     return best_tl
 
-# construção de dataframe com ganhos de transferência
-    """
-    Returns a DataFrame with columns:
-    sample, strategy, imputation, upstream, best_tl_rmse, best_st_rmse, abs_gain, pct_gain
-    Only includes TL rows (upstream not None) and only samples where ST baseline exists.
-    pct_gain is fraction (e.g., 0.10 -> 10% improvement).
-    """
-    best_st = compute_best_st_per_sample(df, rmse_col=rmse_col)
-    best_tl = compute_best_tl_per_group(df, rmse_col=rmse_col)
-
-    if best_tl.empty:
-        return pd.DataFrame(columns=[
-            "sample","strategy","imputation","upstream","best_tl_rmse","best_st_rmse","abs_gain","pct_gain"
-        ])
-
-    merged = best_tl.merge(best_st, on="sample", how="left")
-    # Drop TL rows where no ST baseline exists for that sample
-    merged = merged.dropna(subset=["best_st_rmse"]).copy()
-
-    merged["abs_gain"] = merged["best_st_rmse"] - merged["best_tl_rmse"]
-    merged["pct_gain"] = merged["abs_gain"] / merged["best_st_rmse"]  # fraction
-    # Keep columns in clear order
-    merged = merged[[
-        "sample","strategy","imputation","upstream","best_tl_rmse","best_st_rmse","abs_gain","pct_gain"
-    ]]
-    return merged
-
 def build_tl_gain_per_run_df(
     df: pd.DataFrame,
     rmse_col: str = "rmse_test"
@@ -1769,30 +1742,30 @@ if __name__ == "__main__":
 
     df = load_all_results(path)
 
-    #rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-    #plot_BoxPlots_overfitting(df, out_dir=path)
-    #summarize_results(df, out_dir=path)
-    #analyze_training_curves(df, out_dir=path)
+    rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
+    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+    plot_BoxPlots_overfitting(df, out_dir=path)
+    summarize_results(df, out_dir=path)
+    analyze_training_curves(df, out_dir=path)
 
     has_multiple_upstreams = True
     if has_multiple_upstreams:
         print("Múltiplos upstreams detectados — executando análises adicionais...")
 
-        #rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
-        #plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
+        rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
+        plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
     
         mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
 
-        #compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
+        compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
 
-        #plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
+        plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
         mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
 
         plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
         
         mean_rank_imp_up = build_upstream_rank_by_imputation(df)
         plot_heatmap_mean_rank_imputation_upstream(mean_rank_imp_up, out_dir=path)
-        #anova_analysis(df, out_dir=path)
-        #analysis_gain_by_transfer_learning(df, out_path=path)
+        anova_analysis(df, out_dir=path)
+        analysis_gain_by_transfer_learning(df, out_path=path)
 

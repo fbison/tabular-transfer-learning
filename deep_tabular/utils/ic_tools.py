@@ -72,21 +72,42 @@ def combine_unique_sorted(arr1, arr2, arr3):
     combined = arr1 + arr2 + arr3  # concatena os arrays
     return sorted(set(combined))  # remove repetições e ordena
 
-def get_target_columns(dataset_name):
+def get_downstram_target_columns_for_pseudo_features(dataset_name):
+    """
+    Function to get the target columns for downstream datasets, which are the same for all downstream datasets.
+    """
+    if '_upstream2' in dataset_name:
+            return missing_features['up2_missing']
+    elif '_upstream3' in dataset_name:
+        return missing_features['up3_missing']
+    elif '_upstream4' in dataset_name:
+        return missing_features['up4_missing']
+    ## in this case we are doing one model to predict missing features for all upstream datasets, so we need to combine the missing features from all upstream datasets
+    return combine_unique_sorted(missing_features['up2_missing'], missing_features['up3_missing'], missing_features['up4_missing'])
+
+def get_target_columns_for_multivariant_task(dataset_name):
+    """
+    Function to get the target columns for a given dataset, for the multivariant task (where we predict all missing features for all upstream datasets)
+    We do not include the default target columns, because they are not used in this task to avoid leaking data.
+    """
+    if "ic_upstream2" in dataset_name:
+        return missing_features['up2_missing']
+    elif 'ic_upstream3' in dataset_name:
+        return missing_features['up3_missing']
+    elif 'ic_upstream4' in dataset_name:
+        return missing_features['up4_missing']
+    elif 'ic_downstream1' in dataset_name:
+        return get_downstram_target_columns_for_pseudo_features(dataset_name)
+    else:
+        raise ValueError(f"Unknown dataset name: {dataset_name}")
+    
+def get_target_columns_to_save(dataset_name):
     """
     Function to get the target columns for a given dataset
     """
-    
-    if "ic_upstream2" in dataset_name:
-        return default_target_columns + missing_features['up2_only']
-    elif 'ic_upstream3' in dataset_name:
-        return default_target_columns + missing_features['up3_only']
-    elif 'ic_upstream4' in dataset_name:
-        return default_target_columns + missing_features['up4_only']
-    elif 'ic_downstream1' in dataset_name:
-        return default_target_columns + combine_unique_sorted(missing_features['up2_missing'], missing_features['up3_missing'], missing_features['up4_missing'])
-    else:
-        raise ValueError(f"Unknown dataset name: {dataset_name}")
+    ## we always save the default target columns, because they are used when the task is regression
+    ## and the others are used when the task is pseudo-feature prediction, so we need to save them all (and remove the default target collumns to avoid leaking data)
+    return default_target_columns + get_target_columns_for_multivariant_task(dataset_name)
 
 import os
 import pandas as pd
@@ -253,38 +274,6 @@ def read_cep_dataset(dataset_name):
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
-def split_downstream_dataset(dataset_name: str, dataset_number: int):
-    target_columns = get_target_columns(dataset_name)
-    base_path = os.path.join('data', dataset_name)
-    dataset = pd.read_csv(f'{base_path}/exp_100_{dataset_number}.csv', delimiter = '|')
-    dataset = dataset.drop(columns = non_numerical_columns)
-
-    dataset = dataset.astype(float)
-
-    y_full = dataset[target_columns].copy()
-
-    dataset.drop(columns = default_target_columns, inplace = True) #Não retira tudo, pois as outras targets collumns serão usadas como X em outras tasks
-    
-    X_full = dataset.copy()
-
-    X_train, X_test, y_train, y_test = train_test_split(X_full, y_full, test_size=30, random_state=1) # test size fixed to 30 samples to all downstream
-    X_val = pd.DataFrame(columns=X_train.columns)
-    if isinstance(y_train, pd.DataFrame):
-        y_val = pd.DataFrame(columns=y_train.columns)
-    sample_train_sizes = [5, 10, 20, 50, 75]
-    for sample_size in sample_train_sizes:
-        base_path = os.path.join('data', f'{dataset_name}_Sample{sample_size}')
-        os.makedirs(base_path, exist_ok=True)
-        X_train_samples, y_train_sampled = train_sample(X_train, y_train, sample_size)
-        X_train_samples.to_csv(f'{base_path}/ic_train_X.csv', index = False)
-        y_train_sampled.to_csv(f'{base_path}/ic_train_y.csv', index = False)
-        X_val.to_csv(f'{base_path}/ic_val_X.csv', index = False)
-        y_val.to_csv(f'{base_path}/ic_val_y.csv', index = False)
-        X_test.to_csv(f'{base_path}/ic_test_X.csv', index = False)
-        y_test.to_csv(f'{base_path}/ic_test_y.csv', index = False)
-
-    return
-
 def train_sample(xTrain, yTrain, sample_size):
     if sample_size >= len(xTrain):
         return xTrain, yTrain
@@ -299,17 +288,8 @@ def define_target_for_task(task, dataset_name):
     if not task.startswith('multiVariantRegression'):
         return default_target_columns
     
-    if "ic_upstream2" in dataset_name:
-        return missing_features['up2_only']
-    elif 'ic_upstream3' in dataset_name:
-        return missing_features['up3_only']
-    elif 'ic_upstream4' in dataset_name:
-        return missing_features['up4_only']
-    elif 'ic_downstream1' in dataset_name:
-        return combine_unique_sorted(missing_features['up2_missing'], missing_features['up3_missing'], missing_features['up4_missing']) 
-    
-    return []
-    
+    return get_target_columns_for_multivariant_task(dataset_name)
+        
 def get_datasets(dataset_name, dataset_number=None, target_columnsToSave=None, task="regression", dataset_type='ic'):
     """
     dataset_type: 'ic' ou 'cep'.
@@ -382,7 +362,7 @@ def get_dataset(X_train, X_val, X_test, y_train, y_val, y_test, dataset_name, ta
 def get_ic_dataset(dataset_name, task, stage):
     print(f"Loading dataset: {dataset_name} for task: {task} at stage: {stage}")
     dataset_id = get_last_char_as_int(dataset_name)
-    target_columns = get_target_columns(dataset_name)
+    target_columns = get_target_columns_to_save(dataset_name)
 
     X_train, X_val, X_test, y_train, y_val, y_test = get_datasets(
         dataset_name, dataset_id, target_columnsToSave=target_columns, task=task, dataset_type="ic"

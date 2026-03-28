@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "headless-Quincey",
+    "best_epoch": 192,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.89291912317276,
+        "rmse": 0.89291912317276
+    },
+    "train_stats": {
+        "score": -0.36527103185653687,
+        "rmse": 0.36527103185653687
+    },
+    "val_stats": {
+        "score": -0.8002954125404358,
+        "rmse": 0.8002954125404358
+    },
+    "all_train_stats": null
+}

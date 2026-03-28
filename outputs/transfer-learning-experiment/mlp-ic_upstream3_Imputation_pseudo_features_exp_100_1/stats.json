@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_pseudo_features_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "hawklike-Franz",
+    "best_epoch": 162,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -1.007171869277954,
+        "rmse_normalized": 1.007171869277954
+    },
+    "train_stats": {
+        "score": -0.5858228206634521,
+        "rmse_normalized": 0.5858228206634521
+    },
+    "val_stats": {
+        "score": -1.019749402999878,
+        "rmse_normalized": 1.019749402999878
+    },
+    "all_train_stats": null
+}

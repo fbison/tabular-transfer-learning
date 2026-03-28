@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "melic-Jairo",
+    "best_epoch": 151,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.9275680780410767,
+        "rmse": 0.9275680780410767
+    },
+    "train_stats": {
+        "score": -0.9840995669364929,
+        "rmse": 0.9840995669364929
+    },
+    "val_stats": {
+        "score": -0.9305024147033691,
+        "rmse": 0.9305024147033691
+    },
+    "all_train_stats": null
+}

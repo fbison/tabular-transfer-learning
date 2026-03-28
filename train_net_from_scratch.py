@@ -49,9 +49,9 @@ def main(cfg: DictConfig):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes, data_schema = dt.utils.get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes, data_schema, y_info_normalize = dt.utils.get_dataloaders(cfg)
     
-    net, start_epoch, optimizer_state_dict, _ = dt.utils.load_model_from_checkpoint(cfg.model,
+    net, start_epoch, optimizer_state_dict, _, _ = dt.utils.load_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,
                                                                                  unique_categories,
                                                                                  n_classes,
@@ -112,7 +112,7 @@ def main(cfg: DictConfig):
             test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                                    [loaders["test"], loaders["val"], loaders["train"]],
                                                                    cfg.dataset.task,
-                                                                   device)
+                                                                   device, y_info_normalization=y_info_normalize)
             log.info(f"Training stats: {json.dumps(train_stats, indent=4)}")
             log.info(f"Val stats: {json.dumps(val_stats, indent=4)}")
             log.info(f"Test stats: {json.dumps(test_stats, indent=4)}")
@@ -140,7 +140,7 @@ def main(cfg: DictConfig):
             val_stats, test_stats = dt.evaluate_model(net,
                                                       [loaders["val"], loaders["test"]],
                                                       cfg.dataset.task,
-                                                      device)
+                                                      device, y_info_normalization=y_info_normalize)
             if val_stats["score"] > highest_val_acc_so_far:
                 best_epoch = epoch
                 highest_val_acc_so_far = val_stats["score"]
@@ -148,6 +148,7 @@ def main(cfg: DictConfig):
                 # save current model
                 state = {"net": net.state_dict(), "epoch": epoch, "optimizer": optimizer.state_dict()}
                 state["data_schema"] = data_schema
+                state["y_info_normalize"] = y_info_normalize
                 out_str = "model_best.pth"
                 log.info(f"Saving model to: {out_str}")
                 torch.save(state, out_str)
@@ -165,12 +166,12 @@ def main(cfg: DictConfig):
     if cfg.hyp.use_patience and best_epoch != epoch - 1:
         log.info(f"Loading best model from epoch {best_epoch} for final evaluation...")
         checkpoint_path = "model_best.pth"
-        net.load_state_dict(torch.load(checkpoint_path, weights_only=True)["net"])
+        net.load_state_dict(torch.load(checkpoint_path, weights_only=False)["net"])
         
     test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                            [loaders["test"], loaders["val"], loaders["train"]],
                                                            cfg.dataset.task,
-                                                           device)
+                                                            device, y_info_normalization=y_info_normalize)
 
     log.info(f"Training accuracy: {json.dumps(train_stats, indent=4)}")
     log.info(f"Val accuracy: {json.dumps(val_stats, indent=4)}")

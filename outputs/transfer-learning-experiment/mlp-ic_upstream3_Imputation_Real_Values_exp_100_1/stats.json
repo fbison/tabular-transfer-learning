@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_Real_Values_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "pathic-Agustin",
+    "best_epoch": 110,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.8076995015144348,
+        "rmse": 0.8076995015144348
+    },
+    "train_stats": {
+        "score": -0.7802687883377075,
+        "rmse": 0.7802687883377075
+    },
+    "val_stats": {
+        "score": -0.9008962512016296,
+        "rmse": 0.9008962512016296
+    },
+    "all_train_stats": null
+}

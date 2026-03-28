@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2",
+    "model_name": "mlp",
+    "run_id": "cogent-Magen",
+    "best_epoch": 195,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.5589544177055359,
+        "rmse": 0.5589544177055359
+    },
+    "train_stats": {
+        "score": -0.36509454250335693,
+        "rmse": 0.36509454250335693
+    },
+    "val_stats": {
+        "score": -0.6708416938781738,
+        "rmse": 0.6708416938781738
+    },
+    "all_train_stats": null
+}

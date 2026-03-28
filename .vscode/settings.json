@@ -1,4 +1,5 @@
 {
+    "python.defaultInterpreterPath": "C:\\Users\\Bison\\AppData\\Local\\Programs\\Python\\Python38\\python.exe",
     "python.REPL.enableREPLSmartSend": false,
     "python.analysis.extraPaths": [
         "./deep_tabular/utils"

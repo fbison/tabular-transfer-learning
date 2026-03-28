@@ -1,5 +1,8 @@
 #*/output*/
 #outputs/
+.pth
+*from_scratch_optuna*/*model_best.pth
+*from_scratch_optuna*/*stats.json.
 plots/output.pdf/
 tensorboard/
 .hydra/

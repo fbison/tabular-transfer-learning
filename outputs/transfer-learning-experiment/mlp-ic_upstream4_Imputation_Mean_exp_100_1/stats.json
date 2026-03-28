@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_Mean_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "hobnailed-Eamonn",
+    "best_epoch": 184,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -1.1293456554412842,
+        "rmse": 1.1293456554412842
+    },
+    "train_stats": {
+        "score": -0.36913734674453735,
+        "rmse": 0.36913734674453735
+    },
+    "val_stats": {
+        "score": -0.9582794308662415,
+        "rmse": 0.9582794308662415
+    },
+    "all_train_stats": null
+}

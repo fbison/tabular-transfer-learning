@@ -43,7 +43,7 @@ def main(cfg: DictConfig):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes, data_schema = dt.utils.get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes, data_schema, _ = dt.utils.get_dataloaders(cfg)
 
     net, start_epoch, optimizer_state_dict = dt.utils.load_transfer_model_from_checkpoint(cfg.model,
                                                                                  n_numerical,

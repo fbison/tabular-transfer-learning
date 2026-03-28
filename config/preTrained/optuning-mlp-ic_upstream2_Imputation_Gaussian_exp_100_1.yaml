@@ -1,19 +1,19 @@
-name: ic_upstream2Gaus
+name: ic_upstream2Gaussian
 number: 2
 model_path: '../../../outputs/transfer-learning-experiment/mlp-ic_upstream2_Imputation_Gaussian_exp_100_1/model_best.pth'
 normalizer_path: '../../../data/ic_upstream2_Imputation_Gaussian_exp_100_1/normalizer.pkl'
 imputationMethod: Gaussian
 model:
   name: mlp
-  d_embedding: 120
+  d_embedding: 392
   model_path:
   use_mlp_head: false
   freeze_feature_extractor: false
-  dropout: 0.1
-  d_layers: [179, 160, 145]
+  d_layers: [2, 190, 190, 190, 190, 123]
+  dropout: 0.21563064759191347
 hyp:
   epochs: 200
-  lr: 0.0007428238479534785
+  lr: 0.0009999828597268984
   lr_decay: step
   lr_factor: 0.1
   lr_schedule:
@@ -28,12 +28,12 @@ hyp:
   use_patience: true
   val_period: 10
   warmup_period: 5
-  weight_decay: 0.0004997757090832181
+  weight_decay: 0.000695229695533973
   momentum: 0.9
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
-  plateau_stop: true
+  plateau_stop: false
   plateau_patience: 5
   plateau_min_epochs: 75
   plateau_window: 30

@@ -1,4 +1,4 @@
-from deep_tabular.utils.ic_tools import impute_and_save, split_downstream_dataset
+from deep_tabular.utils.ic_tools import impute_and_save
 
 def input_missing_columns(method):
     path_src = "data/ic_downstream1/ic_train_X.csv"

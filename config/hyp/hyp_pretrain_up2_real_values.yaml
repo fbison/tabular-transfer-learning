@@ -1,5 +1,5 @@
 epochs: 200
-lr: 0.0006007667690175435
+lr: 0.0007868127605854149
 lr_decay: step
 lr_factor: 0.1
 lr_schedule:
@@ -14,7 +14,7 @@ train_batch_size: 256
 use_patience: true
 val_period: 10
 warmup_period: 5
-weight_decay: 9.904687908577443e-06
+weight_decay: 4.813346301656967e-05
 momentum: 0.9
 warmup_type: linear
 head_warmup_period: 10

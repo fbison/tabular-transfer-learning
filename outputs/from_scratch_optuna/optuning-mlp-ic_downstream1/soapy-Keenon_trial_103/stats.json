@@ -1,0 +1,19 @@
+{
+    "dataset": "ic_downstream1",
+    "model_name": "mlp",
+    "run_id": "soapy-Keenon_trial_103",
+    "best_epoch": 117,
+    "routine": "from_scratch",
+    "test_stats": {
+        "score": -1.0254117250442505,
+        "rmse_normalized": 1.0254117250442505
+    },
+    "train_stats": {
+        "score": -0.8518367409706116,
+        "rmse_normalized": 0.8518367409706116
+    },
+    "val_stats": {
+        "score": -0.9583254456520081,
+        "rmse_normalized": 0.9583254456520081
+    }
+}

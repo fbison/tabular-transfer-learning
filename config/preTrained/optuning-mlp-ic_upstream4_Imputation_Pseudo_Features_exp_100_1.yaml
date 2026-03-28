@@ -6,24 +6,16 @@ imputationMethod: pseudo_features
 
 model:
   name: mlp
-  dropout: 0.03303742553669689
-  d_embedding: 240
-  d_layers:
-    - 465
-    - 101
-    - 101
-    - 101
-    - 101
-    - 101
-    - 101
-    - 441
+  d_embedding: 200
+  model_path:
   use_mlp_head: false
   freeze_feature_extractor: false
-  model_path:
+  d_layers: [389, 332, 332, 332, 332, 332, 332, 250]
+  dropout: 0.10424633924304764
 
 hyp:
   epochs: 200
-  lr: 0.0006368913653460317
+  lr: 0.00088808659269034
   lr_decay: step
   lr_factor: 0.1
   lr_schedule:
@@ -38,13 +30,13 @@ hyp:
   use_patience: true
   val_period: 10
   warmup_period: 5
-  weight_decay: 1.0300243701663512e-05
+  weight_decay: 0.000211469779276844
   momentum: 0.9
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
 
-  plateau_stop: true
+  plateau_stop: false
   plateau_patience: 5
   plateau_min_epochs: 75
   plateau_window: 30

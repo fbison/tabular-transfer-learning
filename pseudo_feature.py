@@ -38,22 +38,23 @@ def get_imputation_model(dataset_name_used_to_train_imputation_model):
         })
     # Vai pegar o dataset em que o modelo foi treinado, esses dados não serão usados, porém são necessários
     # para montar o data_schema corretamente e fazer a validação
-    _, unique_categories, n_numerical, n_classes, data_schema = dt.utils.get_dataloaders(cfgExecution)
+    _, unique_categories, n_numerical, n_classes, data_schema, _ = dt.utils.get_dataloaders(cfgExecution)
     
-    net_to_pseudo_features, _, _, data_schema_loaded = dt.utils.load_model_from_checkpoint(modelConfig,
+    net_to_pseudo_features, _, _, data_schema_loaded, y_normalizer = dt.utils.load_model_from_checkpoint(modelConfig,
                                                                     n_numerical,
                                                                     unique_categories,
                                                                     n_classes,
                                                                     device,
                                                                     data_schema
                                                                     )
-    return net_to_pseudo_features, data_schema_loaded
+    return net_to_pseudo_features, data_schema_loaded, y_normalizer
 
 def impute_pseudo_features_by_file(
     file_path,
     net_to_pseudo_features,
     data_schema_loaded,
     dataset_used_to_train_model,
+    y_normalizer,
     device="cpu",
 ):
     # ---- Load dataset to be imputed ----
@@ -108,6 +109,11 @@ def impute_pseudo_features_by_file(
     net_to_pseudo_features.eval()
     with torch.no_grad():
         y_pred = net_to_pseudo_features(x_tensor, None)
+        # Denormalize
+        mean = torch.tensor(y_normalizer["mean"], device=y_pred.device).view(1, -1)
+        std = torch.tensor(y_normalizer["std"], device=y_pred.device).view(1, -1)
+
+        y_pred = y_pred * std + mean
 
     # ---- Convert predictions to DataFrame with semantic labels ----
     y_labels = data_schema_loaded["y"]["labels"]
@@ -183,10 +189,10 @@ def clean_y_files(features_to_maintain, dataset_name, dataset_used_to_train_mode
         dataset_y_cleaned = dataset_y[features_to_maintain]
         save_imputed_dataset(y_file, dataset_y_cleaned, dataset_used_to_train_model, method=method)
 
-def impute_pseudo_features_by_dataset(dataset_to_impute, dataset_name_used_to_train_imputation_model, net_to_pseudo_features, data_schema_loaded):
+def impute_pseudo_features_by_dataset(dataset_to_impute, dataset_name_used_to_train_imputation_model, net_to_pseudo_features, data_schema_loaded, y_normalizer):
     x_files = get_x_files_in_dataset(dataset_to_impute)
     for x_file in x_files:
-        impute_pseudo_features_by_file(x_file, net_to_pseudo_features, data_schema_loaded, dataset_name_used_to_train_imputation_model)
+        impute_pseudo_features_by_file(x_file, net_to_pseudo_features, data_schema_loaded, dataset_name_used_to_train_imputation_model, y_normalizer)
     clean_y_files("pIC50", dataset_to_impute, dataset_name_used_to_train_imputation_model)
 
     
@@ -212,14 +218,15 @@ def get_multiple_samples_dataset_name(base_dataset_name):
     return matching_files
 
 def impute_pseudo_features(dataset_to_impute, dataset_name_used_to_train_imputation_model):
-    net_to_pseudo_features, data_schema_loaded = get_imputation_model(dataset_name_used_to_train_imputation_model)
+    net_to_pseudo_features, data_schema_loaded, y_normalizer = get_imputation_model(dataset_name_used_to_train_imputation_model)
     sampled_dataset_names = get_multiple_samples_dataset_name(dataset_to_impute)
     for dataset_name in sampled_dataset_names:
         impute_pseudo_features_by_dataset(
             dataset_name,
             dataset_name_used_to_train_imputation_model,
             net_to_pseudo_features,
-            data_schema_loaded
+            data_schema_loaded,
+            y_normalizer
         )
 
 downstream_features = ["SpDiam_A","AATS5d","AATS7s","AATS8s","AATS1i","AATS2i","AATS3i","AATS4i","AATS6i","ATSC1dv","ATSC8dv","ATSC1d","ATSC7d","AATSC0v","MATS6s","MATS7s","MATS8s","GATS2c","GATS3c","GATS8c","GATS1dv","GATS3dv","GATS4dv","GATS6dv","GATS7dv","GATS8dv","GATS1d","GATS2d","GATS5d","GATS2s","GATS3s","GATS4s","GATS6s","GATS1v","GATS2v","GATS5p","GATS6p","GATS7p","GATS1i","GATS2i","GATS3i","GATS4i","GATS5i","GATS7i","GATS8i","RNCG","RPCG","Xc-3dv","Xc-5dv","Xc-6dv","AXp-0d","SdssC","SsNH2","SdO","SssO","SssS","SaaS","SddssS","MAXaaCH","AETA_alpha","AETA_beta_ns_d","ETA_dAlpha_B","ETA_epsilon_5","ETA_dEpsilon_D","IC1","CIC1","CIC2","ZMIC2","PEOE_VSA1","PEOE_VSA4","PEOE_VSA6","PEOE_VSA9","SMR_VSA1","SMR_VSA3","SMR_VSA4","SMR_VSA9","SlogP_VSA2","SlogP_VSA3","SlogP_VSA4","SlogP_VSA10","EState_VSA4","EState_VSA5","VSA_EState8","VSA_EState9","AMID_C","TopoPSA(NO)","GGI6","GGI7","JGI4","RNCS","Mor02m","Mor03m","Mor13m","Mor26m","Mor30m","Mor31m","MOMI-Z","MLOGP","ESOL_Solubility_(mg/ml)","Ali_Log_S"]
@@ -291,17 +298,17 @@ def impute_real_values(dataset, dataset_to_select_features_from):
 
 @hydra.main()
 def main(_: DictConfig):
-    #impute_pseudo_features("ic_downstream1", "ic_upstream2")
-    impute_real_values("ic_downstream1", "ic_upstream2")
+    impute_pseudo_features("ic_downstream1", "ic_upstream2")
+    #impute_real_values("ic_downstream1", "ic_upstream2")
     impute_pseudo_features("ic_downstream1", "ic_upstream3")
-    impute_real_values("ic_downstream1", "ic_upstream3")
-    #impute_pseudo_features("ic_downstream1", "ic_upstream4")
-    impute_real_values("ic_downstream1", "ic_upstream4")
-    #impute_pseudo_features("ic_upstream2", "ic_downstream1")
-    impute_real_values("ic_upstream2", "ic_downstream1")
-    #impute_pseudo_features("ic_upstream3", "ic_downstream1")
-    impute_real_values("ic_upstream3", "ic_downstream1")
-    #impute_pseudo_features("ic_upstream4", "ic_downstream1")
-    impute_real_values("ic_upstream4", "ic_downstream1")
+    #impute_real_values("ic_downstream1", "ic_upstream3")
+    impute_pseudo_features("ic_downstream1", "ic_upstream4")
+    #impute_real_values("ic_downstream1", "ic_upstream4")
+    impute_pseudo_features("ic_upstream2", "ic_downstream1")
+    #impute_real_values("ic_upstream2", "ic_downstream1")
+    impute_pseudo_features("ic_upstream3", "ic_downstream1")
+    #impute_real_values("ic_upstream3", "ic_downstream1")
+    impute_pseudo_features("ic_upstream4", "ic_downstream1")
+    #impute_real_values("ic_upstream4", "ic_downstream1")
 if __name__ == "__main__":
     main()

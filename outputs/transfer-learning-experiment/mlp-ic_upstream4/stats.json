@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4",
+    "model_name": "mlp",
+    "run_id": "snidest-Aubree",
+    "best_epoch": 198,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -10010972.0,
+        "rmse": 10010972.0
+    },
+    "train_stats": {
+        "score": -0.35304442048072815,
+        "rmse": 0.35304442048072815
+    },
+    "val_stats": {
+        "score": -0.5477384328842163,
+        "rmse": 0.5477384328842163
+    },
+    "all_train_stats": null
+}

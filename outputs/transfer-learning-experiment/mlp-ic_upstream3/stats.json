@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3",
+    "model_name": "mlp",
+    "run_id": "dreamful-Qushawn",
+    "best_epoch": 199,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -10010972.0,
+        "rmse": 10010972.0
+    },
+    "train_stats": {
+        "score": -0.37450897693634033,
+        "rmse": 0.37450897693634033
+    },
+    "val_stats": {
+        "score": -0.555321991443634,
+        "rmse": 0.555321991443634
+    },
+    "all_train_stats": null
+}

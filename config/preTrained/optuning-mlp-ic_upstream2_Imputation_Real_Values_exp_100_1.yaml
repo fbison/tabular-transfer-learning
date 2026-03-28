@@ -1,26 +1,19 @@
-name: ic_upstream2RealValues
+name: ic_upstream2Real
 number: 2
 model_path: '../../../outputs/transfer-learning-experiment/mlp-ic_upstream2_Imputation_Real_Values_exp_100_1/model_best.pth'
 normalizer_path: '../../../data/ic_upstream2_Imputation_Real_Values_exp_100_1/normalizer.pkl'
 imputationMethod: Real_Values
-
 model:
   name: mlp
-  dropout: 0.010941611508099948
-  d_embedding: 448
-  d_layers:
-    - 230
-    - 425
-    - 425
-    - 425
-    - 406
+  d_embedding: 512
+  model_path:
   use_mlp_head: false
   freeze_feature_extractor: false
-  model_path:
-
+  d_layers: [361, 495, 495, 495, 495, 175]
+  dropout: 0.08337402857785554
 hyp:
   epochs: 200
-  lr: 0.0006007667690175435
+  lr: 0.0007868127605854149
   lr_decay: step
   lr_factor: 0.1
   lr_schedule:
@@ -35,12 +28,12 @@ hyp:
   use_patience: true
   val_period: 10
   warmup_period: 5
-  weight_decay: 9.904687908577443e-06
+  weight_decay: 4.813346301656967e-05
   momentum: 0.9
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
-  plateau_stop: true
+  plateau_stop: false
   plateau_patience: 5
   plateau_min_epochs: 75
   plateau_window: 30

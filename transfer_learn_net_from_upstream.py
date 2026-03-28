@@ -6,6 +6,7 @@ import sys
 from collections import OrderedDict
 import copy
 import multiprocessing as mp
+from typing import Dict
 
 from hydra import experimental, compose, initialize
 import hydra
@@ -20,6 +21,7 @@ import deep_tabular as dt
 N_JOBS_MAX = 1  # Número máximo de jobs do HPC DA USP
 import numpy as np
 import torch
+FILE_NAME= "results.jsonl"
 
 def make_serializable(obj):
     if isinstance(obj, dict):
@@ -43,7 +45,7 @@ def omegaconf_to_serializable(oc):
     if OmegaConf.is_config(oc):
         oc = OmegaConf.to_container(oc, resolve=True)
     return make_serializable(oc)
-def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False, results_file="results.jsonl"):
+def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False, results_file=FILE_NAME):
     # Copias independentes para cada job
     model_copy = copy.deepcopy(model_cfg)
     dataset_copy = copy.deepcopy(dataset_cfg)
@@ -92,15 +94,27 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
         log.error(f"Erro ao salvar resultado de {configName}: {e}")
     return result
 
-def select_epoch(samples: int, mlpHead: bool, freeze: bool, from_scratch: bool) -> int:
-    return 1000
+##For the data levels of 4 and 10 samples, we simply select 30 fine-tuning epochs. For more data of
+#20 samples, we select 60 fine-tuning epochs. In the larger data levels of 100 and 200 samples, we
+#sample 20% of the data as a validation set to perform early stopping with the flexible end-to-end
+#fine-tuned transfer learning setups prone to overfitting. For early stopping, we terminates training
+#if no improvement in the validation score is observed for more than 30 epochs. In the less flexible
+#transfer learning setups with a frozen feature extractor, 
+#feature extractor. Finally, for the deep baselines with the hyperparameters tuned on a small subsample
+#of the upstream data, we select the best epoch from the small upstream subsample.
+def select_epoch(samples: int, mlpHead: bool, freeze: bool, from_scratch: bool, plateau_stop: bool, same_epochs: bool) -> int:
+    if plateau_stop:
+        return 1000
+    if same_epochs:
+        return 500
+    if from_scratch:
+        return 200
     if freeze:
         return 100 if mlpHead else 200  
+        #we select 100 fine-tuning epochs for the MLP head atop a frozen feature extractor and 200 fine-tuning epochs for the linear head atop a frozen
         # Congelando, precisa de mais épocas para ajustar a cabeça e já reduz o risco de overfitting
         # Se usar mlpHead, são mais parâmetros, então consegue aprender mais rápido
-    if samples <= 10:
-        return 30 
-    elif samples <= 20:
+    if samples <= 20:
         return 60
     elif samples <= 50:
         return 90
@@ -119,6 +133,21 @@ def getImpuationMethodSufix(imputationMethod: str, upstream_number: int) -> str:
     if upstream_number < 0 or upstream_number == None:
         return f"{imputationMethod}"
     return f"{imputationMethod}_exp_100_{upstream_number}"
+
+def configsAlreadyExecuted(results_file=FILE_NAME) -> Dict[str, bool]:
+    if not os.path.exists(results_file):
+        return {}
+    executed_configs = {}
+    with open(results_file, "r", encoding="utf-8") as fp:
+        for line in fp:
+            try:
+                result = json.loads(line)
+                if "config" in result and "run_id" in result["config"]:
+                    executed_configs[result["config"]["run_id"]] = True
+            except json.JSONDecodeError:
+                continue
+    return executed_configs
+
 # ============================
 # Hydra main
 # ============================
@@ -147,11 +176,12 @@ def main(cfg: DictConfig):
     seeds = [2, 12, 22, 32, 42, 52, 62, 72, 82, 92]
     # Monta todos os jobs a serem executados
     jobs = []
-
+    configs_executed = configsAlreadyExecuted()
+    imputationMethod = getImpuationMethodSufix(config["imputationMethod"], upstream_number)
     for seed in seeds:
         for sample in sampleSizes:
             if not benchmark:
-                dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{getImpuationMethodSufix(config['imputationMethod'], upstream_number)}"
+                dataset_name = f"{downstreamName}_Sample{sample}_Imputation_{imputationMethod}"
             else:
                 dataset_name = f"{downstreamName}_Sample{sample}"
             full_name = f"{dataset_name}"
@@ -169,27 +199,30 @@ def main(cfg: DictConfig):
                     # Cria cópia independente do model para cada job
                     model_cfg = copy.deepcopy(model)
                     hyp_cfg = copy.deepcopy(hyp)
-                    hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze, False)
+                    hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze, False, hyp["plateau_stop"], False)
                     hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, freeze, hyp["lr"], hyp["head_lr"])
-                    hyp_cfg["lr"] = 0.00005 
+                    hyp_cfg["lr"] = 0.00005 ##chose from hyp/2
                     hyp_cfg["seed"] = seed
                     model_cfg["use_mlp_head"] = mlpHead
                     model_cfg["freeze_feature_extractor"] = freeze
                     configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}_seed{seed}"
-                    # Adiciona à lista de jobs
-                    jobs.append((model_cfg, dataset_cfg, hyp_cfg, configName, log, False))
+                    if configName not in configs_executed:
+                        # Adiciona à lista de jobs
+                        jobs.append((model_cfg, dataset_cfg, hyp_cfg, configName, log, False))
             dataset_fs = copy.deepcopy(dataset_cfg)
-            dataset_fs["name"] = f"{downstreamName}_Sample{sample}"
+            dataset_fs["name"] = f"{downstreamName}_Sample{sample}_hypParamsFrom-{upstream_number}-{imputationMethod}"
             dataset_fs["normalizer_path"] = None
             model_from_scratch = copy.deepcopy(model)
             hyp_from_scratch = copy.deepcopy(hyp)
-            hyp_from_scratch["epochs"] = select_epoch(sample, False, False, True)
+            hyp_from_scratch["epochs"] = select_epoch(sample, False, False, True, hyp["plateau_stop"], False)
             model_from_scratch["model_path"] = None
             model_from_scratch["use_mlp_head"] = False
             model_from_scratch["freeze_feature_extractor"] = False
             hyp_from_scratch["seed"] = seed
+            hyp_from_scratch["lr"] = 0.0001 ##chose from hyp, since it's training from scratch, can use higher learning rate
             configName = f"{dataset_fs['name']}_fromScratch_seed{seed}"
-            jobs.append((model_from_scratch, dataset_fs, hyp_from_scratch, configName, log, True))
+            if configName not in configs_executed:
+                jobs.append((model_from_scratch, dataset_fs, hyp_from_scratch, configName, log, True))
 
     # ============================
     # Executa os jobs em paralelo de um mesmo upstream

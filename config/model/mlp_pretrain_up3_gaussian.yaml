@@ -3,5 +3,5 @@ d_embedding: 464
 model_path:
 use_mlp_head: false
 freeze_feature_extractor: false
-d_layers: [398, 130, 130, 130, 130, 155]
-dropout: 0.1
+d_layers: [469, 402, 402, 402, 402, 485]
+dropout: 0.14099411250593347

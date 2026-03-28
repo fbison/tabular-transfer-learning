@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "gimlet-Jenai",
+    "best_epoch": 135,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -1.2251585721969604,
+        "rmse": 1.2251585721969604
+    },
+    "train_stats": {
+        "score": -0.4982701539993286,
+        "rmse": 0.4982701539993286
+    },
+    "val_stats": {
+        "score": -1.0493018627166748,
+        "rmse": 1.0493018627166748
+    },
+    "all_train_stats": null
+}

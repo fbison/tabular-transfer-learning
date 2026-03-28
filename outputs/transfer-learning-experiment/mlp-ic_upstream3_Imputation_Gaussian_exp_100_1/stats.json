@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_Gaussian_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "blocky-Lindamarie",
+    "best_epoch": 159,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -1.2141797542572021,
+        "rmse": 1.2141797542572021
+    },
+    "train_stats": {
+        "score": -0.40640687942504883,
+        "rmse": 0.40640687942504883
+    },
+    "val_stats": {
+        "score": -1.1539438962936401,
+        "rmse": 1.1539438962936401
+    },
+    "all_train_stats": null
+}

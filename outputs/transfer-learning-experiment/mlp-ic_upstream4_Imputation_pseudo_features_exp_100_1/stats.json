@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_pseudo_features_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "goosy-Shundrika",
+    "best_epoch": 120,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -1.238910436630249,
+        "rmse_normalized": 1.238910436630249
+    },
+    "train_stats": {
+        "score": -0.5426855087280273,
+        "rmse_normalized": 0.5426855087280273
+    },
+    "val_stats": {
+        "score": -1.055782675743103,
+        "rmse_normalized": 1.055782675743103
+    },
+    "all_train_stats": null
+}

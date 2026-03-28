@@ -1,7 +1,7 @@
 name: mlp
-d_embedding: 280
+d_embedding: 232
 model_path:
 use_mlp_head: false
 freeze_feature_extractor: false
-d_layers: [233, 321, 321, 290]
-dropout: 0.1
+d_layers: [9, 379, 379, 379, 379, 489]
+dropout: 0.06069913264970778

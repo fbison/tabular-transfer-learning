@@ -1,213 +1,424 @@
 {
     "version": "0.2.0",
-    "configurations": [    
+    "configurations": [
 
+        // =========================
+        // PIPE / ANALYSIS
+        // =========================
         {
-            "name": "pipe analysis",
+            "name": "Pipe Analysis",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/downstream_data_analysis.py",
-            "args": [],
-            "console": "integratedTerminal"
-        },
-
-        {
-            "name": "optuna backup",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/optuna_backup.py",
-            "args": [],
             "console": "integratedTerminal"
         },
         {
-            "name": "do zero",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/train_net_from_scratch.py",
-            "args": ["model=mlp_pf_downstream1", "dataset=ic_downstream1", "hyp=hyp_pf_downstream1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "optune continue script4",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream4_Imputation_Real_Values_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "optune continue script3",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_Real_Values_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "optune continue script2",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_Real_Values_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "pre train real values",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": [
-                    "model=mlp_pretrain_up4_real_values", 
-                    "hyp=hyp_pretrain_up4_real_values",
-                    "dataset=ic_upstream4_Imputation_Real_Values_exp_100_1"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "pre train pseudo features",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": [
-                    "model=mlp_pretrain_up4_pseudo_features", 
-                    "hyp=hyp_pretrain_up4_pseudo_features",
-                    "dataset=ic_upstream4_Imputation_pseudo_features_exp_100_1"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "pre train gaussian",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": [
-                    "model=mlp_pretrain_up4_gaussian", 
-                    "hyp=hyp_pretrain_up4_gaussian",
-                    "dataset=ic_upstream4_Imputation_Gaussian_exp_100_1"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "pre train mean",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": [
-                    "model=mlp_pretrain_up4_mean", 
-                    "hyp=hyp_pretrain_up4_mean",
-                    "dataset=ic_upstream4_Imputation_Mean_exp_100_1"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "train transfering downstream",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": ["model=ft_transformer_downstream dataset=ic_downstream1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "train downstream from scratch",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net.py",
-            "args": ["model=ft_transformer dataset=ic_downstream1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "inputação estatistica",
+            "name": "Statistical Imputation",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/input_data.py",
-            "args": [],
             "console": "integratedTerminal"
         },
         {
-            "name": "DownstreamPipelineRV",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Real_Values_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "DownstreamPipelinePF",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Pseudo_Features_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "DownstreamPipelineGaus",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Gaussian_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "DownstreamPipelineMean",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Mean_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "DownstreamPipeline2",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream2_Imputation_Gaussian_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        
-        {
-            "name": "DownstreamPipeline3",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Mean_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        
-        {
-            "name": "DownstreamPipeline4",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Mean_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "DownstreamPipeline4g",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
-            "args": ["preTrained=optuning-mlp-ic_upstream4_Imputation_Gaussian_exp_100_1"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "pseudo feature imputation",
+            "name": "Pseudo Feature Generation",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/pseudo_feature.py",
-            "args": [],
+            "console": "integratedTerminal"
+        },
+
+        // =========================
+        // TRAIN FROM SCRATCH
+        // =========================
+        {
+            "name": "Train Downstream From Scratch",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": ["model=ft_transformer", "dataset=ic_downstream1"],
             "console": "integratedTerminal"
         },
         {
-            "name": "train to impute pseudo features",
+            "name": "Train Zero (MLP PF)",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/train_net_from_scratch.py",
             "args": [
-                "model=mlp_pf_ic_upstream3", 
-                    "hyp=hyp_pf_ic_upstream3",
-                    "dataset=ic_upstream3"
+                "model=mlp_pf_downstream1",
+                "dataset=ic_downstream1",
+                "hyp=hyp_pf_downstream1"
             ],
             "console": "integratedTerminal"
-        }
+        },
+        // =========================
+        // PRETRAIN - GENERATE PSEUDO FEATURES
+        // =========================
+        {
+            "name": "Pretrain PF -D1",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": [
+                "model=mlp_pf_ic_downstream1",
+                "hyp=hyp_pf_ic_downstream1",
+                "dataset=ic_downstream1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain PF -U2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": [
+                "model=mlp_pf_ic_upstream2",
+                "hyp=hyp_pf_ic_upstream2",
+                "dataset=ic_upstream2"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain PF -U3",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": [
+                "model=mlp_pf_ic_upstream3",
+                "hyp=hyp_pf_ic_upstream3",
+                "dataset=ic_upstream3"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain PF -U4",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": [
+                "model=mlp_pf_ic_upstream4",
+                "hyp=hyp_pf_ic_upstream4",
+                "dataset=ic_upstream4"
+            ],
+            "console": "integratedTerminal"
+        },
+        // =========================
+        // PRETRAIN - UPSTREAM 4
+        // =========================
+        {
+            "name": "Pretrain U4 - Gaussian",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up4_gaussian",
+                "hyp=hyp_pretrain_up4_gaussian",
+                "dataset=ic_upstream4_Imputation_Gaussian_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U4 - Mean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up4_mean",
+                "hyp=hyp_pretrain_up4_mean",
+                "dataset=ic_upstream4_Imputation_Mean_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U4 - Real Values",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up4_real_values",
+                "hyp=hyp_pretrain_up4_real_values",
+                "dataset=ic_upstream4_Imputation_Real_Values_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U4 - Pseudo Features",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up4_pseudo_features",
+                "hyp=hyp_pretrain_up4_pseudo_features",
+                "dataset=ic_upstream4_Imputation_Pseudo_Features_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+                // =========================
+        // PRETRAIN - UPSTREAM 3
+        // =========================
+        {
+            "name": "Pretrain U3 - Gaussian",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up3_gaussian",
+                "hyp=hyp_pretrain_up3_gaussian",
+                "dataset=ic_upstream3_Imputation_Gaussian_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U3 - Mean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up3_mean",
+                "hyp=hyp_pretrain_up3_mean",
+                "dataset=ic_upstream3_Imputation_Mean_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U3 - Real Values",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up3_real_values",
+                "hyp=hyp_pretrain_up3_real_values",
+                "dataset=ic_upstream3_Imputation_Real_Values_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U3 - Pseudo Features",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up3_pseudo_features",
+                "hyp=hyp_pretrain_up3_pseudo_features",
+                "dataset=ic_upstream3_Imputation_Pseudo_Features_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+
+        // =========================
+        // PRETRAIN - UPSTREAM 2
+        // =========================
+        {
+            "name": "Pretrain U2 - Gaussian",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up2_gaussian",
+                "hyp=hyp_pretrain_up2_gaussian",
+                "dataset=ic_upstream2_Imputation_Gaussian_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U2 - Mean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up2_mean",
+                "hyp=hyp_pretrain_up2_mean",
+                "dataset=ic_upstream2_Imputation_Mean_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U2 - Real Values",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up2_real_values",
+                "hyp=hyp_pretrain_up2_real_values",
+                "dataset=ic_upstream2_Imputation_Real_Values_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain U2 - Pseudo Features",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net.py",
+            "args": [
+                "model=mlp_pretrain_up2_pseudo_features",
+                "hyp=hyp_pretrain_up2_pseudo_features",
+                "dataset=ic_upstream2_Imputation_Pseudo_Features_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        // =========================
+        // OPTUNA
+        // =========================
+        {
+            "name": "Optuna Backup",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optuna_backup.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Optuna Continue U2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py", 
+            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_pseudo_features_exp_100_1"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Optuna Continue U3",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
+            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_pseudo_features_exp_100_1"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Optuna Continue U4",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
+            "args": ["model=mlp", "dataset=ic_upstream4_Imputation_pseudo_features_exp_100_1"],
+            "console": "integratedTerminal"
+        },
+
+        // =========================
+        // DOWNSTREAM TRANSFER - FROM UPSTREAM 2
+        // =========================
+        {
+            "name": "Downstream U2 - Gaussian",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream2_Imputation_Gaussian_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U2 - Mean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream2_Imputation_Mean_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U2 - Real Values",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream2_Imputation_Real_Values_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U2 - Pseudo Features",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream2_Imputation_Pseudo_Features_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        // =========================
+        // DOWNSTREAM TRANSFER - FROM UPSTREAM 3
+        // =========================
+        {
+            "name": "Downstream U3 - Gaussian",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream3_Imputation_Gaussian_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U3 - Mean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream3_Imputation_Mean_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U3 - Real Values",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream3_Imputation_Real_Values_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U3 - Pseudo Features",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream3_Imputation_Pseudo_Features_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        // =========================
+        // DOWNSTREAM TRANSFER - FROM UPSTREAM 4
+        // =========================
+        {
+            "name": "Downstream U4 - Gaussian",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream4_Imputation_Gaussian_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U4 - Mean",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream4_Imputation_Mean_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U4 - Real Values",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream4_Imputation_Real_Values_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Downstream U4 - Pseudo Features",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
+            "args": [
+                "preTrained=optuning-mlp-ic_upstream4_Imputation_Pseudo_Features_exp_100_1"
+            ],
+            "console": "integratedTerminal"
+        },
+
     ]
 }

@@ -90,7 +90,7 @@ def get_dataloaders(cfg, which_dataset=None):
                              stage=cfg_dataset.stage)
 
     X = dataset.preprocess_data()
-    Y, _ = dataset.build_y()
+    Y, normalizerY = dataset.build_y()
     unique_categories = get_categories_full_cat_data(full_cat_data_for_encoder)
     print(f"dataser shape: {len(X[0]['train'])}")
     print(f"x shape: {X[0]['train'].shape}, {X[1]['train'].shape}, y shape: {Y['train'].shape}")
@@ -110,7 +110,7 @@ def get_dataloaders(cfg, which_dataset=None):
     testloader = DataLoader(testset, batch_size=cfg.hyp.test_batch_size, shuffle=False, drop_last=False)
 
     loaders = {"train": trainloader, "val": valloader, "test": testloader}
-    return loaders, unique_categories, n_numerical, n_classes, info.get("data_schema", None)
+    return loaders, unique_categories, n_numerical, n_classes, info.get("data_schema", None), normalizerY
 
 
 def get_model(model, num_numerical, unique_categories, num_outputs, d_embedding, model_params):
@@ -272,7 +272,7 @@ def load_transfer_model_from_checkpoint(model_args, num_numerical, unique_catego
     head_name, head_module = get_head(model_args.name, net)
     if model_path is not None:
         logging.info(f"Loading model from checkpoint {model_path}...") 
-        state_dict = torch.load(model_path, map_location=device, weights_only=True)
+        state_dict = torch.load(model_path, map_location=device, weights_only=False)
         if device == "cuda":
             state_dict["net"] = remove_parallel(state_dict["net"])
         pretrained_feature_extractor_dict = {k: v for k, v in state_dict["net"].items() if head_name not in k}
@@ -337,7 +337,7 @@ def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num
     if device == "cuda":
         net = torch.nn.DataParallel(net)
     if model_path is None:
-        return net, epoch, optimizer, None
+        return net, epoch, optimizer, None, None
     
     #This isn't used most of the time because the load_model_from_checkpoint isn't called in transfer learning applications
     logging.info(f"Loading model from checkpoint {model_path}...")
@@ -346,14 +346,14 @@ def load_model_from_checkpoint(model_args, num_numerical, unique_categories, num
     state_dict = torch.load(
         model_path,
         map_location=device,
-        weights_only=True
+        weights_only=False
     )
     validate_ic_data_schema(state_dict.get("data_schema", None), data_schema)
     net.load_state_dict(state_dict["net"])
     epoch = state_dict["epoch"] + 1
     optimizer = state_dict["optimizer"]
 
-    return net, epoch, optimizer, state_dict.get("data_schema", None)
+    return net, epoch, optimizer, state_dict.get("data_schema", None), state_dict.get("y_info_normalize", None)
 
 
 def validate_ic_data_schema(checkpoint_schema, current_schema):

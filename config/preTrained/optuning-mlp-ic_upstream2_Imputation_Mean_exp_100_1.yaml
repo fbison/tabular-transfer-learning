@@ -5,15 +5,15 @@ normalizer_path: '../../../data/ic_upstream2_Imputation_Mean_exp_100_1/normalize
 imputationMethod: Mean
 model:
   name: mlp
-  d_embedding: 280
+  d_embedding: 232
   model_path:
   use_mlp_head: false
   freeze_feature_extractor: false
-  d_layers: [233, 321, 321, 290]
-  dropout: 0.1
+  d_layers: [9, 379, 379, 379, 379, 489]
+  dropout: 0.06069913264970778
 hyp:
   epochs: 200
-  lr: 0.0005057968425844802
+  lr: 0.0009086191096466719
   lr_decay: step
   lr_factor: 0.1
   lr_schedule:
@@ -28,12 +28,12 @@ hyp:
   use_patience: true
   val_period: 10
   warmup_period: 5
-  weight_decay: 7.783000887256909e-06
+  weight_decay: 2.5102185055360543e-05
   momentum: 0.9
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
-  plateau_stop: true
+  plateau_stop: false
   plateau_patience: 5
   plateau_min_epochs: 75
   plateau_window: 30

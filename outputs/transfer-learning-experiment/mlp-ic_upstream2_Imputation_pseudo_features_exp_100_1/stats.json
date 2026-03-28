@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2_Imputation_pseudo_features_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "larkish-Lavern",
+    "best_epoch": 199,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.7930049300193787,
+        "rmse_normalized": 0.7930049300193787
+    },
+    "train_stats": {
+        "score": -0.7388745546340942,
+        "rmse_normalized": 0.7388745546340942
+    },
+    "val_stats": {
+        "score": -0.831228494644165,
+        "rmse_normalized": 0.831228494644165
+    },
+    "all_train_stats": null
+}

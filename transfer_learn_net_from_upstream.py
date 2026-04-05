@@ -7,7 +7,7 @@ from collections import OrderedDict
 import copy
 import multiprocessing as mp
 from typing import Dict
-
+import gc
 from hydra import experimental, compose, initialize
 import hydra
 import numpy as np
@@ -18,9 +18,9 @@ import train_net_from_scratch
 import transfer_learn_net
 import deep_tabular as dt
 
-N_JOBS_MAX = 1  # Número máximo de jobs do HPC DA USP
+N_JOBS_MAX =   1 # Número máximo de jobs do HPC DA USP
 import numpy as np
-import torch
+
 FILE_NAME= "results.jsonl"
 
 def make_serializable(obj):
@@ -84,6 +84,9 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
 
     log.info(result)
     try:
+        file = get_jsonl_files()
+        if file and len(file) > 0:
+            results_file = file[0]  # Usa o primeiro arquivo encontrado
         results_dir = os.path.dirname(results_file)
         if results_dir:  # só cria se não for string vazia
             os.makedirs(results_dir, exist_ok=True)
@@ -92,7 +95,9 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
             fp.write(json.dumps(result, ensure_ascii=False) + "\n")
     except Exception as e:
         log.error(f"Erro ao salvar resultado de {configName}: {e}")
-    return result
+    gc.collect()
+    torch.cuda.empty_cache() 
+    return
 
 ##For the data levels of 4 and 10 samples, we simply select 30 fine-tuning epochs. For more data of
 #20 samples, we select 60 fine-tuning epochs. In the larger data levels of 100 and 200 samples, we
@@ -102,10 +107,10 @@ def run_job(model_cfg, dataset_cfg, hyp_cfg, configName, log, from_scratch=False
 #transfer learning setups with a frozen feature extractor, 
 #feature extractor. Finally, for the deep baselines with the hyperparameters tuned on a small subsample
 #of the upstream data, we select the best epoch from the small upstream subsample.
-def select_epoch(samples: int, mlpHead: bool, freeze: bool, from_scratch: bool, plateau_stop: bool, same_epochs: bool) -> int:
+def select_epoch(samples: int, mlpHead: bool, freeze: bool, from_scratch: bool, plateau_stop: bool, fixed_epochs: bool) -> int:
     if plateau_stop:
         return 1000
-    if same_epochs:
+    if fixed_epochs:
         return 500
     if from_scratch:
         return 200
@@ -120,9 +125,11 @@ def select_epoch(samples: int, mlpHead: bool, freeze: bool, from_scratch: bool, 
         return 90
     else:
         return 200
-    
 
-
+def selectLearningRate(lr: float, from_scratch: bool):
+    if from_scratch:
+        return lr
+    return lr/2
 
 def selectHeadLearningRate(mlpHead: bool, freeze: bool, base_lr: float, upstream_head_lr: float) -> float:
     if mlpHead or freeze:
@@ -134,11 +141,20 @@ def getImpuationMethodSufix(imputationMethod: str, upstream_number: int) -> str:
         return f"{imputationMethod}"
     return f"{imputationMethod}_exp_100_{upstream_number}"
 
-def configsAlreadyExecuted(results_file=FILE_NAME) -> Dict[str, bool]:
-    if not os.path.exists(results_file):
-        return {}
+def get_jsonl_files():
+    jsonl_files = []
+    for root, _, files in os.walk(os.getcwd()):
+        for file in files:
+            if file.endswith(".jsonl"):
+                jsonl_files.append(os.path.join(root, file))
+    return jsonl_files
+
+def configsAlreadyExecuted() -> Dict[str, bool]:
     executed_configs = {}
-    with open(results_file, "r", encoding="utf-8") as fp:
+    files = get_jsonl_files()
+    if not files or len(files) == 0:
+        return executed_configs
+    with open(files[0], "r", encoding="utf-8") as fp:  # Assuming the first file is the one to check
         for line in fp:
             try:
                 result = json.loads(line)
@@ -178,6 +194,10 @@ def main(cfg: DictConfig):
     jobs = []
     configs_executed = configsAlreadyExecuted()
     imputationMethod = getImpuationMethodSufix(config["imputationMethod"], upstream_number)
+
+
+    FIXED_EPOCHS = True
+
     for seed in seeds:
         for sample in sampleSizes:
             if not benchmark:
@@ -196,41 +216,65 @@ def main(cfg: DictConfig):
             }
             for mlpHead in [True, False]: 
                 for freeze in [True, False]:
+                    is_from_scratch = False
                     # Cria cópia independente do model para cada job
                     model_cfg = copy.deepcopy(model)
                     hyp_cfg = copy.deepcopy(hyp)
-                    hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze, False, hyp["plateau_stop"], False)
-                    hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, freeze, hyp["lr"], hyp["head_lr"])
-                    hyp_cfg["lr"] = 0.00005 ##chose from hyp/2
                     hyp_cfg["seed"] = seed
                     model_cfg["use_mlp_head"] = mlpHead
                     model_cfg["freeze_feature_extractor"] = freeze
+                    hyp_cfg["epochs"] = select_epoch(sample, mlpHead, freeze, is_from_scratch, hyp["plateau_stop"], FIXED_EPOCHS)
+                    hyp_cfg["head_lr"] = selectHeadLearningRate(mlpHead, freeze, hyp["lr"], hyp["head_lr"])
+                    hyp_cfg["lr"] = selectLearningRate(hyp["lr"], is_from_scratch)
                     configName = f"{dataset_name}_upstream{upstream_number}_mlpHead{mlpHead}_freeze{freeze}_seed{seed}"
                     if configName not in configs_executed:
                         # Adiciona à lista de jobs
                         jobs.append((model_cfg, dataset_cfg, hyp_cfg, configName, log, False))
-            dataset_fs = copy.deepcopy(dataset_cfg)
-            dataset_fs["name"] = f"{downstreamName}_Sample{sample}_hypParamsFrom-{upstream_number}-{imputationMethod}"
-            dataset_fs["normalizer_path"] = None
+            is_from_scratch = True
+
+            ## Model from scratch
             model_from_scratch = copy.deepcopy(model)
-            hyp_from_scratch = copy.deepcopy(hyp)
-            hyp_from_scratch["epochs"] = select_epoch(sample, False, False, True, hyp["plateau_stop"], False)
             model_from_scratch["model_path"] = None
             model_from_scratch["use_mlp_head"] = False
             model_from_scratch["freeze_feature_extractor"] = False
+
+            # HyperParameter configs adapted for training from scratch
+            hyp_from_scratch = copy.deepcopy(hyp)
             hyp_from_scratch["seed"] = seed
-            hyp_from_scratch["lr"] = 0.0001 ##chose from hyp, since it's training from scratch, can use higher learning rate
-            configName = f"{dataset_fs['name']}_fromScratch_seed{seed}"
+            hyp_from_scratch["lr"] = selectLearningRate(hyp["lr"], is_from_scratch)
+            hyp_from_scratch["epochs"] = select_epoch(
+                sample,
+                (not is_from_scratch),
+                (not is_from_scratch),
+                is_from_scratch,
+                hyp["plateau_stop"],
+                FIXED_EPOCHS
+            )
+            
+
+
+            # Dataset without imputation to validate if the imputation is actually helping or not
+            dataset_fs = copy.deepcopy(dataset_cfg)
+            dataset_fs["name"] = f"{downstreamName}_Sample{sample}"
+            dataset_fs["normalizer_path"] = None
+            
+            
+            configName = f"{dataset_fs['name']}_hypParamsFrom-{upstream_number}-{imputationMethod}_fromScratch_seed{seed}"
             if configName not in configs_executed:
-                jobs.append((model_from_scratch, dataset_fs, hyp_from_scratch, configName, log, True))
+                jobs.append((model_from_scratch, dataset_fs, hyp_from_scratch, configName, log, is_from_scratch))
+            
+            dataset_fs_with_imputation = copy.deepcopy(dataset_cfg)
+
+            configName = f"{configName}_Imputation_{imputationMethod}"
+            if configName not in configs_executed:
+                jobs.append((model_from_scratch, dataset_fs_with_imputation, hyp_from_scratch, configName, log, is_from_scratch))
+
 
     # ============================
     # Executa os jobs em paralelo de um mesmo upstream
     # ============================
-    all_results = []
     with mp.Pool(processes=N_JOBS_MAX) as pool:
-        results = pool.starmap(run_job, jobs)
-        all_results.append(results)
+        pool.starmap(run_job, jobs)
 
     log.info("Todos os jobs concluídos!")
 

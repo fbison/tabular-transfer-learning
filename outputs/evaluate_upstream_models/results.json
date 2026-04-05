@@ -1,0 +1,1022 @@
+[
+    {
+        "upstream": "up2",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -0.9916702508926392,
+            "rmse": 0.9916702508926392
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.322475790977478,
+            "rmse": 1.322475790977478
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -0.9916702508926392,
+            "rmse": 0.9916702508926392
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.0628178119659424,
+            "rmse": 1.0628178119659424
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -0.9916702508926392,
+            "rmse": 0.9916702508926392
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -0.9987002611160278,
+            "rmse": 0.9987002611160278
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -0.9916702508926392,
+            "rmse": 0.9916702508926392
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -0.8411673903465271,
+            "rmse": 0.8411673903465271
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -0.9916702508926392,
+            "rmse": 0.9916702508926392
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -0.8719234466552734,
+            "rmse": 0.8719234466552734
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -1.6204357147216797,
+            "rmse": 1.6204357147216797
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.0696487426757812,
+            "rmse": 2.0696487426757812
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -1.6204357147216797,
+            "rmse": 1.6204357147216797
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.5955569744110107,
+            "rmse": 1.5955569744110107
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -1.6204357147216797,
+            "rmse": 1.6204357147216797
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.360995888710022,
+            "rmse": 1.360995888710022
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -1.6204357147216797,
+            "rmse": 1.6204357147216797
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.2648388147354126,
+            "rmse": 1.2648388147354126
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -1.6204357147216797,
+            "rmse": 1.6204357147216797
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.4870378971099854,
+            "rmse": 1.4870378971099854
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -0.852369487285614,
+            "rmse": 0.852369487285614
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.105910301208496,
+            "rmse": 1.105910301208496
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -0.852369487285614,
+            "rmse": 0.852369487285614
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -0.9297543168067932,
+            "rmse": 0.9297543168067932
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -0.852369487285614,
+            "rmse": 0.852369487285614
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -0.9430493712425232,
+            "rmse": 0.9430493712425232
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -0.852369487285614,
+            "rmse": 0.852369487285614
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -0.8586397171020508,
+            "rmse": 0.8586397171020508
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -0.852369487285614,
+            "rmse": 0.852369487285614
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -0.9020293951034546,
+            "rmse": 0.9020293951034546
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -7.934340000152588,
+            "rmse": 7.934340000152588
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -9.394365310668945,
+            "rmse": 9.394365310668945
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -7.934340000152588,
+            "rmse": 7.934340000152588
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -7.632606029510498,
+            "rmse": 7.632606029510498
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -7.934340000152588,
+            "rmse": 7.934340000152588
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -7.446800231933594,
+            "rmse": 7.446800231933594
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -7.934340000152588,
+            "rmse": 7.934340000152588
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -7.426002502441406,
+            "rmse": 7.426002502441406
+        }
+    },
+    {
+        "upstream": "up2",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -7.934340000152588,
+            "rmse": 7.934340000152588
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -7.382040977478027,
+            "rmse": 7.382040977478027
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -3.0331931114196777,
+            "rmse": 3.0331931114196777
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.338257312774658,
+            "rmse": 3.338257312774658
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -3.0331931114196777,
+            "rmse": 3.0331931114196777
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.6612119674682617,
+            "rmse": 3.6612119674682617
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -3.0331931114196777,
+            "rmse": 3.0331931114196777
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.3521623611450195,
+            "rmse": 3.3521623611450195
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -3.0331931114196777,
+            "rmse": 3.0331931114196777
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.738811731338501,
+            "rmse": 2.738811731338501
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -3.0331931114196777,
+            "rmse": 3.0331931114196777
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.989591598510742,
+            "rmse": 2.989591598510742
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -3.127617597579956,
+            "rmse": 3.127617597579956
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.9401984214782715,
+            "rmse": 3.9401984214782715
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -3.127617597579956,
+            "rmse": 3.127617597579956
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.6502339839935303,
+            "rmse": 3.6502339839935303
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -3.127617597579956,
+            "rmse": 3.127617597579956
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.164010524749756,
+            "rmse": 3.164010524749756
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -3.127617597579956,
+            "rmse": 3.127617597579956
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.9535880088806152,
+            "rmse": 2.9535880088806152
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -3.127617597579956,
+            "rmse": 3.127617597579956
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.9559836387634277,
+            "rmse": 2.9559836387634277
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -3.135202407836914,
+            "rmse": 3.135202407836914
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.9806668758392334,
+            "rmse": 3.9806668758392334
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -3.135202407836914,
+            "rmse": 3.135202407836914
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.9601104259490967,
+            "rmse": 3.9601104259490967
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -3.135202407836914,
+            "rmse": 3.135202407836914
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.6324965953826904,
+            "rmse": 3.6324965953826904
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -3.135202407836914,
+            "rmse": 3.135202407836914
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.0919718742370605,
+            "rmse": 3.0919718742370605
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -3.135202407836914,
+            "rmse": 3.135202407836914
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.9556190967559814,
+            "rmse": 2.9556190967559814
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -2.0450758934020996,
+            "rmse": 2.0450758934020996
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.0566461086273193,
+            "rmse": 2.0566461086273193
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -2.0450758934020996,
+            "rmse": 2.0450758934020996
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.7901211977005005,
+            "rmse": 1.7901211977005005
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -2.0450758934020996,
+            "rmse": 2.0450758934020996
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.512486457824707,
+            "rmse": 1.512486457824707
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -2.0450758934020996,
+            "rmse": 2.0450758934020996
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.512002944946289,
+            "rmse": 1.512002944946289
+        }
+    },
+    {
+        "upstream": "up3",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -2.0450758934020996,
+            "rmse": 2.0450758934020996
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.5002628564834595,
+            "rmse": 1.5002628564834595
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -2.228956937789917,
+            "rmse": 2.228956937789917
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.0883336067199707,
+            "rmse": 2.0883336067199707
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -2.228956937789917,
+            "rmse": 2.228956937789917
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.214127779006958,
+            "rmse": 2.214127779006958
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -2.228956937789917,
+            "rmse": 2.228956937789917
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.336463689804077,
+            "rmse": 2.336463689804077
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -2.228956937789917,
+            "rmse": 2.228956937789917
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.2244181632995605,
+            "rmse": 2.2244181632995605
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "gaussian",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -2.228956937789917,
+            "rmse": 2.228956937789917
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -1.9261891841888428,
+            "rmse": 1.9261891841888428
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -4.325741767883301,
+            "rmse": 4.325741767883301
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -4.98551607131958,
+            "rmse": 4.98551607131958
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -4.325741767883301,
+            "rmse": 4.325741767883301
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -4.884021282196045,
+            "rmse": 4.884021282196045
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -4.325741767883301,
+            "rmse": 4.325741767883301
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -4.445690631866455,
+            "rmse": 4.445690631866455
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -4.325741767883301,
+            "rmse": 4.325741767883301
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.7347986698150635,
+            "rmse": 3.7347986698150635
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "mean",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -4.325741767883301,
+            "rmse": 4.325741767883301
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -3.7022876739501953,
+            "rmse": 3.7022876739501953
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -9.843637466430664,
+            "rmse": 9.843637466430664
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -10.805655479431152,
+            "rmse": 10.805655479431152
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -9.843637466430664,
+            "rmse": 9.843637466430664
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -10.649381637573242,
+            "rmse": 10.649381637573242
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -9.843637466430664,
+            "rmse": 9.843637466430664
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -10.00329875946045,
+            "rmse": 10.00329875946045
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -9.843637466430664,
+            "rmse": 9.843637466430664
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -9.790425300598145,
+            "rmse": 9.790425300598145
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "pseudo_features",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -9.843637466430664,
+            "rmse": 9.843637466430664
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -9.723828315734863,
+            "rmse": 9.723828315734863
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 5,
+        "test_stats": {
+            "score": -2.6627020835876465,
+            "rmse": 2.6627020835876465
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.91397762298584,
+            "rmse": 2.91397762298584
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 10,
+        "test_stats": {
+            "score": -2.6627020835876465,
+            "rmse": 2.6627020835876465
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.8163888454437256,
+            "rmse": 2.8163888454437256
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 20,
+        "test_stats": {
+            "score": -2.6627020835876465,
+            "rmse": 2.6627020835876465
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.863600730895996,
+            "rmse": 2.863600730895996
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 50,
+        "test_stats": {
+            "score": -2.6627020835876465,
+            "rmse": 2.6627020835876465
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.472439765930176,
+            "rmse": 2.472439765930176
+        }
+    },
+    {
+        "upstream": "up4",
+        "imputation": "real_values",
+        "downstream": "ic_downstream1",
+        "sample": 75,
+        "test_stats": {
+            "score": -2.6627020835876465,
+            "rmse": 2.6627020835876465
+        },
+        "val_stats": {
+            "score": 0.0
+        },
+        "train_stats": {
+            "score": -2.4836792945861816,
+            "rmse": 2.4836792945861816
+        }
+    }
+]

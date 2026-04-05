@@ -24,7 +24,7 @@ N_OPTUNA_TRIALS = 200
 
 def objective(trial, cfg: DictConfig, trial_stats, 
               trial_counter, n_total_trials, 
-              loaders, unique_categories, n_numerical, n_classes, run_id, lock
+              loaders, unique_categories, n_numerical, n_classes, y_info_normalize, run_id, lock
               ):
 
     # Use a lock to safely get and increment the trial counter
@@ -83,7 +83,7 @@ def main(cfg):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes, data_schema, _ = dt.utils.get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes, data_schema, y_info_normalize = dt.utils.get_dataloaders(cfg)
     storage_path = "sqlite:///optuna_study.db"
     study = optuna.create_study(
         study_name="my_study",
@@ -96,7 +96,7 @@ def main(cfg):
 
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, N_OPTUNA_TRIALS,
-                                   loaders, unique_categories, n_numerical, n_classes, cfg.run_id, lock)
+                                   loaders, unique_categories, n_numerical, n_classes, y_info_normalize, cfg.run_id, lock)
     study.optimize(func, n_trials=N_OPTUNA_TRIALS, n_jobs=N_JOBS, show_progress_bar=True)
 
     in_memory_study = study  # assume it's still available in scope

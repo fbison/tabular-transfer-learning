@@ -1,0 +1,7 @@
+name: ic_downstream1_upstream2
+source: local
+task: multiVariantRegression
+normalization: quantile
+normalizer_path: '../../../data/ic_downstream1_upstream2/normalizer.pkl'
+stage: 'pretrain'
+y_policy: 'mean_std'

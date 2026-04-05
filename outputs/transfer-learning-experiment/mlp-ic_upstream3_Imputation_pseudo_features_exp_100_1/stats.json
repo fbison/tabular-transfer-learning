@@ -1,20 +1,20 @@
 {
     "dataset": "ic_upstream3_Imputation_pseudo_features_exp_100_1",
     "model_name": "mlp",
-    "run_id": "hawklike-Franz",
-    "best_epoch": 162,
+    "run_id": "distraught-Timtohy",
+    "best_epoch": 188,
     "routine": "transfer_learn_net",
     "test_stats": {
-        "score": -1.007171869277954,
-        "rmse_normalized": 1.007171869277954
+        "score": -0.799554705619812,
+        "rmse": 0.799554705619812
     },
     "train_stats": {
-        "score": -0.5858228206634521,
-        "rmse_normalized": 0.5858228206634521
+        "score": -0.6631880402565002,
+        "rmse": 0.6631880402565002
     },
     "val_stats": {
-        "score": -1.019749402999878,
-        "rmse_normalized": 1.019749402999878
+        "score": -0.8412724137306213,
+        "rmse": 0.8412724137306213
     },
     "all_train_stats": null
 }

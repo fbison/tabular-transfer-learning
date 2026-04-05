@@ -33,7 +33,7 @@ import gc
 INPUT_PATH = r"all_trials.jsonl"
 STORAGE_PATH = "sqlite:///optuna_study.db"
 N_TOTAL_TRIALS = 200
-N_JOBS = 20  # número de processos paralelos
+N_JOBS = 4  # número de processos paralelos
 
 
 SAVE_INTERVAL = 5  # salva a cada 5 trials
@@ -51,7 +51,7 @@ import optuna
 
 def objective(trial, cfg: DictConfig, trial_stats, 
               trial_counter, n_total_trials, 
-              loaders, unique_categories, n_numerical, n_classes, run_id, lock
+              loaders, unique_categories, n_numerical, n_classes, y_info_normalize, run_id, lock
               ):
     gc.collect()
     # Use a lock to safely get and increment the trial counter
@@ -75,7 +75,7 @@ def objective(trial, cfg: DictConfig, trial_stats,
         if cfg.hyp.save_period < 0:
             cfg.hyp.save_period = 1e8
         beginTime = time.time()
-        stats = train_net_for_optuna.main(config, loaders, unique_categories, n_numerical, n_classes)
+        stats = train_net_for_optuna.main(config, loaders, unique_categories, n_numerical, n_classes, y_info_normalize)
         endTime = time.time()
         time_taken = endTime - beginTime
         with lock:
@@ -110,7 +110,7 @@ def main(cfg):
 
     ####################################################
     #               Dataset and Network and Optimizer
-    loaders, unique_categories, n_numerical, n_classes, data_schema, _ = dt.utils.get_dataloaders(cfg)
+    loaders, unique_categories, n_numerical, n_classes, data_schema, y_info_normalize = dt.utils.get_dataloaders(cfg)
     storage_path = "sqlite:///optuna_study.db"
     study = optuna.create_study(
         study_name="my_study",
@@ -128,7 +128,7 @@ def main(cfg):
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(), pruner=optuna.pruners.MedianPruner())
     study.add_trials(trials)
     func = lambda trial: objective(trial, cfg, trial_stats, trial_counter, N_TOTAL_TRIALS,
-                                   loaders, unique_categories, n_numerical, n_classes, cfg.run_id, lock)
+                                   loaders, unique_categories, n_numerical, n_classes,y_info_normalize, cfg.run_id, lock)
     if n_done >= N_TOTAL_TRIALS:
         print("Já atingiu ou ultrapassou o limite de trials.")
     else:

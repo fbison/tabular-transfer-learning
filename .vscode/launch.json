@@ -25,8 +25,14 @@
             "request": "launch",
             "program": "${workspaceFolder}/pseudo_feature.py",
             "console": "integratedTerminal"
+        },  
+        {
+            "name": "Upstream evaluation",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/evaluate_upstream_for_downstream.py",
+            "console": "integratedTerminal"
         },
-
         // =========================
         // TRAIN FROM SCRATCH
         // =========================
@@ -54,14 +60,38 @@
         // PRETRAIN - GENERATE PSEUDO FEATURES
         // =========================
         {
-            "name": "Pretrain PF -D1",
+            "name": "Pretrain PF -D1 UP2",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/train_net_from_scratch.py",
             "args": [
-                "model=mlp_pf_ic_downstream1",
-                "hyp=hyp_pf_ic_downstream1",
-                "dataset=ic_downstream1"
+                "model=mlp_pf_ic_downstream1_upstream2",
+                "hyp=hyp_pf_ic_downstream1_upstream2",
+                "dataset=ic_downstream1_upstream2"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain PF -D1 UP3",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": [
+                "model=mlp_pf_ic_downstream1_upstream3",
+                "hyp=hyp_pf_ic_downstream1_upstream3",
+                "dataset=ic_downstream1_upstream3"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pretrain PF -D1 UP4",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/train_net_from_scratch.py",
+            "args": [
+                "model=mlp_pf_ic_downstream1_upstream4",
+                "hyp=hyp_pf_ic_downstream1_upstream4",
+                "dataset=ic_downstream1_upstream4"
             ],
             "console": "integratedTerminal"
         },
@@ -152,7 +182,7 @@
             ],
             "console": "integratedTerminal"
         },
-                // =========================
+        // =========================
         // PRETRAIN - UPSTREAM 3
         // =========================
         {
@@ -287,6 +317,34 @@
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
             "args": ["model=mlp", "dataset=ic_upstream4_Imputation_pseudo_features_exp_100_1"],
+            "console": "integratedTerminal"
+        },
+        
+        // =========================
+        // OPTUNA - to generate pseudo features for downstream transfer
+        // =========================
+        {
+            "name": "Optuna PF downstream intersection U2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
+            "args": ["model=mlp", "dataset=ic_downstream1_upstream2"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Optuna PF downstream intersection U3",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
+            "args": ["model=mlp", "dataset=ic_downstream1_upstream3"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Optuna PF downstream intersection U4",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/optune_continue.py",
+            "args": ["model=mlp", "dataset=ic_downstream1_upstream4"],
             "console": "integratedTerminal"
         },
 

@@ -27,7 +27,7 @@ import deep_tabular as dt
 #     Too many local variables (R0914), Missing docstring (C0116, C0115).
 # pylint: disable=R0912, R0915, E1101, E1102, C0103, W0702, R0914, C0116, C0115
 
-def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
+def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes, y_info_normalize):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     torch.backends.cudnn.benchmark = True
     log = logging.getLogger()
@@ -94,7 +94,7 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
             test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                                    [loaders["test"], loaders["val"], loaders["train"]],
                                                                    cfg.dataset.task,
-                                                                   device)
+                                                                   device, y_info_normalization=y_info_normalize)
             log.info(f"Training stats: {json.dumps(train_stats, indent=4)}")
             log.info(f"Val stats: {json.dumps(val_stats, indent=4)}")
             log.info(f"Test stats: {json.dumps(test_stats, indent=4)}")
@@ -110,7 +110,7 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
             val_stats, test_stats = dt.evaluate_model(net,
                                                       [loaders["val"], loaders["test"]],
                                                       cfg.dataset.task,
-                                                      device)
+                                                        device, y_info_normalization=y_info_normalize)
             if val_stats["score"] > highest_val_acc_so_far:
                 best_epoch = epoch
                 highest_val_acc_so_far = val_stats["score"]
@@ -134,7 +134,7 @@ def main(cfg: DictConfig, loaders, unique_categories, n_numerical, n_classes):
     test_stats, val_stats, train_stats = dt.evaluate_model(net,
                                                            [loaders["test"], loaders["val"], loaders["train"]],
                                                            cfg.dataset.task,
-                                                           device)
+                                                          device, y_info_normalization=y_info_normalize)
 
     log.info(f"Training accuracy: {json.dumps(train_stats, indent=4)}")
     log.info(f"Val accuracy: {json.dumps(val_stats, indent=4)}")

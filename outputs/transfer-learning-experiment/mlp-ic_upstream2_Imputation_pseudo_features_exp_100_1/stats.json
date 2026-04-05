@@ -1,20 +1,20 @@
 {
     "dataset": "ic_upstream2_Imputation_pseudo_features_exp_100_1",
     "model_name": "mlp",
-    "run_id": "larkish-Lavern",
-    "best_epoch": 199,
+    "run_id": "hobnail-Tillie",
+    "best_epoch": 184,
     "routine": "transfer_learn_net",
     "test_stats": {
-        "score": -0.7930049300193787,
-        "rmse_normalized": 0.7930049300193787
+        "score": -0.6657308340072632,
+        "rmse": 0.6657308340072632
     },
     "train_stats": {
-        "score": -0.7388745546340942,
-        "rmse_normalized": 0.7388745546340942
+        "score": -0.4784538745880127,
+        "rmse": 0.4784538745880127
     },
     "val_stats": {
-        "score": -0.831228494644165,
-        "rmse_normalized": 0.831228494644165
+        "score": -0.739713191986084,
+        "rmse": 0.739713191986084
     },
     "all_train_stats": null
 }

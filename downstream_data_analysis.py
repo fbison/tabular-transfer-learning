@@ -1,6 +1,7 @@
 import os
 import re
 import json
+from turtle import color
 from typing import List
 import numpy as np
 import pandas as pd
@@ -22,6 +23,9 @@ import pandas as pd
 from scipy.stats import spearmanr
 import seaborn as sns
 from typing import Tuple
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Set global style (Times New Roman)
 plt.rcParams["font.family"] = "Times New Roman"
@@ -63,25 +67,35 @@ def extract_upstream(config_name):
 
 def map_strategy_from_runid(run_id):
     # adapt mapping to cover variants seen in your run_id
-    rid = run_id.lower()
-    if "fromscratch" in rid or "from_scratch" in rid or "_from_scratch_" in rid:
+    _run_id = run_id.lower()
+    if "fromscratch" in _run_id or "from_scratch" in _run_id or "_from_scratch_" in _run_id:
         return "FS"
     # patterns: mlpHeadFalse_freezeFalse  -> LH-E2E
-    if "mlpheadfalse_freezefalse" in rid or "mlpheadfalse_freezefalse" in rid:
+    if "mlpheadfalse_freezefalse" in _run_id:
         return "LH-E2E"
-    if "mlpheadtrue_freezefalse" in rid or "mlpheadtrue_freezefalse" in rid:
+    if "mlpheadtrue_freezefalse" in _run_id:
         return "MLP-E2E"
-    if "mlpheadfalse_freezetrue" in rid or "mlpheadfalse_freezetrue" in rid:
+    if "mlpheadfalse_freezetrue" in _run_id:
         return "LH"
-    if "mlpheadtrue_freezetrue" in rid or "mlpheadtrue_freezetrue" in rid:
+    if "mlpheadtrue_freezetrue" in _run_id:
         return "MLP"
     # try other guesses
-    if "mlphead" in rid and "freezetrue" in rid:
+    if "mlphead" in _run_id and "freezetrue" in _run_id:
         return "MLP"
-    if "mlphead" in rid and "freezefalse" in rid:
+    if "mlphead" in _run_id and "freezefalse" in _run_id:
         return "MLP-E2E"
     return "UNKNOWN"
 
+def extract_seed_from_runid(run_id):
+    match = re.search(r'seed(\d+)', run_id)
+    return int(match.group(1)) if match else None
+
+def extract_hyp_params_source_from_runid(run_id, upstream):
+    if 'fromScratch' not in run_id:
+        return upstream
+    
+    match = re.search(r'hypParamsFrom-(.+?)_fromScratch', run_id)
+    return match.group(1) if match else None
 # ---------------------------
 # Load JSONL preserving seed-level RMSE
 # ---------------------------
@@ -125,17 +139,19 @@ def load_results(jsonl_path, prefer="test"):
             # If RMSE still None, skip
             if rmse is None:
                 continue
-
+            upstream = extract_upstream(cfg.get("run_id", ""))
             rows.append({
                 "sample": sample,
                 "strategy": strategy,
                 "imputation": imputation,
-                "upstream": extract_upstream(cfg.get("run_id", "")),
+                "upstream": upstream,
                 "rmse": float(rmse),
                 "rmse_train": float(rmse_train) if rmse_train is not None else None,
                 "rmse_test": float(rmse_test) if rmse_test is not None else None,
                 "run_id": run_id,
-                "all_train_stats": all_train_stats
+                "all_train_stats": all_train_stats, 
+                "seed": extract_seed_from_runid(run_id),
+                "hyp_source": extract_hyp_params_source_from_runid(run_id, upstream),
             })
     df = pd.DataFrame(rows)
     # drop rows that failed to parse sample or strategy (optional)
@@ -341,7 +357,7 @@ def plot_and_save_heatmap(
 
     with open((path_complete + ".fig.pickle"), "wb") as f:
         pickle.dump(fig, f)
-    plt.savefig("heatmap.eps", format="eps", bbox_inches="tight")
+    #plt.savefig("heatmap.eps", format="eps", bbox_inches="tight")
 
     plt.close()
 
@@ -349,7 +365,7 @@ def strategies_order_per_imputation(imputation):
     if imputation == NOT_USED:
         return ['FS']
     else:
-        return ['LH-E2E', 'MLP-E2E', 'LH', 'MLP']
+        return ['FS','LH-E2E', 'MLP-E2E', 'LH', 'MLP']
     
 def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_order=None):
     """
@@ -412,7 +428,7 @@ def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_or
     with open(path_complete + ".fig.pickle", "wb") as f:
         pickle.dump(fig, f)
 
-    ##plt.show()
+    plt.close()
 
 def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename="summary.csv"):
     """
@@ -459,7 +475,7 @@ def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename=
 def analyze_training_curves(df: pd.DataFrame, out_dir: str):
     # paleta de cores por upstream
     upstreams = df["upstream"].unique()
-    palette = dict(zip(upstreams, sns.color_palette("tab10", len(upstreams))))
+    palette = dict(zip(upstreams, sns.color_palette("tab20", len(upstreams))))
 
     # armazenar médias para o gráfico comparativo
     mean_curves = []
@@ -475,7 +491,7 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
 
         # plot curvas individuais
         unique_upstreams = df["upstream"].unique()
-        palette = dict(zip(unique_upstreams, sns.color_palette("husl", len(unique_upstreams))))
+        palette = dict(zip(unique_upstreams, sns.color_palette("hls", len(unique_upstreams))))
 
         for _, row in group.iterrows():
             if not row["all_train_stats"]:
@@ -501,7 +517,7 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
         ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
         ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
-        ##plt.show()
+        plt.close()
 
         # === curva média ===
         max_epochs = max(max([e["epoch"] for e in r["all_train_stats"]]) for _, r in group.iterrows())
@@ -553,7 +569,7 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
         ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
         ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
-        ##plt.show()
+        plt.close()
 
         print(f"→ {strategy}/{imputation}: plateau detectado próximo da época {plateau_epoch}, "
               f"RMSE médio final = {mean_rmse[-1]:.4f}")
@@ -565,13 +581,13 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         {"max_epochs": 20, "suffix": "_EpocasIniciais20", "title_suffix": " (20 Épocas Iniciais)"},
         {"max_epochs": 10, "suffix": "_EpocasIniciais10", "title_suffix": " (10 Épocas Iniciais)"}
     ]
-
+    cmap = plt.cm.get_cmap("tab20", len(mean_curves))
     for cfg in plot_configs:
 
         plt.figure(figsize=(10, 6))
         legend_lines = []
 
-        for c in mean_curves:
+        for i, c in enumerate(mean_curves):
             label = f"{c['strategy']} / {c['imputation']}"
             if cfg["max_epochs"] is None:
                 x = range(len(c["mean_rmse"]))
@@ -584,8 +600,8 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
                 median = c["median_rmse"][:cfg["max_epochs"]]
                 std = c["std_rmse"][:cfg["max_epochs"]]
 
-            line_mean, = plt.plot(x, mean, lw=2, label=label)
-            color = line_mean.get_color()
+            color = cmap(i)
+            plt.plot(x, mean, lw=2, label=label, color=color)
             legend_lines.append((color, label))
 
 
@@ -632,7 +648,6 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         path_complete = os.path.join(out_dir, f"ConvergenciaMedia_Todas{cfg['suffix']}")
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
         plt.close()
-        #plt.show()
 
 # ANOVA 2-way (upstream x strategy) dentro de cada imputação
 
@@ -1071,13 +1086,9 @@ def compute_spearman_corr_between_upstreams(mean_rank_df, out_dir="."):
     plt.tight_layout()
     path_complete = os.path.join(out_dir, "compute_spearman_corr_between_upstreams")
     plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-    #plt.show()
+    plt.close()
 
     return corr_matrix
-
-import os
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # =========================================================
 # 1️⃣ Heatmap de rank médio (Upstream × Strategy)
@@ -1133,38 +1144,23 @@ def plot_heatmap_mean_rank_strategy_upstream(mean_rank_df, out_dir):
         plt.tight_layout()
         path_complete = os.path.join(out_dir, "heatmap_mean_rank_strategy_upstream")
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
+        plt.close()
 
 def _ensure_outdir(path: str):
     os.makedirs(path, exist_ok=True)
 
-def compute_best_st_per_sample(df: pd.DataFrame, rmse_col: str = "rmse_test") -> pd.DataFrame:
+def compute_best_st_per_group(df: pd.DataFrame, rmse_col: str = "rmse_test") -> pd.DataFrame:
     """
     Returns DataFrame with columns: sample, best_st_rmse
     Considers ST rows as upstream == None.
     Uses rmse_col (default rmse_test). Drops NaNs.
     """
+    colluns_to_group_by = ["sample", "hyp_source", "seed"] #add seed?
     st_df = df[df["upstream"].isna()].dropna(subset=[rmse_col])
     if st_df.empty:
         return pd.DataFrame(columns=["sample", "best_st_rmse"])
-    best_st = st_df.groupby("sample")[rmse_col].min().reset_index().rename(columns={rmse_col: "best_st_rmse"})
+    best_st = st_df.groupby(colluns_to_group_by)[rmse_col].min().reset_index().rename(columns={rmse_col: "best_st_rmse"})
     return best_st
-
-def compute_best_tl_per_group(df: pd.DataFrame, rmse_col: str = "rmse_test") -> pd.DataFrame:
-    """
-    Computes best TL (min rmse_col) for each (sample, strategy, imputation, upstream).
-    Returns DataFrame with those keys + best_tl_rmse.
-    Excludes ST (upstream is None).
-    """
-    tl = df[df["upstream"].notna()].dropna(subset=[rmse_col])
-    if tl.empty:
-        return pd.DataFrame(columns=["sample", "strategy", "imputation", "upstream", "best_tl_rmse"])
-    best_tl = (
-        tl.groupby(["sample", "strategy", "imputation", "upstream"])[rmse_col]
-        .min()
-        .reset_index()
-        .rename(columns={rmse_col: "best_tl_rmse"})
-    )
-    return best_tl
 
 def build_tl_gain_per_run_df(
     df: pd.DataFrame,
@@ -1181,7 +1177,7 @@ def build_tl_gain_per_run_df(
     - Uses best ST (min rmse) per sample as baseline
     """
     # best ST per sample (single value per sample)
-    best_st = compute_best_st_per_sample(df, rmse_col=rmse_col)
+    best_st = compute_best_st_per_group(df, rmse_col=rmse_col)
 
     if best_st.empty:
         return pd.DataFrame(columns=[
@@ -1742,6 +1738,7 @@ if __name__ == "__main__":
 
     df = load_all_results(path)
 
+    path = os.path.join(path, "analysis")
     rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
     plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
     plot_BoxPlots_overfitting(df, out_dir=path)
@@ -1749,7 +1746,7 @@ if __name__ == "__main__":
     analyze_training_curves(df, out_dir=path)
 
     has_multiple_upstreams = True
-    if has_multiple_upstreams:
+    if False:
         print("Múltiplos upstreams detectados — executando análises adicionais...")
 
         rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
@@ -1763,9 +1760,9 @@ if __name__ == "__main__":
         mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
 
         plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
-        
+        #
         mean_rank_imp_up = build_upstream_rank_by_imputation(df)
         plot_heatmap_mean_rank_imputation_upstream(mean_rank_imp_up, out_dir=path)
         anova_analysis(df, out_dir=path)
-        analysis_gain_by_transfer_learning(df, out_path=path)
+    analysis_gain_by_transfer_learning(df, out_path=path)
 

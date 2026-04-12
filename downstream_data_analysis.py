@@ -6,7 +6,6 @@ from typing import List
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 from scipy.stats import mannwhitneyu
 from statistics import mode, StatisticsError
 import statsmodels.api as sm
@@ -21,11 +20,14 @@ from matplotlib.patches import Patch
 import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
-import seaborn as sns
 from typing import Tuple
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.stats import friedmanchisquare
+import scikit_posthocs as sp
+import numpy as np
+from result_analysis import anova_analysis, analysis_gain_by_transfer_learning, distribution_of_score_by_transfer_learning
 
 # Set global style (Times New Roman)
 plt.rcParams["font.family"] = "Times New Roman"
@@ -649,190 +651,6 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
         plt.close()
 
-# ANOVA 2-way (upstream x strategy) dentro de cada imputação
-
-def _run_two_way_anova(
-    df,
-    dv,
-    factor1,
-    factor2,
-    min_rows=10,
-):
-    """
-    Executa ANOVA 2-way (tipo II) e retorna a tabela com eta² e partial eta².
-    """
-    sub = (df.dropna(subset=[dv, factor1, factor2])).copy()
-
-    if sub.shape[0] < min_rows:
-        return None
-
-    sub[factor1] = sub[factor1].astype("category")    
-    sub[factor2] = sub[factor2].astype("category")
-
-
-    formula = f"{dv} ~ C({factor1}) * C({factor2})"
-    model = smf.ols(formula, data=sub).fit()
-    aov = sm.stats.anova_lm(model, typ=2)
-    # Effect sizes
-    ss_total = aov["sum_sq"].sum()
-    aov["eta2"] = aov["sum_sq"] / ss_total
-
-    ss_error = (
-        aov.loc["Residual", "sum_sq"]
-        if "Residual" in aov.index
-        else model.ssr
-    )
-
-    aov["partial_eta2"] = np.nan
-    for idx in aov.index:
-        if idx != "Residual":
-            ss_effect = aov.loc[idx, "sum_sq"]
-            aov.loc[idx, "partial_eta2"] = ss_effect / (ss_effect + ss_error)
-
-    return aov
-
-def anova_upstream_strategy_all(
-    df,
-    dv="rmse",
-    out_dir=None,
-    min_rows=10,
-):
-    aov = _run_two_way_anova(
-        df=df,
-        dv=dv,
-        factor1="upstream",
-        factor2="strategy",
-        min_rows=min_rows,
-    )
-
-    if aov is None:
-        return None
-
-    if out_dir:
-        aov.to_csv(
-            os.path.join(out_dir, f"anova_{dv}_2way_upstream_strategy_all.csv")
-        )
-
-    return aov
-
-def anova_strategy_imputation_all(
-    df,
-    dv="rmse",
-    out_dir=None,
-    min_rows=10,
-):
-    aov = _run_two_way_anova(
-        df=df,
-        dv=dv,
-        factor1="strategy",
-        factor2="imputation",
-        min_rows=min_rows,
-    )
-
-    if aov is None:
-        return None
-
-    if out_dir:
-        aov.to_csv(
-            os.path.join(out_dir, f"anova_{dv}_2way_strategy_imputation_all.csv")
-        )
-
-    return aov
-def anova_upstream_imputation_all(
-    df,
-    dv="rmse",
-    out_dir=None,
-    min_rows=10,
-):
-    aov = _run_two_way_anova(
-        df=df,
-        dv=dv,
-        factor1="upstream",
-        factor2="imputation",
-        min_rows=min_rows,
-    )
-
-    if aov is None:
-        return None
-
-    if out_dir:
-        aov.to_csv(
-            os.path.join(out_dir, f"anova_{dv}_2way_upstream_imputation_all.csv")
-        )
-
-    return aov
-
-def anova_two_way_by_imputation(
-    df,
-    dv="rmse",
-    factor1="upstream",
-    factor2="strategy",
-    min_rows=10,
-    out_dir=None,
-):
-    results = {}
-
-    for imp in sorted(df["imputation"].unique()):
-        sub = df[df["imputation"] == imp]
-
-        aov = _run_two_way_anova(
-            df=sub,
-            dv=dv,
-            factor1=factor1,
-            factor2=factor2,
-            min_rows=min_rows,
-        )
-
-        if aov is None:
-            continue
-
-        results[imp] = aov
-
-        if out_dir:
-            aov.to_csv(
-                os.path.join(
-                    out_dir,
-                    f"anova_{dv}_2way_imputation_{imp}.csv",
-                )
-            )
-
-    return results
-
-def anova_analysis(df, out_dir, dv="rmse"):
-    """
-    Executa todas as análises de ANOVA e salva os resultados em:
-    out_dir/anova_analysis/
-    """
-    out_dir = os.path.join(out_dir, "anova_analysis")
-    _ensure_outdir(out_dir)
-
-    filtered_df = df[df["upstream"].notna()] ##remove situações sem transferências
-
-    anova_upstream_strategy_all(
-        df=filtered_df,
-        dv=dv,
-        out_dir=out_dir,
-    )
-
-    anova_upstream_imputation_all(
-        df=filtered_df,
-        dv=dv,
-        out_dir=out_dir,
-    )
-
-    anova_two_way_by_imputation(
-        df=filtered_df,
-        dv=dv,
-        out_dir=out_dir,
-    )
-
-    anova_strategy_imputation_all(
-        df=filtered_df,
-        dv=dv,
-        out_dir=out_dir,
-    )
-
-
 def build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False):
     """
     Gera um DataFrame de rank médio por (upstream, strategy, imputation)
@@ -916,7 +734,6 @@ def build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False
         print(f"Gerado mean_rank_df com {len(mean_rank_df)} combinações únicas.")
     return mean_rank_df
 
-
 def build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2, verbose=False):
     """
     Calcula o rank relativo entre upstreams para cada estratégia,
@@ -960,18 +777,20 @@ def build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2, verbose=False):
                         "strategy": strat,
                         "imputation": imp,
                         "upstream": u,
-                        "sample": sample,
+                        "sample": sample,   # 🔥 ESSENCIAL
                         "rank": r,
                     })
+
     df_rank = pd.DataFrame(results)
-    # rank médio global (média dos samples)
+
+    # média (como você já fazia)
     mean_rank_df = (
         df_rank.groupby(["strategy", "upstream", "imputation"])["rank"]
         .mean()
         .reset_index()
     )
-    return mean_rank_df
 
+    return mean_rank_df, df_rank
 def build_upstream_rank_by_imputation(df, alpha=0.05, min_seeds=2, verbose=False):
     """
     Calcula o rank relativo entre upstreams para cada imputação,
@@ -1125,6 +944,8 @@ def plot_heatmap_mean_rank_strategy_upstream(mean_rank_df, out_dir):
     """
     Plota o rank médio dos upstreams para cada estratégia.
     """
+    out_dir = os.path.join(out_dir, "heatmap_mean_rank_strategy_upstream")
+    _ensure_outdir(out_dir)
     imputations = mean_rank_df["imputation"].unique()
     for imp in imputations:
         subset = mean_rank_df[mean_rank_df["imputation"] == imp]
@@ -1142,569 +963,163 @@ def plot_heatmap_mean_rank_strategy_upstream(mean_rank_df, out_dir):
         plt.xlabel("Upstream")
         plt.ylabel("Estratégia")
         plt.tight_layout()
-        path_complete = os.path.join(out_dir, "heatmap_mean_rank_strategy_upstream")
+        path_complete = os.path.join(out_dir, "imp" + str(imp))
         plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
         plt.close()
 
-def _ensure_outdir(path: str):
-    os.makedirs(path, exist_ok=True)
 
-def compute_best_st_per_group(df: pd.DataFrame, rmse_col: str = "rmse_test") -> pd.DataFrame:
+def build_friedman_matrix(df_rank):
     """
-    Returns DataFrame with columns: sample, best_st_rmse
-    Considers ST rows as upstream == None.
-    Uses rmse_col (default rmse_test). Drops NaNs.
+    Constrói matriz para teste de Friedman.
+
+    Linhas = blocos experimentais (sample, strategy, imputation)
+    Colunas = upstreams
+    Valores = rank
     """
-    colluns_to_group_by = ["sample", "hyp_source", "seed"] #add seed?
-    st_df = df[df["upstream"].isna()].dropna(subset=[rmse_col])
-    if st_df.empty:
-        return pd.DataFrame(columns=["sample", "best_st_rmse"])
-    best_st = st_df.groupby(colluns_to_group_by)[rmse_col].min().reset_index().rename(columns={rmse_col: "best_st_rmse"})
-    return best_st
+    df_rank = df_rank.copy()
 
-def build_tl_gain_per_run_df(
-    df: pd.DataFrame,
-    rmse_col: str = "rmse_test"
-) -> pd.DataFrame:
+    df_rank["block"] = (
+        df_rank["sample"].astype(str)
+        + "_" + df_rank["strategy"].astype(str)
+        + "_" + df_rank["imputation"].astype(str)
+    )
+
+    pivot = df_rank.pivot_table(
+        index="block",
+        columns="upstream",
+        values="rank"
+    )
+
+    # remove blocos incompletos (necessário para Friedman)
+    pivot = pivot.dropna()
+
+    return pivot
+
+def run_friedman_test(pivot):
     """
-    Returns a DataFrame with gains computed PER EXECUTION.
-
-    Columns:
-    sample, strategy, imputation, upstream, rmse_test,
-    best_st_rmse, abs_gain, pct_gain
-
-    - Keeps all TL executions (upstream not None)
-    - Uses best ST (min rmse) per sample as baseline
+    Executa o teste de Friedman.
     """
-    # best ST per sample (single value per sample)
-    best_st = compute_best_st_per_group(df, rmse_col=rmse_col)
+    data = [pivot[col].values for col in pivot.columns]
 
-    if best_st.empty:
-        return pd.DataFrame(columns=[
-            "sample","strategy","imputation","upstream",
-            rmse_col,"best_st_rmse","abs_gain","pct_gain"
-        ])
+    stat, p = friedmanchisquare(*data)
 
-    # keep all TL executions
-    tl_runs = df[df["upstream"].notna()].dropna(subset=[rmse_col]).copy()
+    print("\n[Friedman Test]")
+    print(f"Statistic: {stat:.4f}")
+    print(f"p-value: {p:.6f}")
 
-    if tl_runs.empty:
-        return pd.DataFrame(columns=[
-            "sample","strategy","imputation","upstream",
-            rmse_col,"best_st_rmse","abs_gain","pct_gain"
-        ])
+    return stat, p
 
-    # merge ST baseline
-    tl_runs = tl_runs.merge(best_st, on="sample", how="left")
-
-    # drop TL runs without ST baseline
-    tl_runs = tl_runs.dropna(subset=["best_st_rmse"]).copy()
-
-    # gains per execution
-    tl_runs["abs_gain"] = tl_runs["best_st_rmse"] - tl_runs[rmse_col]
-    tl_runs["pct_gain"] = tl_runs["abs_gain"] / tl_runs["best_st_rmse"]
-
-    return tl_runs[[
-        "sample","strategy","imputation","upstream",
-        rmse_col,"best_st_rmse","abs_gain","pct_gain"
-    ]]
-
-## ===============================
-## graphs gain of transfer
-## ===============================
-
-def plot_boxplot_gain(tl_gain_df: pd.DataFrame, out_dir: str, x_name: str = "strategy", hue: str = "upstream",
-                      title: str = "Transfer Learning Gain by Strategy", save_name: str = "boxplot_gain.png"):
+def run_nemenyi_posthoc(pivot, out_dir):
     """
-    Boxplot (or violin) of pct_gain grouped by strategy.
-    hue can be 'upstream' or 'sample' (or other categorical column present in tl_gain_df).
-    Saves PNG into out_dir.
+    Executa teste post-hoc de Nemenyi.
     """
-    _ensure_outdir(out_dir)
-    df = tl_gain_df.copy()
-    # Convert pct to percent for plotting
-    df["pct_gain_pct"] = df["pct_gain"] * 100.0
+    nemenyi = sp.posthoc_nemenyi_friedman(pivot)
 
-    plt.figure(figsize=(10, 6))
-    ax = sns.boxplot(data=df, x=x_name, y="pct_gain_pct", hue=hue, dodge=True)
-    sns.stripplot(data=df, x=x_name, y="pct_gain_pct", hue=hue, dodge=True, color="black", size=3, alpha=0.3, linewidth=0)
-    # Remove duplicate legend entries (stripplot added)
-    handles, labels = ax.get_legend_handles_labels()
-    # keep only first set
-    n_unique = len(df[hue].unique()) if hue in df.columns else 0
-    if n_unique > 0:
-        ax.legend(handles[:n_unique], labels[:n_unique], title=hue)
-    else:
-        ax.get_legend().remove()
+    print("\n[Nemenyi Post-hoc]")
+    print(nemenyi)
 
-    ax.set_ylabel("Transfer Gain (%)", fontsize=12)
-    ax.set_xlabel(x_name.capitalize(), fontsize=12)
-    ax.set_title(title, fontsize=14)
-    plt.xticks(rotation=45, ha="right")
+    # salvar heatmap
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import os
+
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(
+        nemenyi,
+        annot=True,
+        cmap="coolwarm_r",
+        cbar_kws={"label": "p-value"}
+    )
+    plt.title("Nemenyi Post-hoc (p-values)")
     plt.tight_layout()
-    path_complete = os.path.join(out_dir, save_name)
-    plt.savefig(path_complete, dpi=300, bbox_inches="tight")
+
+    path = os.path.join(out_dir, "nemenyi_posthoc.png")
+    plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.close()
 
+    return nemenyi
 
-def plot_heatmap_gain_facets_strategies(tl_gain_df: pd.DataFrame, out_dir: str,
-                                      title_template: str = "Percent Gain (Strategy: {up})",
-                                      save_name_prefix: str = "heatmap_gain_strategy"):
+def compute_global_mean_rank(df_rank):
     """
-    For each strategy, produce a heatmap with rows = sample, cols = upstream, values = pct_gain (%).
-    Uses the same color scale across all strategy facets.
-    Saves each strategy heatmap as a separate PNG.
+    Calcula rank médio global dos upstreams.
     """
-    _ensure_outdir(out_dir)
-    # prepare pivot values (pct in percent)
-    tl_gain_df = tl_gain_df.copy()
-    tl_gain_df["pct_gain_pct"] = tl_gain_df["pct_gain"] * 100.0
-
-    # global vmin/vmax across all upstreams for consistent color scale
-    if tl_gain_df["pct_gain_pct"].empty:
-        return
-    vmin = tl_gain_df["pct_gain_pct"].min()
-    vmax = tl_gain_df["pct_gain_pct"].max()
-
-    for up, grp in tl_gain_df.groupby("strategy"):
-        pivot = grp.pivot_table(index="sample", columns="upstream", values="pct_gain_pct", aggfunc="mean")
-        plt.figure(figsize=(2 * max(4, pivot.shape[1]), max(4, pivot.shape[0] * 0.3)))
-        sns.heatmap(
-            pivot,
-            annot=True,
-            fmt=".2f",
-            cmap="RdYlBu_r",
-            vmin=vmin,
-            vmax=vmax,
-            cbar_kws={"label": "Percent Gain (%)"},
-            linewidths=0.4, linecolor="white"
-        )
-        plt.title(title_template.format(up=up), fontsize=14)
-        plt.xlabel("Upstream")
-        plt.ylabel("Sample")
-        plt.tight_layout()
-        fname = os.path.join(out_dir, f"{save_name_prefix}_up_{up}.png")
-        plt.savefig(fname, dpi=300, bbox_inches="tight")
-        plt.close()
-
-def plot_heatmap_gain_facets_upstream(tl_gain_df: pd.DataFrame, out_dir: str,
-                                      title_template: str = "Percent Gain (Upstream: {up})",
-                                      save_name_prefix: str = "heatmap_gain_upstream"):
-    """
-    For each upstream, produce a heatmap with rows = sample, cols = strategy, values = pct_gain (%).
-    Uses the same color scale across all upstream facets.
-    Saves each upstream heatmap as a separate PNG.
-    """
-    _ensure_outdir(out_dir)
-    # prepare pivot values (pct in percent)
-    tl_gain_df = tl_gain_df.copy()
-    tl_gain_df["pct_gain_pct"] = tl_gain_df["pct_gain"] * 100.0
-
-    # global vmin/vmax across all upstreams for consistent color scale
-    if tl_gain_df["pct_gain_pct"].empty:
-        return
-    vmin = tl_gain_df["pct_gain_pct"].min()
-    vmax = tl_gain_df["pct_gain_pct"].max()
-
-    for up, grp in tl_gain_df.groupby("upstream"):
-        pivot = grp.pivot_table(index="sample", columns="strategy", values="pct_gain_pct", aggfunc="mean")
-        plt.figure(figsize=(2 * max(4, pivot.shape[1]), max(4, pivot.shape[0] * 0.3)))
-        sns.heatmap(
-            pivot,
-            annot=True,
-            fmt=".2f",
-            cmap="RdYlBu_r",
-            vmin=vmin,
-            vmax=vmax,
-            cbar_kws={"label": "Percent Gain (%)"},
-            linewidths=0.4, linecolor="white"
-        )
-        plt.title(title_template.format(up=up), fontsize=14)
-        plt.xlabel("Strategy")
-        plt.ylabel("Sample")
-        plt.tight_layout()
-        fname = os.path.join(out_dir, f"{save_name_prefix}_up_{up}.png")
-        plt.savefig(fname, dpi=300, bbox_inches="tight")
-        plt.close()
-
-def _plot_heatmap_gain_generic(
-    df: pd.DataFrame,
-    row_factor: str,
-    col_factor: str,
-    out_dir: str,
-    title: str,
-    save_name: str,
-    agg_fn,
-):
-    _ensure_outdir(out_dir)
-
-    # regra: imputation sempre no eixo X e deve ter >1 nível
-    if col_factor == "imputation" and df["imputation"].nunique() <= 1:
-        print(f"[SKIP] Apenas uma imputação encontrada. Ignorando: {save_name}")
-        return
-
-    work = df.copy()
-    work["pct_gain_pct"] = work["pct_gain"] * 100.0
-
-    agg = (
-        work.groupby([row_factor, col_factor])["pct_gain_pct"]
-        .agg(agg_fn)
+    global_rank = (
+        df_rank.groupby("upstream")["rank"]
+        .mean()
+        .sort_values()
         .reset_index()
     )
 
-    pivot = agg.pivot(index=row_factor, columns=col_factor, values="pct_gain_pct")
+    print("\n[Global Mean Rank]")
+    print(global_rank)
 
-    vmin = np.nanmin(agg["pct_gain_pct"])
-    vmax = np.nanmax(agg["pct_gain_pct"])
+    return global_rank
 
-    plt.figure(figsize=(2 * max(4, pivot.shape[1]), max(4, pivot.shape[0] * 0.3)))
-    sns.heatmap(
-        pivot,
-        annot=True,
-        fmt=".2f",
-        cmap="RdYlBu_r",
-        vmin=vmin,
-        vmax=vmax,
-        cbar_kws={"label": "Percent Gain (%)"},
-        linewidths=0.4,
-        linecolor="white",
-    )
+def plot_global_mean_rank(global_rank, out_dir):
+    import matplotlib.pyplot as plt
+    import os
 
-    plt.title(title, fontsize=14)
-    plt.xlabel(col_factor.capitalize())
-    plt.ylabel(row_factor.capitalize())
+    plt.figure(figsize=(8, 5))
+    plt.bar(global_rank["upstream"].astype(str), global_rank["rank"])
+    plt.xlabel("Upstream")
+    plt.ylabel("Mean Rank (lower = better)")
+    plt.title("Global Ranking of Upstreams")
     plt.tight_layout()
 
-    path_complete = os.path.join(out_dir, save_name)
-    plt.savefig(path_complete, dpi=300, bbox_inches="tight")
+    path = os.path.join(out_dir, "global_mean_rank.png")
+    plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.close()
 
-def _plot_heatmap_best_gain(
-    df: pd.DataFrame,
-    row_factor: str,
-    col_factor: str,
-    out_dir: str,
-    title: str,
-    save_name: str,
-):
-    _plot_heatmap_gain_generic(
-        df=df,
-        row_factor=row_factor,
-        col_factor=col_factor,
-        out_dir=out_dir,
-        title=title,
-        save_name=save_name,
-        agg_fn="max",
-    )
-
-def _plot_heatmap_mean_gain(
-    df: pd.DataFrame,
-    row_factor: str,
-    col_factor: str,
-    out_dir: str,
-    title: str,
-    save_name: str,
-):
-    _plot_heatmap_gain_generic(
-        df=df,
-        row_factor=row_factor,
-        col_factor=col_factor,
-        out_dir=out_dir,
-        title=title,
-        save_name=save_name,
-        agg_fn="mean",
-    )
-
-def plot_heatmap_sample_x_strategy_best(tl_gain_df, out_dir):
-    _plot_heatmap_best_gain(
-        tl_gain_df, "sample", "strategy", out_dir,
-        "Best Percent Gain (Sample x Strategy)",
-        "heatmap_best_sample_x_strategy.png"
-    )
-
-
-def plot_heatmap_sample_x_imputation_best(tl_gain_df, out_dir):
-    _plot_heatmap_best_gain(
-        tl_gain_df, "sample", "imputation", out_dir,
-        "Best Percent Gain (Sample x Imputation)",
-        "heatmap_best_sample_x_imputation.png"
-    )
-
-
-def plot_heatmap_strategy_x_imputation_best(tl_gain_df, out_dir):
-    _plot_heatmap_best_gain(
-        tl_gain_df, "strategy", "imputation", out_dir,
-        "Best Percent Gain (Strategy x Imputation)",
-        "heatmap_best_strategy_x_imputation.png"
-    )
-
-def plot_heatmap_sample_x_strategy_mean(tl_gain_df, out_dir):
-    _plot_heatmap_mean_gain(
-        tl_gain_df, "sample", "strategy", out_dir,
-        "Mean Percent Gain (Sample x Strategy)",
-        "heatmap_mean_sample_x_strategy.png"
-    )
-
-
-def plot_heatmap_sample_x_imputation_mean(tl_gain_df, out_dir):
-    _plot_heatmap_mean_gain(
-        tl_gain_df, "sample", "imputation", out_dir,
-        "Mean Percent Gain (Sample x Imputation)",
-        "heatmap_mean_sample_x_imputation.png"
-    )
-
-
-def plot_heatmap_strategy_x_imputation_mean(tl_gain_df, out_dir):
-    _plot_heatmap_mean_gain(
-        tl_gain_df, "strategy", "imputation", out_dir,
-        "Mean Percent Gain (Strategy x Imputation)",
-        "heatmap_mean_strategy_x_imputation.png"
-    )
-
-def plot_heatmap_best_gain_overall(tl_gain_df: pd.DataFrame, out_dir: str):
-    plot_heatmap_sample_x_strategy_best(tl_gain_df, out_dir)
-    plot_heatmap_sample_x_imputation_best(tl_gain_df, out_dir)
-    plot_heatmap_strategy_x_imputation_best(tl_gain_df, out_dir)
-
-def plot_heatmap_mean_gain_overall(tl_gain_df: pd.DataFrame, out_dir: str):
-    plot_heatmap_sample_x_strategy_mean(tl_gain_df, out_dir)
-    plot_heatmap_sample_x_imputation_mean(tl_gain_df, out_dir)
-    plot_heatmap_strategy_x_imputation_mean(tl_gain_df, out_dir)
-
-def select_best_tl_run(
-    tl_gain_df: pd.DataFrame,
-    rmse_col: str = "rmse_test"
-) -> pd.DataFrame:
+def plot_cd_diagram(pivot, out_dir):
     """
-    Selects the best TL execution per
-    (sample, strategy, imputation, upstream).
-
-    Best = minimal rmse_test (which also implies max gain).
+    Plota CD diagram simplificado baseado em ranks médios.
     """
-    if tl_gain_df.empty:
-        return tl_gain_df.copy()
+    import matplotlib.pyplot as plt
+    import os
 
-    idx = (
-        tl_gain_df
-        .groupby(["sample", "strategy", "imputation", "upstream"])[rmse_col]
-        .idxmin()
-    )
+    mean_ranks = pivot.mean().sort_values()
 
-    return tl_gain_df.loc[idx].reset_index(drop=True)
+    plt.figure(figsize=(10, 2))
+    plt.scatter(mean_ranks.values, [1]*len(mean_ranks))
 
-def plot_barplot_best_tl_vs_best_st(
-    tl_gain_df: pd.DataFrame,
-    out_dir: str,
-    title_template: str = "Best TL vs FS (Upstream: {up})",
-    save_prefix: str = "barplot_best_vs_st"
-):
-    """
-    Plota Best TL vs From Scratch (FS) por upstream.
+    for i, (name, rank) in enumerate(mean_ranks.items()):
+        plt.text(rank, 1.02, str(name), ha='center')
 
-    Espera tl_gain_df no nível PER RUN.
-    Internamente:
-        - seleciona a melhor execução via select_best_tl_run
-        - assume best_st_rmse constante por sample
-    """
-    out_dir = os.path.join(out_dir, "barplot_by_upstream")
-    _ensure_outdir(out_dir)
+    plt.yticks([])
+    plt.xlabel("Mean Rank (lower = better)")
+    plt.title("CD Diagram (simplified)")
 
-    if tl_gain_df.empty:
-        return
-
-    # ----------------------------------
-    # Seleciona melhor TL por configuração
-    # ----------------------------------
-    best_tl = select_best_tl_run(tl_gain_df)
-
-    # ----------------------------------
-    # Prepara DF TL vs FS
-    # ----------------------------------
-    comp_df = best_tl[[
-        "upstream",
-        "strategy",
-        "sample",
-        "rmse_test",
-        "best_st_rmse"
-    ]].rename(columns={
-        "rmse_test": "tl_rmse",
-        "best_st_rmse": "st_rmse"
-    })
-
-    # ----------------------------------
-    # Melt para formato longo
-    # ----------------------------------
-    plot_df = comp_df.melt(
-        id_vars=["upstream", "strategy", "sample"],
-        value_vars=["tl_rmse", "st_rmse"],
-        var_name="kind",
-        value_name="rmse"
-    )
-
-    plot_df["kind"] = plot_df["kind"].map({
-        "tl_rmse": "With Transfer Learning",
-        "st_rmse": "From Scratch"
-    })
-
-    # Score = -RMSE
-    plot_df["score"] = -plot_df["rmse"]
-
-    # Eixo X = (strategy, sample)
-    plot_df["x"] = plot_df.apply(
-        lambda r: f"{r['strategy']}-{r['sample']}",
-        axis=1
-    )
-
-    ordered_categories = (
-        plot_df
-        .sort_values(["strategy", "sample", "kind"])["x"]
-        .unique()
-    )
-
-    plot_df["x"] = pd.Categorical(
-        plot_df["x"],
-        categories=ordered_categories,
-        ordered=True
-    )
-
-    # -----------------------------
-    # PLOTS INDIVIDUAIS POR UPSTREAM
-    # -----------------------------
-    for up, grp in plot_df.groupby("upstream"):
-        plt.figure(figsize=(14, 7))
-        ax = sns.barplot(data=grp, x="x", y="score", hue="kind")
-
-        ax.set_title(title_template.format(up=up))
-        ax.set_xlabel("(Strategy, Sample Size)")
-        ax.set_ylabel("Score (-RMSE — higher is better)")
-        plt.xticks(rotation=45, ha="right")
-
-        # Annotar sample acima das barras
-        for p, (_, row) in zip(ax.patches, grp.iterrows()):
-            ax.annotate(
-                str(row["sample"]),
-                (p.get_x() + p.get_width() / 2, p.get_height()),
-                ha="center", va="bottom", fontsize=8
-            )
-
-        plt.tight_layout()
-        plt.savefig(
-            os.path.join(out_dir, f"{save_prefix}_up_{up}.png"),
-            dpi=300, bbox_inches="tight"
-        )
-        plt.close()
-
-    # -----------------------------
-    # FACETGRID — todos upstreams
-    # -----------------------------
-    g = sns.FacetGrid(
-        plot_df,
-        col="upstream",
-        sharey=False,
-        height=4,
-        aspect=1.5
-    )
-    g.map_dataframe(
-        sns.barplot,
-        x="x", y="score", hue="kind", dodge=True
-    )
-
-    for ax in g.axes.flatten():
-        for label in ax.get_xticklabels():
-            label.set_rotation(45)
-            label.set_ha("right")
-
-    g.add_legend()
-    g.fig.suptitle("Best TL vs From Scratch — All Upstreams", y=1.03)
-
-    plt.savefig(
-        os.path.join(out_dir, f"{save_prefix}_facetgrid.png"),
-        dpi=300, bbox_inches="tight"
-    )
+    path = os.path.join(out_dir, "cd_diagram.png")
+    plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.close()
 
-def graphs_analysis_gain_by_transfer_learning(df: pd.DataFrame, tl_gain_df: pd.DataFrame, out_path: str):
-    # 1) Boxplot: gain by strategy, hue=upstream 
-    plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="strategy", hue="upstream", title="Transfer Learning Gain by Strategy (hue=upstream)",
-                      save_name="boxplot_gain_by_strategy_hue_upstream.png")
-
-    
-    plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="strategy", hue="imputation", title="Transfer Learning Gain by Strategy (hue=imputation)",
-                      save_name="boxplot_gain_by_strategy_hue_imputation.png")
-    
-    plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="imputation", hue="upstream", title="Transfer Learning Gain by Imputation (hue=upstream)",
-                      save_name="boxplot_gain_by_imputation_hue_upstream.png")
-    
-    # 2) Heatmap facets by upstream: sample x strategy with percent gain
-    plot_heatmap_gain_facets_upstream(tl_gain_df, out_dir=out_path)
-
-    # 3) Heatmap facets by strategy: sample x upstream with percent gain
-    plot_heatmap_gain_facets_strategies(tl_gain_df, out_dir=out_path)
-
-    # 4) Heatmap best gain overall (best across upstreams)
-    plot_heatmap_best_gain_overall(tl_gain_df, out_dir=out_path)
-    plot_heatmap_mean_gain_overall(tl_gain_df, out_dir=out_path)
-    # 5) Barplot grouped: Best TL vs Best ST per strategy (per upstream facet)
-    plot_barplot_best_tl_vs_best_st(tl_gain_df, out_dir=out_path)
-
-def analysis_gain_by_transfer_learning(df: pd.DataFrame, out_path: str):
+def analyze_upstreams_statistically(df_rank, out_dir):
     """
-    Main entry point. Produces:
-      - CSVs: tl_gain_df.csv
-      - Boxplot of gains (hue=upstream by default)
-      - Heatmaps per upstream (sample x strategy)
-      - Heatmap of best gain overall (best upstream per sample,strategy)
-      - Barplots comparing best TL vs best ST per strategy (faceted by upstream, saved one per upstream)
-      - Graphs agrouped by imputation
-    The modular plotting functions are called below and can be reused separately.
+    Pipeline completo:
+    - Friedman
+    - Nemenyi
+    - Ranking global
+    - CD diagram
     """
-    base_out = os.path.join(out_path, "gain_by_transfer_learning")
-    _ensure_outdir(base_out)
+    pivot = build_friedman_matrix(df_rank)
 
-    # Prepare the TL gain DataFrame
-    tl_gain_df = build_tl_gain_per_run_df(df, rmse_col="rmse_test")
-    tl_gain_csv = os.path.join(base_out, "tl_gain_df.csv")
-    tl_gain_df.to_csv(tl_gain_csv, index=False)
+    run_friedman_test(pivot)
 
-    out_path_all = os.path.join(base_out, "all_data")
-    _ensure_outdir(out_path_all)
-    graphs_analysis_gain_by_transfer_learning(df, tl_gain_df, out_path=out_path_all)
-    anova_analysis(tl_gain_df, out_dir=out_path_all, dv="pct_gain")
-    # ==============================================================
-    # 2. PROCESSO POR IMPUTAÇÃO (RECORTES)
-    # ==============================================================
+    nemenyi = run_nemenyi_posthoc(pivot, out_dir)
 
-    imputations = sorted(df["imputation"].dropna().unique())
+    global_rank = compute_global_mean_rank(df_rank)
 
-    for imp in imputations:
-        imp_out = os.path.join(base_out, f"imputation={imp}")
-        _ensure_outdir(imp_out)
+    plot_global_mean_rank(global_rank, out_dir)
 
-        # Recorte do TL (FS continua o mesmo)
-        tl_imp = tl_gain_df[tl_gain_df["imputation"] == imp]
+    plot_cd_diagram(pivot, out_dir)
 
-        if tl_imp.empty:
-            continue
-        #o df passado não precisa ser filtrado pela imputation, pois o FS não tem imputation msm então não faz diferença
-        graphs_analysis_gain_by_transfer_learning(df, tl_imp, out_path=imp_out)
-
-    # Save a brief summary CSV as well
-    summary_csv = os.path.join(base_out, "summary_gain_statistics.csv")
-    if not tl_gain_df.empty:
-        summary = tl_gain_df.groupby(["upstream", "strategy", "imputation"]).agg(
-            mean_pct_gain = ("pct_gain", "mean"),
-            median_pct_gain = ("pct_gain", "median"),
-            count = ("pct_gain", "count")
-        ).reset_index()
-        summary["mean_pct_gain_pct"] = summary["mean_pct_gain"] * 100.0
-        summary.to_csv(summary_csv, index=False)
-    else:
-        pd.DataFrame().to_csv(summary_csv, index=False)
-
-    print(f"[DONE] All outputs saved in {base_out}")
-    return base_out
-
-
+    return {
+        "pivot": pivot,
+        "nemenyi": nemenyi,
+        "global_rank": global_rank
+    }
+def _ensure_outdir(path: str):
+    os.makedirs(path, exist_ok=True)
 
 def get_jsonl_files(base_path: str):
     """
@@ -1740,10 +1155,11 @@ if __name__ == "__main__":
 
     path = os.path.join(path, "analysis")
     rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-    plot_BoxPlots_overfitting(df, out_dir=path)
-    summarize_results(df, out_dir=path)
-    analyze_training_curves(df, out_dir=path)
+    #distribution_of_score_by_transfer_learning(df, path)
+    #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+    #plot_BoxPlots_overfitting(df, out_dir=path)
+    #summarize_results(dfF, out_dir=path)
+    #analyze_training_curves(df, out_dir=path)
 
     has_multiple_upstreams = True
     if False:
@@ -1751,18 +1167,22 @@ if __name__ == "__main__":
 
         rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
         plot_and_save_heatmap(rank_mean_df, name="média-por-upstream", out_dir=path)
-    
+
+        #rank médio por (upstream, strategy, imputation)
         mean_rank_df = build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-
         compute_spearman_corr_between_upstreams(mean_rank_df, out_dir=path)
-
         plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir=path)
-        mean_rank_upstream_df = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
 
-        plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
-        #
+        #rank relativo entre upstreams para cada imputação
         mean_rank_imp_up = build_upstream_rank_by_imputation(df)
         plot_heatmap_mean_rank_imputation_upstream(mean_rank_imp_up, out_dir=path)
-        anova_analysis(df, out_dir=path)
-    analysis_gain_by_transfer_learning(df, out_path=path)
+
+        #anova_analysis(df, out_dir=path)
+
+        mean_rank_upstream_df, df_rank = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
+        re = analyze_upstreams_statistically(df_rank, out_dir=path)
+        plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
+    
+    analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=True, out_path=path)
+    analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=False, out_path=path)
 

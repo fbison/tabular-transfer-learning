@@ -243,7 +243,7 @@ def impute_real_values_by_file(file_path, x_features, dataset_to_select_features
     # colunas que identificam a molécula
     id_features = [
         c for c in dataset_to_impute.columns
-        if c not in x_features
+        if c in x_features
     ]
 
     for index, row in dataset_to_impute.iterrows():
@@ -253,6 +253,18 @@ def impute_real_values_by_file(file_path, x_features, dataset_to_select_features
             condition &= np.isclose(original_dataset[feature], row[feature])
 
         matching_rows = original_dataset[condition]
+        if len(matching_rows) != 1:
+            print(f"[DEBUG] Index {index}: {len(matching_rows)} matches")
+
+        if len(matching_rows) > 1:
+            print(f"  -> Multiple matches for molecule")
+            print(f"  -> ID features values:") ##entra aqui 
+            for feature in id_features:
+                ##mas não aqui
+                print(f"     {feature}: {row[feature]}")
+
+        elif len(matching_rows) == 0:
+            print(f"  -> No match found")
 
         if not matching_rows.empty:
             selected_row = matching_rows.sample(n=1, random_state=42).iloc[0]
@@ -264,7 +276,7 @@ def impute_real_values_by_file(file_path, x_features, dataset_to_select_features
             file_path,
             dataset_to_impute,
             dataset_to_select_features_from,
-            "Real_Values"
+            "Ground_Truth"
         )
     return dataset_to_impute
 
@@ -288,7 +300,7 @@ def impute_real_values_by_dataset(dataset_to_impute, x_features, dataset_to_sele
     x_files = get_x_files_in_dataset(dataset_to_impute)
     for x_file in x_files:
         impute_real_values_by_file(x_file, x_features, dataset_to_select_features_from)
-    clean_y_files("pIC50", dataset_to_impute, dataset_to_select_features_from, method="Real_Values")
+    clean_y_files("pIC50", dataset_to_impute, dataset_to_select_features_from, method="Ground_Truth")
 
 def impute_real_values(dataset, dataset_to_select_features_from):
     x_features = select_x_features(dataset, dataset_to_select_features_from)
@@ -298,17 +310,18 @@ def impute_real_values(dataset, dataset_to_select_features_from):
 
 @hydra.main()
 def main(_: DictConfig):
-    impute_pseudo_features("ic_downstream1", "ic_upstream2")
-    #impute_real_values("ic_downstream1", "ic_upstream2")
-    impute_pseudo_features("ic_downstream1", "ic_upstream3")
-    #impute_real_values("ic_downstream1", "ic_upstream3")
-    impute_pseudo_features("ic_downstream1", "ic_upstream4")
-    #impute_real_values("ic_downstream1", "ic_upstream4")
-    impute_pseudo_features("ic_upstream2", "ic_downstream1_upstream2")
-    #impute_real_values("ic_upstream2", "ic_downstream1")
-    impute_pseudo_features("ic_upstream3", "ic_downstream1_upstream3")
-    #impute_real_values("ic_upstream3", "ic_downstream1")
-    impute_pseudo_features("ic_upstream4", "ic_downstream1_upstream4")
-    #impute_real_values("ic_upstream4", "ic_downstream1")
+    #impute_pseudo_features("ic_downstream1", "ic_upstream2")
+    #impute_pseudo_features("ic_downstream1", "ic_upstream3")
+    #impute_pseudo_features("ic_downstream1", "ic_upstream4")
+    #impute_pseudo_features("ic_upstream2", "ic_downstream1_upstream2")
+    #impute_pseudo_features("ic_upstream3", "ic_downstream1_upstream3")
+    #impute_pseudo_features("ic_upstream4", "ic_downstream1_upstream4")
+
+    impute_real_values("ic_downstream1", "ic_upstream2")
+    impute_real_values("ic_downstream1", "ic_upstream3")
+    impute_real_values("ic_downstream1", "ic_upstream4")
+    impute_real_values("ic_upstream2", "ic_downstream1")
+    impute_real_values("ic_upstream3", "ic_downstream1")
+    impute_real_values("ic_upstream4", "ic_downstream1")
 if __name__ == "__main__":
     main()

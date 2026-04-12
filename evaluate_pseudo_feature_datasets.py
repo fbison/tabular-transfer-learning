@@ -177,12 +177,13 @@ def main(cfg: DictConfig):
 
     stats = []
     original_dir = f"data\ic_downstream1_Sample75"
-    imputation_evaluated= "Real_Values"
-    isRealValues = imputation_evaluated == "Real_Values"
+    imputation_evaluated= "pseudo_features"#"Ground_Truth"
+    isRealValues = imputation_evaluated == "Ground_Truth"
     imputed_downstream_dir = [
         f"data\ic_downstream1_Sample75_Imputation_{imputation_evaluated}_exp_100_2",
                               f"data\ic_downstream1_Sample75_Imputation_{imputation_evaluated}_exp_100_3",
-                              f"data\ic_downstream1_Sample75_Imputation_{imputation_evaluated}_exp_100_4"]
+                              f"data\ic_downstream1_Sample75_Imputation_{imputation_evaluated}_exp_100_4"
+                              ]
     
     stats = [
         evaluate_imputation(original_dir, imputed_downstream_dir[0], isRealValues),

@@ -33,6 +33,13 @@
             "program": "${workspaceFolder}/evaluate_upstream_for_downstream.py",
             "console": "integratedTerminal"
         },
+        {
+            "name": "PF evaluation",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/evaluate_pseudo_feature_datasets.py",
+            "console": "integratedTerminal"
+        },
         // =========================
         // TRAIN FROM SCRATCH
         // =========================

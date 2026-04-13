@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream2_Imputation_Ground_Truth_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "dimmest-Jemima",
+    "best_epoch": 198,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -1.3251594305038452,
+        "rmse": 1.3251594305038452
+    },
+    "train_stats": {
+        "score": -0.4013462960720062,
+        "rmse": 0.4013462960720062
+    },
+    "val_stats": {
+        "score": -0.9449049830436707,
+        "rmse": 0.9449049830436707
+    },
+    "all_train_stats": null
+}

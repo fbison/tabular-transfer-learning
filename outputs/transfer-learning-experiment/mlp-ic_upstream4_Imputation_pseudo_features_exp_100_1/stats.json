@@ -1,20 +1,20 @@
 {
     "dataset": "ic_upstream4_Imputation_pseudo_features_exp_100_1",
     "model_name": "mlp",
-    "run_id": "stricken-Kennon",
-    "best_epoch": 194,
+    "run_id": "curdy-Lizzete",
+    "best_epoch": 187,
     "routine": "transfer_learn_net",
     "test_stats": {
-        "score": -0.8488001227378845,
-        "rmse": 0.8488001227378845
+        "score": -0.7655701041221619,
+        "rmse": 0.7655701041221619
     },
     "train_stats": {
-        "score": -0.29214873909950256,
-        "rmse": 0.29214873909950256
+        "score": -0.5735819339752197,
+        "rmse": 0.5735819339752197
     },
     "val_stats": {
-        "score": -0.7992914915084839,
-        "rmse": 0.7992914915084839
+        "score": -0.8892925977706909,
+        "rmse": 0.8892925977706909
     },
     "all_train_stats": null
 }

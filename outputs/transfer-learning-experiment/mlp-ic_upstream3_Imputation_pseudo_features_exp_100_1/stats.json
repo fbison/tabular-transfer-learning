@@ -1,20 +1,20 @@
 {
     "dataset": "ic_upstream3_Imputation_pseudo_features_exp_100_1",
     "model_name": "mlp",
-    "run_id": "distraught-Timtohy",
-    "best_epoch": 188,
+    "run_id": "cytoid-Mollye",
+    "best_epoch": 190,
     "routine": "transfer_learn_net",
     "test_stats": {
-        "score": -0.799554705619812,
-        "rmse": 0.799554705619812
+        "score": -0.8001553416252136,
+        "rmse": 0.8001553416252136
     },
     "train_stats": {
-        "score": -0.6631880402565002,
-        "rmse": 0.6631880402565002
+        "score": -0.6156694293022156,
+        "rmse": 0.6156694293022156
     },
     "val_stats": {
-        "score": -0.8412724137306213,
-        "rmse": 0.8412724137306213
+        "score": -0.8735760450363159,
+        "rmse": 0.8735760450363159
     },
     "all_train_stats": null
 }

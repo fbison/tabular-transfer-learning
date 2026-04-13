@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream4_Imputation_Ground_Truth_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "countless-Courtnee",
+    "best_epoch": 154,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.8478789329528809,
+        "rmse": 0.8478789329528809
+    },
+    "train_stats": {
+        "score": -0.7072616815567017,
+        "rmse": 0.7072616815567017
+    },
+    "val_stats": {
+        "score": -0.9214059710502625,
+        "rmse": 0.9214059710502625
+    },
+    "all_train_stats": null
+}

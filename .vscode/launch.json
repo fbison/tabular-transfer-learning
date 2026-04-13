@@ -166,14 +166,14 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Pretrain U4 - Real Values",
+            "name": "Pretrain U4 - Ground Truth",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                "model=mlp_pretrain_up4_real_values",
-                "hyp=hyp_pretrain_up4_real_values",
-                "dataset=ic_upstream4_Imputation_Real_Values_exp_100_1"
+                "model=mlp_pretrain_up4_ground_truth",
+                "hyp=hyp_pretrain_up4_ground_truth",
+                "dataset=ic_upstream4_Imputation_Ground_Truth_exp_100_1"
             ],
             "console": "integratedTerminal"
         },
@@ -217,14 +217,14 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Pretrain U3 - Real Values",
+            "name": "Pretrain U3 - Ground Truth",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                "model=mlp_pretrain_up3_real_values",
-                "hyp=hyp_pretrain_up3_real_values",
-                "dataset=ic_upstream3_Imputation_Real_Values_exp_100_1"
+                "model=mlp_pretrain_up3_ground_truth",
+                "hyp=hyp_pretrain_up3_ground_truth",
+                "dataset=ic_upstream3_Imputation_Ground_Truth_exp_100_1"
             ],
             "console": "integratedTerminal"
         },
@@ -269,14 +269,14 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Pretrain U2 - Real Values",
+            "name": "Pretrain U2 - Ground Truth",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net.py",
             "args": [
-                "model=mlp_pretrain_up2_real_values",
-                "hyp=hyp_pretrain_up2_real_values",
-                "dataset=ic_upstream2_Imputation_Real_Values_exp_100_1"
+                "model=mlp_pretrain_up2_ground_truth",
+                "hyp=hyp_pretrain_up2_ground_truth",
+                "dataset=ic_upstream2_Imputation_Ground_Truth_exp_100_1"
             ],
             "console": "integratedTerminal"
         },
@@ -307,7 +307,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py", 
-            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_Ground_Truth_exp_100_1"],
+            "args": ["model=mlp", "dataset=ic_upstream2_Imputation_pseudo_features_exp_100_1"],
             "console": "integratedTerminal"
         },
         {
@@ -315,7 +315,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_Ground_Truth_exp_100_1"],
+            "args": ["model=mlp", "dataset=ic_upstream3_Imputation_pseudo_features_exp_100_1"],
             "console": "integratedTerminal"
         },
         {
@@ -323,7 +323,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/optune_continue.py",
-            "args": ["model=mlp", "dataset=ic_upstream4_Imputation_Ground_Truth_exp_100_1"],
+            "args": ["model=mlp", "dataset=ic_upstream4_Imputation_pseudo_features_exp_100_1"],
             "console": "integratedTerminal"
         },
         
@@ -379,12 +379,12 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Downstream U2 - Real Values",
+            "name": "Downstream U2 - Ground Truth",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
             "args": [
-                "preTrained=optuning-mlp-ic_upstream2_Imputation_Real_Values_exp_100_1"
+                "preTrained=optuning-mlp-ic_upstream2_Imputation_Ground_Truth_exp_100_1"
             ],
             "console": "integratedTerminal"
         },
@@ -422,12 +422,12 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Downstream U3 - Real Values",
+            "name": "Downstream U3 - Ground Truth",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
             "args": [
-                "preTrained=optuning-mlp-ic_upstream3_Imputation_Real_Values_exp_100_1"
+                "preTrained=optuning-mlp-ic_upstream3_Imputation_Ground_Truth_exp_100_1"
             ],
             "console": "integratedTerminal"
         },
@@ -465,12 +465,12 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Downstream U4 - Real Values",
+            "name": "Downstream U4 - Ground Truth",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/transfer_learn_net_from_upstream.py",
             "args": [
-                "preTrained=optuning-mlp-ic_upstream4_Imputation_Real_Values_exp_100_1"
+                "preTrained=optuning-mlp-ic_upstream4_Imputation_Ground_Truth_exp_100_1"
             ],
             "console": "integratedTerminal"
         },

@@ -139,14 +139,14 @@ def impute_pseudo_features_by_file(
     )
 
 def get_number_from_dataset_name(upstream_name):
+    if "downstream1" in upstream_name:
+        return 1
     if "upstream2" in upstream_name:
         return 2
     elif "upstream3" in upstream_name:
         return 3
     elif "upstream4" in upstream_name:
         return 4
-    elif "downstream1" in upstream_name:
-        return 1
     else:
         return None
 
@@ -310,18 +310,22 @@ def impute_real_values(dataset, dataset_to_select_features_from):
 
 @hydra.main()
 def main(_: DictConfig):
-    #impute_pseudo_features("ic_downstream1", "ic_upstream2")
-    #impute_pseudo_features("ic_downstream1", "ic_upstream3")
-    #impute_pseudo_features("ic_downstream1", "ic_upstream4")
-    #impute_pseudo_features("ic_upstream2", "ic_downstream1_upstream2")
-    #impute_pseudo_features("ic_upstream3", "ic_downstream1_upstream3")
-    #impute_pseudo_features("ic_upstream4", "ic_downstream1_upstream4")
+    pseudo_feature = True
+    real_values = False
+    if pseudo_feature:
+        impute_pseudo_features("ic_downstream1", "ic_upstream2")
+        impute_pseudo_features("ic_downstream1", "ic_upstream3")
+        impute_pseudo_features("ic_downstream1", "ic_upstream4")
+        impute_pseudo_features("ic_upstream2", "ic_downstream1_upstream2")
+        impute_pseudo_features("ic_upstream3", "ic_downstream1_upstream3")
+        impute_pseudo_features("ic_upstream4", "ic_downstream1_upstream4")
 
-    impute_real_values("ic_downstream1", "ic_upstream2")
-    impute_real_values("ic_downstream1", "ic_upstream3")
-    impute_real_values("ic_downstream1", "ic_upstream4")
-    impute_real_values("ic_upstream2", "ic_downstream1")
-    impute_real_values("ic_upstream3", "ic_downstream1")
-    impute_real_values("ic_upstream4", "ic_downstream1")
+    if real_values:
+        impute_real_values("ic_downstream1", "ic_upstream2")
+        impute_real_values("ic_downstream1", "ic_upstream3")
+        impute_real_values("ic_downstream1", "ic_upstream4")
+        impute_real_values("ic_upstream2", "ic_downstream1")
+        impute_real_values("ic_upstream3", "ic_downstream1")
+        impute_real_values("ic_upstream4", "ic_downstream1")
 if __name__ == "__main__":
     main()

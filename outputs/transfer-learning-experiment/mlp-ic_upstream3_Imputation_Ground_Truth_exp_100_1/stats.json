@@ -1,0 +1,20 @@
+{
+    "dataset": "ic_upstream3_Imputation_Ground_Truth_exp_100_1",
+    "model_name": "mlp",
+    "run_id": "horny-Lamario",
+    "best_epoch": 199,
+    "routine": "transfer_learn_net",
+    "test_stats": {
+        "score": -0.8540354371070862,
+        "rmse": 0.8540354371070862
+    },
+    "train_stats": {
+        "score": -0.47600725293159485,
+        "rmse": 0.47600725293159485
+    },
+    "val_stats": {
+        "score": -0.8525837659835815,
+        "rmse": 0.8525837659835815
+    },
+    "all_train_stats": null
+}

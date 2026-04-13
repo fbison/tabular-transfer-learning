@@ -1,19 +1,21 @@
-name: ic_upstream2Real
-number: 2
-model_path: '../../../outputs/transfer-learning-experiment/mlp-ic_upstream2_Imputation_Real_Values_exp_100_1/model_best.pth'
-normalizer_path: '../../../data/ic_upstream2_Imputation_Real_Values_exp_100_1/normalizer.pkl'
-imputationMethod: Real_Values
+name: ic_upstream3GroundTruth
+number: 3
+model_path: '../../../outputs/transfer-learning-experiment/mlp-ic_upstream3_Imputation_Ground_Truth_exp_100_1/model_best.pth'
+normalizer_path: '../../../data/ic_upstream3_Imputation_Ground_Truth_exp_100_1/normalizer.pkl'
+imputationMethod: Ground_Truth
+
 model:
   name: mlp
-  d_embedding: 512
+  d_embedding: 232
   model_path:
   use_mlp_head: false
   freeze_feature_extractor: false
-  d_layers: [361, 495, 495, 495, 495, 175]
-  dropout: 0.08337402857785554
+  d_layers: [18, 510, 510, 510, 510, 510, 510, 430]
+  dropout: 0.04260504966868682
+
 hyp:
   epochs: 200
-  lr: 0.0007868127605854149
+  lr: 0.0005369088677995823
   lr_decay: step
   lr_factor: 0.1
   lr_schedule:
@@ -28,11 +30,12 @@ hyp:
   use_patience: true
   val_period: 10
   warmup_period: 5
-  weight_decay: 4.813346301656967e-05
+  weight_decay: 1.5535593123987772e-06
   momentum: 0.9
   warmup_type: linear
   head_warmup_period: 10
   head_lr: 0.001
+
   plateau_stop: false
   plateau_patience: 5
   plateau_min_epochs: 75

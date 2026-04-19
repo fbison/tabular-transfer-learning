@@ -26,7 +26,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from . import helpers as h
 from .anova import anova_analysis
-
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 def compute_best_st_per_group(
     df: pd.DataFrame,
@@ -107,12 +110,8 @@ def _plot_boxplot_base(
     hue: str,
     ylabel: str = "",
     title: str = "",
-    save_name: str = "boxplot.png",
+    save_name: str = "boxplot",
 ):
-    import os
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import pandas as pd
 
     h.ensure_outdir(out_dir)
 
@@ -165,7 +164,7 @@ def _plot_boxplot_base(
         order=x_order,
         hue_order=hue_order,
     )
-
+    
     sns.stripplot(
         data=df,
         x=x,
@@ -179,6 +178,38 @@ def _plot_boxplot_base(
         alpha=0.3,
         linewidth=0,
     )
+
+    # overlay manually colored points
+    norm = plt.Normalize(df["sample"].min(), df["sample"].max())
+    cmap = plt.cm.viridis
+
+    # Each PathCollection = one (x, hue) group
+    collections = sp.collections
+
+    i = 0
+    for (x_val) in x_order:
+        for (h_val) in (hue_order if hue else [None]):
+            if i >= len(collections):
+                continue
+
+            coll = collections[i]
+
+            # filter df for this subgroup
+            if hue:
+                sub = df[(df[x] == x_val) & (df[hue] == h_val)]
+            else:
+                sub = df[df[x] == x_val]
+
+            if len(sub) == 0:
+                i += 1
+                continue
+
+            colors = cmap(norm(sub["sample"].values))
+
+            coll.set_facecolors(colors)
+            coll.set_alpha(0.6)
+
+            i += 1
 
     # --- legenda sem duplicação ---
     handles, labels = ax.get_legend_handles_labels()
@@ -194,13 +225,16 @@ def _plot_boxplot_base(
     ax.set_ylabel(ylabel, fontsize=12)
     ax.set_xlabel(x.capitalize(), fontsize=12)
     ax.set_title(title, fontsize=14)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm)
+    cbar.set_label("Sample Size")
 
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
 
     path_complete = os.path.join(out_dir, save_name)
-    plt.savefig(path_complete, dpi=300, bbox_inches="tight")
-    plt.close()
+    h.plot_save_fig(path_complete)
 
 def plot_boxplot_score_distribution(
     df: pd.DataFrame,
@@ -208,7 +242,7 @@ def plot_boxplot_score_distribution(
     x_name: str = "strategy",
     hue: str = "upstream",
     title: str = "Distribution of Score (-RMSE) by Strategy",
-    save_name: str = "boxplot_score.png",
+    save_name: str = "boxplot_score",
 ):
     """
     Boxplot do score (-rmse_test) agrupado por strategy.
@@ -240,7 +274,7 @@ def plot_boxplot_gain(
     x_name: str = "strategy",
     hue: str = "upstream",
     title: str = "Transfer Learning Gain by Strategy",
-    save_name: str = "boxplot_gain.png",
+    save_name: str = "boxplot_gain",
 ):
     """
     Boxplot do ganho percentual (pct_gain * 100).
@@ -300,9 +334,8 @@ def plot_heatmap_gain_facets_strategies(tl_gain_df: pd.DataFrame, out_dir: str,
         plt.xlabel("Upstream")
         plt.ylabel("Sample")
         plt.tight_layout()
-        fname = os.path.join(out_dir, f"{save_name_prefix}_up_{up}.png")
-        plt.savefig(fname, dpi=300, bbox_inches="tight")
-        plt.close()
+        fname = os.path.join(out_dir, f"{save_name_prefix}_up_{up}")
+        h.plot_save_fig(fname)
 
 def plot_heatmap_gain_facets_upstream(tl_gain_df: pd.DataFrame, out_dir: str,
                                       title_template: str = "Percent Gain (Upstream: {up})",
@@ -340,9 +373,8 @@ def plot_heatmap_gain_facets_upstream(tl_gain_df: pd.DataFrame, out_dir: str,
         plt.xlabel("Strategy")
         plt.ylabel("Sample")
         plt.tight_layout()
-        fname = os.path.join(out_dir, f"{save_name_prefix}_up_{up}.png")
-        plt.savefig(fname, dpi=300, bbox_inches="tight")
-        plt.close()
+        fname = os.path.join(out_dir, f"{save_name_prefix}_up_{up}")
+        h.plot_save_fig(fname)
 
 def _plot_heatmap_gain_generic(
     df: pd.DataFrame,
@@ -393,8 +425,7 @@ def _plot_heatmap_gain_generic(
     plt.tight_layout()
 
     path_complete = os.path.join(out_dir, save_name)
-    plt.savefig(path_complete, dpi=300, bbox_inches="tight")
-    plt.close()
+    h.plot_save_fig(path_complete)
 
 AGGREGATIONS = {
     "best": ("max", "Best"),
@@ -413,7 +444,7 @@ def _plot_heatmap_by_agg(
     agg_fn, label = AGGREGATIONS[agg_key]
 
     title = f"{label} Percent Gain ({row_factor.capitalize()} x {col_factor.capitalize()})"
-    save_name = f"heatmap_{agg_key}_{row_factor}_x_{col_factor}.png"
+    save_name = f"heatmap_{agg_key}_{row_factor}_x_{col_factor}"
 
     _plot_heatmap_gain_generic(
         df=df,
@@ -561,10 +592,8 @@ def plot_barplot_best_tl_vs_best_st(
             )
 
         plt.tight_layout()
-        plt.savefig(
-            os.path.join(out_dir, f"{save_prefix}_up_{up}.png"),
-            dpi=300, bbox_inches="tight"
-        )
+        path_complete = os.path.join(out_dir, f"{save_prefix}_up_{up}")
+        h.plot_save_fig(path_complete)
         plt.close()
 
     # -----------------------------
@@ -590,10 +619,7 @@ def plot_barplot_best_tl_vs_best_st(
     g.add_legend()
     g.fig.suptitle("Best TL vs From Scratch — All Upstreams", y=1.03)
 
-    plt.savefig(
-        os.path.join(out_dir, f"{save_prefix}_facetgrid.png"),
-        dpi=300, bbox_inches="tight"
-    )
+    h.plot_save_fig(os.path.join(out_dir, f"{save_prefix}_facetgrid"))
     plt.close()
 
 
@@ -604,25 +630,25 @@ def distribution_of_gain_by_transfer_learning(tl_gain_df: pd.DataFrame, compare_
         tittlePrefix += " and Imputation Gain"
 
     plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="strategy", hue="upstream", title=f"{tittlePrefix} by Strategy {sufix}",
-                      save_name="boxplot_gain_by_strategy_hue_upstream.png")
+                      save_name="boxplot_gain_by_strategy_hue_upstream")
 
     
     plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="strategy", hue="imputation", title=f"{tittlePrefix} by Strategy {sufix}",
-                      save_name="boxplot_gain_by_strategy_hue_imputation.png")
+                      save_name="boxplot_gain_by_strategy_hue_imputation")
     
     plot_boxplot_gain(tl_gain_df, out_dir=out_path, x_name="imputation", hue="upstream", title=f"{tittlePrefix} by Imputation {sufix}",
-                      save_name="boxplot_gain_by_imputation_hue_upstream.png")
+                      save_name="boxplot_gain_by_imputation_hue_upstream")
 
 def distribution_of_score_by_transfer_learning(tl_gain_df: pd.DataFrame, out_path: str):
     plot_boxplot_score_distribution(tl_gain_df, out_dir=out_path, x_name="strategy", hue="upstream", title="Score (-RMSE) by Strategy",
-                      save_name="boxplot_score_by_strategy_hue_upstream.png")
+                      save_name="boxplot_score_by_strategy_hue_upstream")
 
     
     plot_boxplot_score_distribution(tl_gain_df, out_dir=out_path, x_name="strategy", hue="imputation", title="Score (-RMSE) by Strategy (hue=imputation)",
-                      save_name="boxplot_score_by_strategy_hue_imputation.png")
+                      save_name="boxplot_score_by_strategy_hue_imputation")
     
     plot_boxplot_score_distribution(tl_gain_df, out_dir=out_path, x_name="imputation", hue="upstream", title="Score (-RMSE) by Imputation (hue=upstream)",
-                      save_name="boxplot_score_by_imputation_hue_upstream.png")
+                      save_name="boxplot_score_by_imputation_hue_upstream")
 
 def graphs_analysis_gain_by_transfer_learning(
         df: pd.DataFrame, tl_gain_df: pd.DataFrame,
@@ -644,6 +670,7 @@ def graphs_analysis_gain_by_transfer_learning(
     plot_barplot_best_tl_vs_best_st(tl_gain_df, out_dir=out_path)
 
 def analysis_per_imputation_gain_by_transfer_learning(df: pd.DataFrame, tl_gain_df: pd.DataFrame, out_path: str):
+    out_path = os.path.join(out_path, "per_imputation")
     imputations = sorted(df["imputation"].dropna().unique())
 
     for imp in imputations:
@@ -693,7 +720,7 @@ def analysis_gain_by_transfer_learning(
     # 2. PROCESSO POR IMPUTAÇÃO (RECORTES)
     # ==============================================================
 
-    ##analysis_per_imputation_gain_by_transfer_learning(df, tl_gain_df, compare_with_imputed_fs, out_path=base_out)
+    analysis_per_imputation_gain_by_transfer_learning(tl_gain_df, compare_with_imputed_fs, out_path=base_out)
 
     # Save a brief summary CSV as well
     summary_csv = os.path.join(base_out, "summary_gain_statistics.csv")

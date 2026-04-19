@@ -27,7 +27,7 @@ import seaborn as sns
 from scipy.stats import friedmanchisquare
 import scikit_posthocs as sp
 import numpy as np
-from result_analysis import anova_analysis, analysis_gain_by_transfer_learning, distribution_of_score_by_transfer_learning
+from result_analysis import anova_analysis, analysis_gain_by_transfer_learning, distribution_of_score_by_transfer_learning, plot_save_fig
 
 # Set global style (Times New Roman)
 plt.rcParams["font.family"] = "Times New Roman"
@@ -45,10 +45,10 @@ def parse_sample_from_dataset_name(name):
 def parse_imputation_from_dataset_name(name):
     # split after _Imputation_
     m = re.search(r"_Imputation_([^_]+)", name)
-    if 'real' in name.lower():
-        return 'RealValue'
+    if 'ground' in name.lower():
+        return 'Ground Truth'
     if 'pseudo' in name.lower():
-        return 'PseudoFeature'
+        return 'Pseudo-Feature'
     return m.group(1) if m else NOT_USED
 
 def parse_upstream_from_model_path_name(name: str):
@@ -353,15 +353,7 @@ def plot_and_save_heatmap(
 
     plt.tight_layout()
     path_complete = os.path.join(out_dir, f"heatmap-{name}")
-    plt.savefig((path_complete + ".png"), dpi=300, bbox_inches="tight")
-    #plt.savefig((path_complete + ".pdf"), bbox_inches="tight")
-    #plt.savefig((path_complete + ".svg"), bbox_inches="tight")
-
-    with open((path_complete + ".fig.pickle"), "wb") as f:
-        pickle.dump(fig, f)
-    #plt.savefig("heatmap.eps", format="eps", bbox_inches="tight")
-
-    plt.close()
+    plot_save_fig(path_complete, fig)
 
 def strategies_order_per_imputation(imputation):
     if imputation == NOT_USED:
@@ -424,13 +416,7 @@ def plot_BoxPlots_overfitting(df, out_dir, strategies_order=None, imputations_or
 
     plt.tight_layout()
     path_complete = os.path.join(out_dir, "boxplot_overfitting")
-    plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-    ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-    ###plt.savefig(path_complete + ".svg", bbox_inches="tight")
-    with open(path_complete + ".fig.pickle", "wb") as f:
-        pickle.dump(fig, f)
-
-    plt.close()
+    plot_save_fig(path_complete, fig)
 
 def summarize_results(df: pd.DataFrame, out_dir: str, group_cols=None, filename="summary.csv"):
     """
@@ -516,10 +502,7 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         out_dir_complete = os.path.join(out_dir, "training_curves")
         os.makedirs(out_dir_complete, exist_ok=True)
         path_complete = os.path.join(out_dir_complete, f"CurvaAprendizado {strategy} - {imputation}")
-        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-        ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
-        plt.close()
+        plot_save_fig(path_complete)
 
         # === curva média ===
         max_epochs = max(max([e["epoch"] for e in r["all_train_stats"]]) for _, r in group.iterrows())
@@ -568,10 +551,7 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
         out_dir_complete = os.path.join(out_dir, "plateau")
         os.makedirs(out_dir_complete, exist_ok=True)
         path_complete = os.path.join(out_dir_complete, f"Análise de Plateau- {strategy} - {imputation}")
-        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        ##plt.savefig(path_complete + ".pdf", bbox_inches="tight")
-        ##plt.savefig(path_complete + ".svg", bbox_inches="tight")
-        plt.close()
+        plot_save_fig(path_complete)
 
         print(f"→ {strategy}/{imputation}: plateau detectado próximo da época {plateau_epoch}, "
               f"RMSE médio final = {mean_rmse[-1]:.4f}")
@@ -648,8 +628,7 @@ def analyze_training_curves(df: pd.DataFrame, out_dir: str):
 
         # === salvar ===
         path_complete = os.path.join(out_dir, f"ConvergenciaMedia_Todas{cfg['suffix']}")
-        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        plt.close()
+        plot_save_fig(path_complete)
 
 def build_statistical_mean_rank_table(df, alpha=0.05, min_seeds=2, verbose=False):
     """
@@ -872,8 +851,7 @@ def plot_heatmap_mean_rank_imputation_upstream(mean_rank_df, out_dir):
     plt.tight_layout()
 
     path_complete = os.path.join(out_dir, "heatmap_mean_rank_imputation_upstream.png")
-    plt.savefig(path_complete, dpi=300, bbox_inches="tight")
-    plt.close()
+    plot_save_fig(path_complete)
 
 # =========================================================
 # 2️ Correlação de Spearman entre upstreams (baseada nos ranks médios)
@@ -904,8 +882,7 @@ def compute_spearman_corr_between_upstreams(mean_rank_df, out_dir="."):
     plt.title("Correlação de Spearman entre Upstreams (Rank Médio)")
     plt.tight_layout()
     path_complete = os.path.join(out_dir, "compute_spearman_corr_between_upstreams")
-    plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-    plt.close()
+    plot_save_fig(path_complete)
 
     return corr_matrix
 
@@ -936,10 +913,8 @@ def plot_heatmap_mean_rank_upstream_strategy(mean_rank_df, out_dir):
         plt.ylabel("Upstream")
         plt.tight_layout()
         path_complete = os.path.join(out_dir, f"heatmap_mean_rank_upstream_strategy_imp{imp}")
-        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        plt.close()
-
-
+        plot_save_fig(path_complete)
+    
 def plot_heatmap_mean_rank_strategy_upstream(mean_rank_df, out_dir):
     """
     Plota o rank médio dos upstreams para cada estratégia.
@@ -964,8 +939,7 @@ def plot_heatmap_mean_rank_strategy_upstream(mean_rank_df, out_dir):
         plt.ylabel("Estratégia")
         plt.tight_layout()
         path_complete = os.path.join(out_dir, "imp" + str(imp))
-        plt.savefig(path_complete + ".png", dpi=300, bbox_inches="tight")
-        plt.close()
+        plot_save_fig(path_complete)
 
 
 def build_friedman_matrix(df_rank):
@@ -1034,8 +1008,7 @@ def run_nemenyi_posthoc(pivot, out_dir):
     plt.tight_layout()
 
     path = os.path.join(out_dir, "nemenyi_posthoc.png")
-    plt.savefig(path, dpi=300, bbox_inches="tight")
-    plt.close()
+    plot_save_fig(path)
 
     return nemenyi
 
@@ -1067,8 +1040,7 @@ def plot_global_mean_rank(global_rank, out_dir):
     plt.tight_layout()
 
     path = os.path.join(out_dir, "global_mean_rank.png")
-    plt.savefig(path, dpi=300, bbox_inches="tight")
-    plt.close()
+    plot_save_fig(path)
 
 def plot_cd_diagram(pivot, out_dir):
     """
@@ -1090,8 +1062,7 @@ def plot_cd_diagram(pivot, out_dir):
     plt.title("CD Diagram (simplified)")
 
     path = os.path.join(out_dir, "cd_diagram.png")
-    plt.savefig(path, dpi=300, bbox_inches="tight")
-    plt.close()
+    plot_save_fig(path)
 
 def analyze_upstreams_statistically(df_rank, out_dir):
     """
@@ -1155,14 +1126,14 @@ if __name__ == "__main__":
 
     path = os.path.join(path, "analysis")
     rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
-    #distribution_of_score_by_transfer_learning(df, path)
-    #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-    #plot_BoxPlots_overfitting(df, out_dir=path)
-    #summarize_results(dfF, out_dir=path)
+    distribution_of_score_by_transfer_learning(df, path)
+    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+    plot_BoxPlots_overfitting(df, out_dir=path)
+    summarize_results(df, out_dir=path)
     #analyze_training_curves(df, out_dir=path)
 
     has_multiple_upstreams = True
-    if False:
+    if has_multiple_upstreams:
         print("Múltiplos upstreams detectados — executando análises adicionais...")
 
         rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
@@ -1177,12 +1148,12 @@ if __name__ == "__main__":
         mean_rank_imp_up = build_upstream_rank_by_imputation(df)
         plot_heatmap_mean_rank_imputation_upstream(mean_rank_imp_up, out_dir=path)
 
-        #anova_analysis(df, out_dir=path)
+        anova_analysis(df, out_dir=path)
 
         mean_rank_upstream_df, df_rank = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
         re = analyze_upstreams_statistically(df_rank, out_dir=path)
         plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
     
-    analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=True, out_path=path)
-    analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=False, out_path=path)
+        analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=True, out_path=path)
+        analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=False, out_path=path)
 

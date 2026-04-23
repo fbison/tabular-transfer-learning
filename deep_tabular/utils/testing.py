@@ -113,6 +113,12 @@ def _compute_scores(
                     predictions_real,
                     multioutput="raw_values",
                 )
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    mape_per_feature = np.mean(
+                        np.abs((targets_real - predictions_real) / (targets_real + 1e-8)),
+                        axis=0
+                    ) * 100
+                result["mape_per_feature"] = mape_per_feature.tolist()
 
                 result["rmse_per_feature"] = rmse_per_feature.tolist()
                 result["r2_per_feature"] = r2_per_feature.tolist()

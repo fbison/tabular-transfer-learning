@@ -1127,13 +1127,13 @@ if __name__ == "__main__":
     path = os.path.join(path, "analysis")
     rank_df = build_rank_table(df, alpha=0.05, min_seeds=2, verbose=False)
     distribution_of_score_by_transfer_learning(df, path)
-    plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
-    plot_BoxPlots_overfitting(df, out_dir=path)
-    summarize_results(df, out_dir=path)
+    #plot_and_save_heatmap(rank_df, name="geral", out_dir=path)
+    #plot_BoxPlots_overfitting(df, out_dir=path)
+    #summarize_results(df, out_dir=path)
     #analyze_training_curves(df, out_dir=path)
 
     has_multiple_upstreams = True
-    if has_multiple_upstreams:
+    if False:
         print("Múltiplos upstreams detectados — executando análises adicionais...")
 
         rank_mean_df = build_rank_table(df, alpha=0.05, min_seeds=2, group_field="upstream", verbose=False)
@@ -1148,12 +1148,11 @@ if __name__ == "__main__":
         mean_rank_imp_up = build_upstream_rank_by_imputation(df)
         plot_heatmap_mean_rank_imputation_upstream(mean_rank_imp_up, out_dir=path)
 
-        anova_analysis(df, out_dir=path)
-
+        
         mean_rank_upstream_df, df_rank = build_upstream_rank_by_strategy(df, alpha=0.05, min_seeds=2)
         re = analyze_upstreams_statistically(df_rank, out_dir=path)
         plot_heatmap_mean_rank_strategy_upstream(mean_rank_upstream_df, out_dir=path)
-    
-        analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=True, out_path=path)
-        analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=False, out_path=path)
+    anova_analysis(df, out_dir=path)
+    analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=True, out_path=path)
+    analysis_gain_by_transfer_learning(df, compare_with_imputed_fs=False, out_path=path)
 

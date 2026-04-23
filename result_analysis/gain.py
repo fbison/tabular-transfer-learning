@@ -71,20 +71,17 @@ def build_tl_gain_per_run_df(
     # best ST per sample (single value per sample)
     best_st = compute_best_st_per_group(df, compare_with_imputed_fs, rmse_col=rmse_col)
 
+    collums_to_return = ["sample", "strategy", "imputation", "upstream",
+                         rmse_col, "best_st_rmse", "abs_gain", "pct_gain",
+                         "positive_gain"]
     if best_st.empty:
-        return pd.DataFrame(columns=[
-            "sample","strategy","imputation","upstream",
-            rmse_col,"best_st_rmse","abs_gain","pct_gain"
-        ])
+        return pd.DataFrame(columns=collums_to_return)
 
     # keep all TL executions
     tl_runs = df[df["upstream"].notna()].dropna(subset=[rmse_col]).copy()
 
     if tl_runs.empty:
-        return pd.DataFrame(columns=[
-            "sample","strategy","imputation","upstream",
-            rmse_col,"best_st_rmse","abs_gain","pct_gain"
-        ])
+        return pd.DataFrame(columns=collums_to_return)
 
     # merge ST baseline
     tl_runs = tl_runs.merge(best_st, on="sample", how="left")
@@ -95,11 +92,8 @@ def build_tl_gain_per_run_df(
     # gains per execution
     tl_runs["abs_gain"] = tl_runs["best_st_rmse"] - tl_runs[rmse_col]
     tl_runs["pct_gain"] = tl_runs["abs_gain"] / tl_runs["best_st_rmse"]
-
-    return tl_runs[[
-        "sample","strategy","imputation","upstream",
-        rmse_col,"best_st_rmse","abs_gain","pct_gain"
-    ]]
+    tl_runs["positive_gain"] = (tl_runs["pct_gain"] > 0)
+    return tl_runs[collums_to_return]
 
 
 def _plot_boxplot_base(
@@ -165,7 +159,7 @@ def _plot_boxplot_base(
         hue_order=hue_order,
     )
     
-    sns.stripplot(
+    sp =sns.stripplot(
         data=df,
         x=x,
         y=y,
@@ -185,10 +179,10 @@ def _plot_boxplot_base(
 
     # Each PathCollection = one (x, hue) group
     collections = sp.collections
-
+    effective_hue_order = hue_order if hue_order is not None else sorted(df[hue].dropna().unique())
     i = 0
     for (x_val) in x_order:
-        for (h_val) in (hue_order if hue else [None]):
+        for (h_val) in (effective_hue_order if hue else [None]):
             if i >= len(collections):
                 continue
 
@@ -228,7 +222,8 @@ def _plot_boxplot_base(
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = plt.colorbar(sm)
-    cbar.set_label("Sample Size")
+    cbar.set_label("Sample Size", fontsize=12)
+    cbar.ax.tick_params(labelsize=10)
 
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
@@ -714,13 +709,14 @@ def analysis_gain_by_transfer_learning(
 
     out_path_all = os.path.join(base_out, "all_data")
     h.ensure_outdir(out_path_all)
-    graphs_analysis_gain_by_transfer_learning(df, tl_gain_df, compare_with_imputed_fs, out_path=out_path_all)
+    analyze_transfer_learning_gain(tl_gain_df, out_path=out_path_all)
+    #graphs_analysis_gain_by_transfer_learning(df, tl_gain_df, compare_with_imputed_fs, out_path=out_path_all)
     anova_analysis(tl_gain_df, out_dir=out_path_all, dv="pct_gain")
     # ==============================================================
     # 2. PROCESSO POR IMPUTAÇÃO (RECORTES)
     # ==============================================================
 
-    analysis_per_imputation_gain_by_transfer_learning(tl_gain_df, compare_with_imputed_fs, out_path=base_out)
+    #analysis_per_imputation_gain_by_transfer_learning(tl_gain_df, compare_with_imputed_fs, out_path=base_out)
 
     # Save a brief summary CSV as well
     summary_csv = os.path.join(base_out, "summary_gain_statistics.csv")
@@ -737,3 +733,175 @@ def analysis_gain_by_transfer_learning(
 
     print(f"[DONE] All outputs saved in {base_out}")
     return base_out
+
+
+import os
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+
+
+def analyze_transfer_learning_gain(tl_gain_df: pd.DataFrame, out_path: str):
+    """
+    Perform deep analysis of transfer learning gain considering:
+    - aggregation across seeds
+    - consistency of gain (probability of positive gain)
+    - clustering of configurations
+    - interpretable decision rules
+
+    Saves:
+    - aggregated CSVs
+    - plots for interpretation
+    - decision tree visualization
+    """
+    out_path = os.path.join(out_path, "detailed_analysis")
+    h.ensure_outdir(out_path)
+    df = tl_gain_df.copy()
+
+    # -------------------------------------------------
+    # 1. Aggregate by configuration (remove seed noise)
+    # -------------------------------------------------
+    group_cols = ["sample", "strategy", "imputation", "upstream"]
+
+    agg = (
+        df.groupby(group_cols)
+        .agg(
+            mean_gain=("pct_gain", "mean"),
+            std_gain=("pct_gain", "std"),
+            prob_positive=("positive_gain", "mean"),
+            n_runs=("pct_gain", "count"),
+            mean_rmse=("rmse_test", "mean"),
+            mean_best=("best_st_rmse", "mean"),
+        )
+        .reset_index()
+    )
+
+    agg["std_gain"] = agg["std_gain"].fillna(0)
+
+    agg.to_csv(os.path.join(out_path, "aggregated_by_config.csv"), index=False)
+
+    # -------------------------------------------------
+    # 2. Classify configuration profiles
+    # -------------------------------------------------
+    def classify(row):
+        if row["prob_positive"] > 0.8:
+            return "Consistent Positive"
+        elif row["prob_positive"] < 0.2:
+            return "Consistent Negative"
+        else:
+            return "Unstable"
+
+    agg["profile"] = agg.apply(classify, axis=1)
+
+    agg.to_csv(os.path.join(out_path, "aggregated_with_profiles.csv"), index=False)
+
+    # -------------------------------------------------
+    # 3. Visualization: mean vs std (stability vs gain)
+    # -------------------------------------------------
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(
+        data=agg,
+        x="mean_gain",
+        y="std_gain",
+        hue="profile",
+        style="strategy"
+    )
+    plt.title("Mean Gain vs Variability (per configuration)")
+    plt.xlabel("Mean Gain")
+    plt.ylabel("Std Gain")
+    plt.tight_layout()
+    plt.savefig(os.path.join(out_path, "mean_vs_std_gain.png"), dpi=300)
+    plt.close()
+
+    # -------------------------------------------------
+    # 4. Visualization: probability of positive gain
+    # -------------------------------------------------
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(
+        data=agg,
+        x="strategy",
+        y="prob_positive",
+        hue="upstream"
+    )
+    plt.title("Probability of Positive Gain by Strategy")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(out_path, "prob_positive_by_strategy.png"), dpi=300)
+    plt.close()
+
+    # -------------------------------------------------
+    # 5. Visualization: sample effect
+    # -------------------------------------------------
+    plt.figure(figsize=(8, 6))
+    sns.boxplot(data=agg, x="sample", y="mean_gain")
+    plt.title("Mean Gain by Sample Size")
+    plt.tight_layout()
+    plt.savefig(os.path.join(out_path, "gain_by_sample.png"), dpi=300)
+    plt.close()
+
+    # -------------------------------------------------
+    # 6. Clustering configurations
+    # -------------------------------------------------
+    features = ["mean_gain", "std_gain", "prob_positive", "sample"]
+
+    X = StandardScaler().fit_transform(agg[features])
+
+    kmeans = KMeans(n_clusters=4, random_state=0)
+    agg["cluster"] = kmeans.fit_predict(X)
+
+    agg.to_csv(os.path.join(out_path, "aggregated_with_clusters.csv"), index=False)
+
+    # cluster visualization
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(
+        data=agg,
+        x="mean_gain",
+        y="std_gain",
+        hue="cluster",
+        palette="tab10"
+    )
+    plt.title("Cluster of Configurations")
+    plt.tight_layout()
+    plt.savefig(os.path.join(out_path, "clusters.png"), dpi=300)
+    plt.close()
+
+    # -------------------------------------------------
+    # 7. Decision Tree (interpretable rules)
+    # -------------------------------------------------
+    X_tree = agg[["sample", "strategy", "imputation", "upstream"]]
+    y_tree = (agg["prob_positive"] > 0.5)
+
+    X_tree_enc = pd.get_dummies(X_tree)
+
+    tree = DecisionTreeClassifier(max_depth=3, random_state=0)
+    tree.fit(X_tree_enc, y_tree)
+
+    # plot tree
+    plt.figure(figsize=(16, 8))
+    plot_tree(
+        tree,
+        feature_names=X_tree_enc.columns,
+        class_names=["Negative", "Positive"],
+        filled=True,
+        rounded=True,
+        fontsize=8
+    )
+    plt.title("Decision Tree: What drives positive gain")
+    plt.savefig(os.path.join(out_path, "decision_tree.png"), dpi=300)
+    plt.close()
+
+    # -------------------------------------------------
+    # 8. Export top configurations
+    # -------------------------------------------------
+    top_configs = agg.sort_values(by="mean_gain", ascending=False).head(20)
+    worst_configs = agg.sort_values(by="mean_gain", ascending=True).head(20)
+
+    top_configs.to_csv(os.path.join(out_path, "top_configs.csv"), index=False)
+    worst_configs.to_csv(os.path.join(out_path, "worst_configs.csv"), index=False)
+
+    print(f"Analysis saved to: {out_path}")

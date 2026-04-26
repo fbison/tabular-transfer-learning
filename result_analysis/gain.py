@@ -25,6 +25,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from . import helpers as h
+from . import plots as p
 from .anova import anova_analysis
 import os
 import matplotlib.pyplot as plt
@@ -490,6 +491,117 @@ def select_best_tl_run(
     )
 
     return tl_gain_df.loc[idx].reset_index(drop=True)
+def _rank_subset_general(sub_df, value_col, alpha, min_seeds, higher_is_better):
+    configs_df = sub_df[['strategy', 'imputation']].drop_duplicates().reset_index(drop=True)
+    keys = [tuple(x) for x in configs_df.values.tolist()]
+
+    counts = {
+        k: sub_df[(sub_df['strategy'] == k[0]) & (sub_df['imputation'] == k[1])].shape[0]
+        for k in keys
+    }
+
+    # fallback (no statistical test)
+    if any(v < min_seeds for v in counts.values()):
+        means = {
+            k: sub_df[
+                (sub_df['strategy'] == k[0]) &
+                (sub_df['imputation'] == k[1])
+            ][value_col].mean()
+            for k in keys
+        }
+
+        sorted_keys = sorted(
+            keys,
+            key=lambda k: means[k],
+            reverse=higher_is_better
+        )
+
+        ranks, current_rank, prev = {}, 1, None
+        for k in sorted_keys:
+            if prev is None or not np.isclose(means[k], prev):
+                ranks[k] = current_rank
+                prev = means[k]
+                current_rank += 1
+            else:
+                ranks[k] = current_rank - 1
+        return ranks
+
+    # statistical ranking
+    ranks, assigned, current_rank = {}, set(), 1
+
+    while len(assigned) < len(keys):
+        unassigned = [k for k in keys if k not in assigned]
+
+        best = max(
+            unassigned,
+            key=lambda k: sub_df[
+                (sub_df['strategy'] == k[0]) &
+                (sub_df['imputation'] == k[1])
+            ][value_col].mean(),
+        ) if higher_is_better else min(
+            unassigned,
+            key=lambda k: sub_df[
+                (sub_df['strategy'] == k[0]) &
+                (sub_df['imputation'] == k[1])
+            ][value_col].mean(),
+        )
+
+        same_rank = []
+        for k in unassigned:
+            a = sub_df[(sub_df['strategy'] == best[0]) & (sub_df['imputation'] == best[1])][value_col].values
+            b = sub_df[(sub_df['strategy'] == k[0]) & (sub_df['imputation'] == k[1])][value_col].values
+
+            try:
+                _, p = mannwhitneyu(
+                    a, b,
+                    alternative="greater" if higher_is_better else "less"
+                )
+            except Exception:
+                p = 1.0
+
+            if p >= alpha:
+                same_rank.append(k)
+
+        for k in same_rank:
+            ranks[k] = current_rank
+            assigned.add(k)
+
+        current_rank += 1
+
+    return ranks
+
+def compute_gain_ranks_for_sample(
+    df_sample,
+    alpha=0.05,
+    min_seeds=2,
+):
+    return _rank_subset_general(
+        df_sample,
+        value_col="pct_gain",
+        alpha=alpha,
+        min_seeds=min_seeds,
+        higher_is_better=True
+    )
+
+def build_gain_rank_table(tl_runs, alpha=0.05, min_seeds=2):
+    results = []
+
+    for sample, dfg in tl_runs.groupby("sample"):
+        ranks = compute_gain_ranks_for_sample(
+            dfg,
+            alpha=alpha,
+            min_seeds=min_seeds
+        )
+
+        for (strategy, imputation), rank in ranks.items():
+            results.append({
+                "sample": sample,
+                "strategy": strategy,
+                "imputation": imputation,
+                "rank": rank,
+            })
+
+    return pd.DataFrame(results)
 
 def plot_barplot_best_tl_vs_best_st(
     tl_gain_df: pd.DataFrame,
@@ -707,15 +819,18 @@ def analysis_gain_by_transfer_learning(
     tl_gain_csv = os.path.join(base_out, "tl_gain_df.csv")
     tl_gain_df.to_csv(tl_gain_csv, index=False)
 
+    rank_gain_df = build_gain_rank_table(tl_gain_df)
+
     out_path_all = os.path.join(base_out, "all_data")
     h.ensure_outdir(out_path_all)
+    p.plot_and_save_heatmap(rank_gain_df, out_dir=out_path_all, name="gain_ranks")
     analyze_transfer_learning_gain(tl_gain_df, out_path=out_path_all)
     #graphs_analysis_gain_by_transfer_learning(df, tl_gain_df, compare_with_imputed_fs, out_path=out_path_all)
     anova_analysis(tl_gain_df, out_dir=out_path_all, dv="pct_gain")
     # ==============================================================
     # 2. PROCESSO POR IMPUTAÇÃO (RECORTES)
     # ==============================================================
-
+    
     #analysis_per_imputation_gain_by_transfer_learning(tl_gain_df, compare_with_imputed_fs, out_path=base_out)
 
     # Save a brief summary CSV as well

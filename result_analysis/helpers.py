@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 import pickle
 ##import tikzplotlib
 
+NOT_USED = "Not Used"
+
 
 def ensure_outdir(path: str):
     os.makedirs(path, exist_ok=True)
@@ -16,3 +18,9 @@ def plot_save_fig(path_complete, fig=None):
         with open(path_complete + ".fig.pickle", "wb") as f:
             pickle.dump(fig, f)
     plt.close()
+
+def strategies_order_per_imputation(imputation):
+    if imputation == NOT_USED:
+        return ['FS']
+    else:
+        return ['FS','LH-E2E', 'MLP-E2E', 'LH', 'MLP']

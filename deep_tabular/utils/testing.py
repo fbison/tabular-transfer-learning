@@ -119,7 +119,7 @@ def _compute_scores(
                         axis=0
                     ) * 100
                 result["mape_per_feature"] = mape_per_feature.tolist()
-
+                result["mape_mean"] = float(np.mean(mape_per_feature))  # single number for the full model
                 result["rmse_per_feature"] = rmse_per_feature.tolist()
                 result["r2_per_feature"] = r2_per_feature.tolist()
                 result["r2_mean"] = float(np.mean(r2_per_feature))

@@ -23,5 +23,5 @@ def load_dataset(dataset_dir):
     df_y = df_y.drop(columns=list(overlap_cols))
 
     df = pd.concat([df_x, df_y], axis=1)
-
+    df = df[sorted(df.columns, key=str.lower)]
     return df

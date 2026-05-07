@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-
+from dataset_analysis.blocks import analyze_dataset
 from dataset_analysis.loaders import load_dataset
 from dataset_analysis.validators import validate_no_nan
 from dataset_analysis.dimensionality_metrics import compute_pca_metrics, effective_rank
@@ -9,6 +9,38 @@ from dataset_analysis.reconstruction_metrics import reconstruction_error
 from dataset_analysis.plots import plot_pca_curve
 from dataset_analysis.pairing import parse_key, is_valid_pair
 
+def check_column_order(df1, df2, name1="df1", name2="df2"):
+    """
+    Verifica se dois DataFrames possuem as mesmas colunas na mesma ordem.
+    Se não, imprime os erros encontrados.
+    """
+
+    cols1 = list(df1.columns)
+    cols2 = list(df2.columns)
+
+    # Verifica se têm as mesmas colunas (ignorando ordem)
+    if set(cols1) != set(cols2):
+        missing_in_df2 = set(cols1) - set(cols2)
+        missing_in_df1 = set(cols2) - set(cols1)
+
+        print("❌ DataFrames não possuem as mesmas colunas.")
+        if missing_in_df2:
+            print(f"Colunas em {name1} e não em {name2}: {missing_in_df2}")
+        if missing_in_df1:
+            print(f"Colunas em {name2} e não em {name1}: {missing_in_df1}")
+        return False
+
+    # Verifica ordem
+    if cols1 != cols2:
+        print("⚠️ Mesmas colunas, mas ordem diferente.")
+        for i, (c1, c2) in enumerate(zip(cols1, cols2)):
+            if c1 != c2:
+                print(f"Primeira diferença na posição {i}: {name1}='{c1}' vs {name2}='{c2}'")
+                break
+        return False
+
+    print("✅ DataFrames possuem mesmas colunas na mesma ordem.")
+    return True
 
 def run_analysis(dataset_paths, output_path, original_paths=[]):
     os.makedirs(output_path, exist_ok=True)
@@ -19,7 +51,10 @@ def run_analysis(dataset_paths, output_path, original_paths=[]):
 
     datasets = {}
 
-    dataset_paths_to_pca = {**dataset_paths, **original_paths}
+    if len(original_paths) > 0:
+        dataset_paths_to_pca = {**dataset_paths, **original_paths}
+    else:
+        dataset_paths_to_pca = dataset_paths
     # --- Load all datasets ---
     for name, path in dataset_paths_to_pca.items():
         df = load_dataset(path)
@@ -44,6 +79,7 @@ def run_analysis(dataset_paths, output_path, original_paths=[]):
             os.path.join(output_path, f"pca_{name}")
         )
 
+    pd.DataFrame(results_dim).to_csv(os.path.join(output_path, "dimensionality.csv"), index=False) 
     # --- Reconstruction (GT vs imputed) ---
     # Assumes naming convention contains "gt"
     gt_datasets = {k: v for k, v in datasets.items() if "gt" in k.lower()}
@@ -77,7 +113,6 @@ def run_analysis(dataset_paths, output_path, original_paths=[]):
             pair_id = tuple(sorted([a, b]))
             if pair_id in processed:
                 continue
-
             processed.add(pair_id)
 
             meta_a = meta_map[a]
@@ -88,7 +123,7 @@ def run_analysis(dataset_paths, output_path, original_paths=[]):
 
             df_a = datasets[a]
             df_b = datasets[b]
-
+            check_column_order(df_a, df_b, name1=a, name2=b)
             try:
                 corr_dist = correlation_distance(df_a, df_b)
                 domain_acc = domain_classifier_accuracy(df_a, df_b)
@@ -108,7 +143,6 @@ def run_analysis(dataset_paths, output_path, original_paths=[]):
                 continue
 
     # --- Save results ---
-    pd.DataFrame(results_dim).to_csv(os.path.join(output_path, "dimensionality.csv"), index=False)
     pd.DataFrame(results_recon).to_csv(os.path.join(output_path, "reconstruction.csv"), index=False)
     pd.DataFrame(results_align).to_csv(os.path.join(output_path, "alignment.csv"), index=False)
 
@@ -157,4 +191,5 @@ if __name__ == "__main__":
         "original_4": rf"{base_path}\ic_upstream4",
         "original_downstream_2": rf"{base_path}\ic_downstream1_Sample75",
     }
-    run_analysis(dataset_paths, output_path, original_paths)
+    analyze_dataset(original_paths, dataset_paths, output_path)
+    #run_analysis(dataset_paths, output_path)

@@ -13,7 +13,7 @@ IMPUTATION_DATASET_MAP = {
     "gaussian": "Gaussian",
     "mean": "Mean",
     "pseudo_features": "pseudo_features",
-    "real_values": "Real_Values",
+    "Ground_Truth": "Ground_Truth",
 }
 
 def getImpuationMethodSufix(imputationMethod: str, upstream_number: int) -> str:
@@ -174,7 +174,7 @@ def evaluate_upstream_on_downstream(
 
 def generate_all_pairs(downstream_name: str):
     upstreams = ["up2", "up3", "up4"]
-    imputations = ["gaussian", "mean", "pseudo_features", "real_values"]
+    imputations = ["gaussian", "mean", "pseudo_features", "Ground_Truth"]
 
     pairs = []
     for up in upstreams:

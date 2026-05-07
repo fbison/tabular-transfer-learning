@@ -12,8 +12,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -1.322475790977478,
-            "rmse": 1.322475790977478
+            "score": -1.3224759101867676,
+            "rmse": 1.3224759101867676
         }
     },
     {
@@ -46,8 +46,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -0.9987002611160278,
-            "rmse": 0.9987002611160278
+            "score": -0.9987002015113831,
+            "rmse": 0.9987002015113831
         }
     },
     {
@@ -80,8 +80,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -0.8719234466552734,
-            "rmse": 0.8719234466552734
+            "score": -0.8719233870506287,
+            "rmse": 0.8719233870506287
         }
     },
     {
@@ -175,15 +175,15 @@
         "downstream": "ic_downstream1",
         "sample": 5,
         "test_stats": {
-            "score": -0.852369487285614,
-            "rmse": 0.852369487285614
+            "score": -9.316560745239258,
+            "rmse": 9.316560745239258
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -1.105910301208496,
-            "rmse": 1.105910301208496
+            "score": -9.324888229370117,
+            "rmse": 9.324888229370117
         }
     },
     {
@@ -192,15 +192,15 @@
         "downstream": "ic_downstream1",
         "sample": 10,
         "test_stats": {
-            "score": -0.852369487285614,
-            "rmse": 0.852369487285614
+            "score": -9.316560745239258,
+            "rmse": 9.316560745239258
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -0.9297543168067932,
-            "rmse": 0.9297543168067932
+            "score": -8.88718032836914,
+            "rmse": 8.88718032836914
         }
     },
     {
@@ -209,15 +209,15 @@
         "downstream": "ic_downstream1",
         "sample": 20,
         "test_stats": {
-            "score": -0.852369487285614,
-            "rmse": 0.852369487285614
+            "score": -9.316560745239258,
+            "rmse": 9.316560745239258
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -0.9430493712425232,
-            "rmse": 0.9430493712425232
+            "score": -8.971375465393066,
+            "rmse": 8.971375465393066
         }
     },
     {
@@ -226,15 +226,15 @@
         "downstream": "ic_downstream1",
         "sample": 50,
         "test_stats": {
-            "score": -0.852369487285614,
-            "rmse": 0.852369487285614
+            "score": -9.316560745239258,
+            "rmse": 9.316560745239258
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -0.8586397171020508,
-            "rmse": 0.8586397171020508
+            "score": -9.018285751342773,
+            "rmse": 9.018285751342773
         }
     },
     {
@@ -243,100 +243,100 @@
         "downstream": "ic_downstream1",
         "sample": 75,
         "test_stats": {
-            "score": -0.852369487285614,
-            "rmse": 0.852369487285614
+            "score": -9.316560745239258,
+            "rmse": 9.316560745239258
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -0.9020293951034546,
-            "rmse": 0.9020293951034546
+            "score": -8.98505687713623,
+            "rmse": 8.98505687713623
         }
     },
     {
         "upstream": "up2",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 5,
         "test_stats": {
-            "score": -7.934340000152588,
-            "rmse": 7.934340000152588
+            "score": -0.8040946125984192,
+            "rmse": 0.8040946125984192
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -9.394365310668945,
-            "rmse": 9.394365310668945
+            "score": -0.5499624609947205,
+            "rmse": 0.5499624609947205
         }
     },
     {
         "upstream": "up2",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 10,
         "test_stats": {
-            "score": -7.934340000152588,
-            "rmse": 7.934340000152588
+            "score": -0.8040946125984192,
+            "rmse": 0.8040946125984192
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -7.632606029510498,
-            "rmse": 7.632606029510498
+            "score": -0.5729061961174011,
+            "rmse": 0.5729061961174011
         }
     },
     {
         "upstream": "up2",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 20,
         "test_stats": {
-            "score": -7.934340000152588,
-            "rmse": 7.934340000152588
+            "score": -0.8040946125984192,
+            "rmse": 0.8040946125984192
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -7.446800231933594,
-            "rmse": 7.446800231933594
+            "score": -0.5589653253555298,
+            "rmse": 0.5589653253555298
         }
     },
     {
         "upstream": "up2",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 50,
         "test_stats": {
-            "score": -7.934340000152588,
-            "rmse": 7.934340000152588
+            "score": -0.8040946125984192,
+            "rmse": 0.8040946125984192
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -7.426002502441406,
-            "rmse": 7.426002502441406
+            "score": -0.76127690076828,
+            "rmse": 0.76127690076828
         }
     },
     {
         "upstream": "up2",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 75,
         "test_stats": {
-            "score": -7.934340000152588,
-            "rmse": 7.934340000152588
+            "score": -0.8040946125984192,
+            "rmse": 0.8040946125984192
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -7.382040977478027,
-            "rmse": 7.382040977478027
+            "score": -0.8499240279197693,
+            "rmse": 0.8499240279197693
         }
     },
     {
@@ -386,8 +386,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -3.3521623611450195,
-            "rmse": 3.3521623611450195
+            "score": -3.3521625995635986,
+            "rmse": 3.3521625995635986
         }
     },
     {
@@ -420,8 +420,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.989591598510742,
-            "rmse": 2.989591598510742
+            "score": -2.9895918369293213,
+            "rmse": 2.9895918369293213
         }
     },
     {
@@ -471,8 +471,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -3.164010524749756,
-            "rmse": 3.164010524749756
+            "score": -3.164010763168335,
+            "rmse": 3.164010763168335
         }
     },
     {
@@ -515,15 +515,15 @@
         "downstream": "ic_downstream1",
         "sample": 5,
         "test_stats": {
-            "score": -3.135202407836914,
-            "rmse": 3.135202407836914
+            "score": -3.29477596282959,
+            "rmse": 3.29477596282959
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -3.9806668758392334,
-            "rmse": 3.9806668758392334
+            "score": -3.7637455463409424,
+            "rmse": 3.7637455463409424
         }
     },
     {
@@ -532,15 +532,15 @@
         "downstream": "ic_downstream1",
         "sample": 10,
         "test_stats": {
-            "score": -3.135202407836914,
-            "rmse": 3.135202407836914
+            "score": -3.29477596282959,
+            "rmse": 3.29477596282959
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -3.9601104259490967,
-            "rmse": 3.9601104259490967
+            "score": -3.4783287048339844,
+            "rmse": 3.4783287048339844
         }
     },
     {
@@ -549,15 +549,15 @@
         "downstream": "ic_downstream1",
         "sample": 20,
         "test_stats": {
-            "score": -3.135202407836914,
-            "rmse": 3.135202407836914
+            "score": -3.29477596282959,
+            "rmse": 3.29477596282959
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -3.6324965953826904,
-            "rmse": 3.6324965953826904
+            "score": -2.9598159790039062,
+            "rmse": 2.9598159790039062
         }
     },
     {
@@ -566,15 +566,15 @@
         "downstream": "ic_downstream1",
         "sample": 50,
         "test_stats": {
-            "score": -3.135202407836914,
-            "rmse": 3.135202407836914
+            "score": -3.29477596282959,
+            "rmse": 3.29477596282959
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -3.0919718742370605,
-            "rmse": 3.0919718742370605
+            "score": -2.7811856269836426,
+            "rmse": 2.7811856269836426
         }
     },
     {
@@ -583,100 +583,100 @@
         "downstream": "ic_downstream1",
         "sample": 75,
         "test_stats": {
-            "score": -3.135202407836914,
-            "rmse": 3.135202407836914
+            "score": -3.29477596282959,
+            "rmse": 3.29477596282959
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.9556190967559814,
-            "rmse": 2.9556190967559814
+            "score": -2.7282819747924805,
+            "rmse": 2.7282819747924805
         }
     },
     {
         "upstream": "up3",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 5,
         "test_stats": {
-            "score": -2.0450758934020996,
-            "rmse": 2.0450758934020996
+            "score": -0.6480183005332947,
+            "rmse": 0.6480183005332947
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.0566461086273193,
-            "rmse": 2.0566461086273193
+            "score": -0.5112375617027283,
+            "rmse": 0.5112375617027283
         }
     },
     {
         "upstream": "up3",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 10,
         "test_stats": {
-            "score": -2.0450758934020996,
-            "rmse": 2.0450758934020996
+            "score": -0.6480183005332947,
+            "rmse": 0.6480183005332947
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -1.7901211977005005,
-            "rmse": 1.7901211977005005
+            "score": -0.3759486675262451,
+            "rmse": 0.3759486675262451
         }
     },
     {
         "upstream": "up3",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 20,
         "test_stats": {
-            "score": -2.0450758934020996,
-            "rmse": 2.0450758934020996
+            "score": -0.6480183005332947,
+            "rmse": 0.6480183005332947
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -1.512486457824707,
-            "rmse": 1.512486457824707
+            "score": -0.3962840437889099,
+            "rmse": 0.3962840437889099
         }
     },
     {
         "upstream": "up3",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 50,
         "test_stats": {
-            "score": -2.0450758934020996,
-            "rmse": 2.0450758934020996
+            "score": -0.6480183005332947,
+            "rmse": 0.6480183005332947
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -1.512002944946289,
-            "rmse": 1.512002944946289
+            "score": -0.7068654298782349,
+            "rmse": 0.7068654298782349
         }
     },
     {
         "upstream": "up3",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 75,
         "test_stats": {
-            "score": -2.0450758934020996,
-            "rmse": 2.0450758934020996
+            "score": -0.6480183005332947,
+            "rmse": 0.6480183005332947
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -1.5002628564834595,
-            "rmse": 1.5002628564834595
+            "score": -0.7676193714141846,
+            "rmse": 0.7676193714141846
         }
     },
     {
@@ -726,8 +726,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.336463689804077,
-            "rmse": 2.336463689804077
+            "score": -2.3364639282226562,
+            "rmse": 2.3364639282226562
         }
     },
     {
@@ -760,8 +760,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -1.9261891841888428,
-            "rmse": 1.9261891841888428
+            "score": -1.9261890649795532,
+            "rmse": 1.9261890649795532
         }
     },
     {
@@ -845,8 +845,8 @@
             "score": 0.0
         },
         "train_stats": {
-            "score": -3.7022876739501953,
-            "rmse": 3.7022876739501953
+            "score": -3.7022879123687744,
+            "rmse": 3.7022879123687744
         }
     },
     {
@@ -855,15 +855,15 @@
         "downstream": "ic_downstream1",
         "sample": 5,
         "test_stats": {
-            "score": -9.843637466430664,
-            "rmse": 9.843637466430664
+            "score": -7.566574573516846,
+            "rmse": 7.566574573516846
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -10.805655479431152,
-            "rmse": 10.805655479431152
+            "score": -8.27973747253418,
+            "rmse": 8.27973747253418
         }
     },
     {
@@ -872,15 +872,15 @@
         "downstream": "ic_downstream1",
         "sample": 10,
         "test_stats": {
-            "score": -9.843637466430664,
-            "rmse": 9.843637466430664
+            "score": -7.566574573516846,
+            "rmse": 7.566574573516846
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -10.649381637573242,
-            "rmse": 10.649381637573242
+            "score": -8.766342163085938,
+            "rmse": 8.766342163085938
         }
     },
     {
@@ -889,15 +889,15 @@
         "downstream": "ic_downstream1",
         "sample": 20,
         "test_stats": {
-            "score": -9.843637466430664,
-            "rmse": 9.843637466430664
+            "score": -7.566574573516846,
+            "rmse": 7.566574573516846
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -10.00329875946045,
-            "rmse": 10.00329875946045
+            "score": -8.145554542541504,
+            "rmse": 8.145554542541504
         }
     },
     {
@@ -906,15 +906,15 @@
         "downstream": "ic_downstream1",
         "sample": 50,
         "test_stats": {
-            "score": -9.843637466430664,
-            "rmse": 9.843637466430664
+            "score": -7.566574573516846,
+            "rmse": 7.566574573516846
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -9.790425300598145,
-            "rmse": 9.790425300598145
+            "score": -7.746409893035889,
+            "rmse": 7.746409893035889
         }
     },
     {
@@ -923,100 +923,100 @@
         "downstream": "ic_downstream1",
         "sample": 75,
         "test_stats": {
-            "score": -9.843637466430664,
-            "rmse": 9.843637466430664
+            "score": -7.566574573516846,
+            "rmse": 7.566574573516846
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -9.723828315734863,
-            "rmse": 9.723828315734863
+            "score": -7.655934810638428,
+            "rmse": 7.655934810638428
         }
     },
     {
         "upstream": "up4",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 5,
         "test_stats": {
-            "score": -2.6627020835876465,
-            "rmse": 2.6627020835876465
+            "score": -0.7863816618919373,
+            "rmse": 0.7863816618919373
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.91397762298584,
-            "rmse": 2.91397762298584
+            "score": -0.7383933663368225,
+            "rmse": 0.7383933663368225
         }
     },
     {
         "upstream": "up4",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 10,
         "test_stats": {
-            "score": -2.6627020835876465,
-            "rmse": 2.6627020835876465
+            "score": -0.7863816618919373,
+            "rmse": 0.7863816618919373
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.8163888454437256,
-            "rmse": 2.8163888454437256
+            "score": -0.6660357117652893,
+            "rmse": 0.6660357117652893
         }
     },
     {
         "upstream": "up4",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 20,
         "test_stats": {
-            "score": -2.6627020835876465,
-            "rmse": 2.6627020835876465
+            "score": -0.7863816618919373,
+            "rmse": 0.7863816618919373
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.863600730895996,
-            "rmse": 2.863600730895996
+            "score": -0.6742462515830994,
+            "rmse": 0.6742462515830994
         }
     },
     {
         "upstream": "up4",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 50,
         "test_stats": {
-            "score": -2.6627020835876465,
-            "rmse": 2.6627020835876465
+            "score": -0.7863816618919373,
+            "rmse": 0.7863816618919373
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.472439765930176,
-            "rmse": 2.472439765930176
+            "score": -0.7222985625267029,
+            "rmse": 0.7222985625267029
         }
     },
     {
         "upstream": "up4",
-        "imputation": "real_values",
+        "imputation": "Ground_Truth",
         "downstream": "ic_downstream1",
         "sample": 75,
         "test_stats": {
-            "score": -2.6627020835876465,
-            "rmse": 2.6627020835876465
+            "score": -0.7863816618919373,
+            "rmse": 0.7863816618919373
         },
         "val_stats": {
             "score": 0.0
         },
         "train_stats": {
-            "score": -2.4836792945861816,
-            "rmse": 2.4836792945861816
+            "score": -0.7541831135749817,
+            "rmse": 0.7541831135749817
         }
     }
 ]

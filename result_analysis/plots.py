@@ -6,7 +6,6 @@ from typing import List
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.stats import mannwhitneyu
 from statistics import mode, StatisticsError
 import statsmodels.api as sm
 import statsmodels.formula.api as smf

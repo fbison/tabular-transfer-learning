@@ -7,6 +7,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
+from sklearn.utils import shuffle
 
 def safe_corrcoef(df):
     df = df.loc[:, df.std() > 1e-8]  # remove constants ONLY HERE
@@ -65,8 +66,10 @@ def mmd_rbf(X, Y):
 
 
 def domain_classifier_accuracy(df_a, df_b):
-    X = np.vstack([df_a.values, df_b.values])
-    y = np.array([0] * len(df_a) + [1] * len(df_b))
+    df_b_shuffled = shuffle(df_b, random_state=42)
+    df_a_shuffled = shuffle(df_a, random_state=0)
+    X = np.vstack([df_a_shuffled.values, df_b_shuffled.values])
+    y = np.array([0] * len(df_a_shuffled) + [1] * len(df_b_shuffled))
 
     clf = make_pipeline(
         VarianceThreshold(threshold=1e-8),  # remove constants
